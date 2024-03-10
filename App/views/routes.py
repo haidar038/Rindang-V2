@@ -4,10 +4,14 @@ from flask_admin.base import BaseView, expose, AdminIndexView, Admin
 from flask_socketio import emit, join_room, leave_room, send, rooms
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-import json
+from babel.dates import format_date, format_datetime, format_time
+from sqlalchemy.sql import func
+import json, locale, babel
 
 from App.models import User, AppAdmin, DataPangan
 from App import db, admin, login_manager, socketio
+
+locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
 
 views = Blueprint('views', __name__)
 
@@ -224,6 +228,15 @@ def dashboard():
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 def datapangan():
     user_data = User.query.all()
+    pangan = DataPangan.query.all()
+
+    total_panen = []
+    for total in pangan:
+        panenTotal = total.jml_panen
+        total_panen.append(panenTotal)
+
+    total_panen = sum(total_panen)
+
     cabai = DataPangan.query.filter_by(komoditas='Cabai').all()
     tomat = DataPangan.query.filter_by(komoditas='Tomat').all()
     stat_cabai = []
@@ -234,6 +247,10 @@ def datapangan():
     for panenTomat in tomat:
         totalTomat = panenTomat.jml_panen
         stat_tomat.append(totalTomat)
+
+    totalPanenCabai = sum(stat_cabai)
+    totalPanenTomat = sum(stat_tomat)
+
     # stat_pangan = ','.join([str(getattr(pangan, col)) for col in DataPangan.__table__.columns.keys()])
     if request.method == 'POST':
         kebun = request.form['kebun']
@@ -250,7 +267,7 @@ def datapangan():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat)
+    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat)
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):

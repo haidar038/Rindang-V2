@@ -227,14 +227,20 @@
                         <div class="card overflow-hidden">
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <h5 class="card-title mb-0 text-dark-emphasis"><strong>Jumlah Kebutuhan dan Hasil
+                                    <h5 class="card-title text-dark-emphasis"><strong>Jumlah Kebutuhan dan Hasil
                                             Produksi</strong>
                                     </h5>
-                                    <em class="text-muted">Informasi bulanan</em>
+                                    <em class="text-muted">Informasi Bulan Ini</em>
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-8">
-                                        <p class="mb-3 display-5"><strong>1.138kg</strong></p>
+                                        {% if pangan %}
+                                        {% set jml_panen = total_panen/1000 %}
+                                        <p class="mb-3 display-5"><strong>{{ jml_panen | default("0") }}
+                                                kg</strong></p>
+                                        {% else %}
+                                        <p class="mb-3 display-5"><strong>0 kg</strong></p>
+                                        {% endif %}
                                         <div class="d-flex align-items-center mb-3">
                                             <span
                                                 class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
@@ -245,14 +251,14 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="me-4">
-                                                <span
-                                                    class="round-8 bg-primary rounded-circle me-2 d-inline-block"></span>
-                                                <span class="fs-2">2023</span>
+                                                <span class="round-8 rounded-circle me-2 d-inline-block"
+                                                    style="background-color: #ff6b6b;"></span>
+                                                <span class="fs-2">Cabai</span>
                                             </div>
                                             <div>
-                                                <span
-                                                    class="round-8 bg-light-primary rounded-circle me-2 d-inline-block"></span>
-                                                <span class="fs-2">2024</span>
+                                                <span class="round-8 rounded-circle me-2 d-inline-block"
+                                                    style="background-color: #fcb45e;"></span>
+                                                <span class="fs-2">Tomat</span>
                                             </div>
                                         </div>
                                     </div>
@@ -410,44 +416,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-0">1</h6>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-1">Kebun 1</h6>
-                                                        <!-- <span class="fw-normal">Skala Besar</span> -->
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">12kg</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">12/03/2024</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <span
-                                                                class="badge bg-yellow rounded-3 fw-semibold">Penanaman</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="fw-bold"><strong>12.000</strong></div>
-                                                        <div class="small">12/06/2024</div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-light" type="button"
-                                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <ion-icon name="ellipsis-vertical"></ion-icon>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li><a class="dropdown-item" href="#">Update</a>
-                                                                </li>
-                                                                <li><a class="dropdown-item" href="#">Hapus</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
                                                 {% for data_cabai in cabai %}
                                                 <tr>
                                                     <td class="border-bottom-0">
@@ -461,7 +429,8 @@
                                                         <p class="mb-0 fw-normal">{{ data_cabai.jml_bibit }}</p>
                                                     </td>
                                                     <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">{{ data_cabai.tanggal_bibit }}</p>
+                                                        <p class="mb-0 fw-normal">{{
+                                                            data_cabai.tanggal_bibit}}</p>
                                                     </td>
                                                     <td class="border-bottom-0">
                                                         <div class="d-flex align-items-center gap-2">
@@ -470,7 +439,8 @@
                                                         </div>
                                                     </td>
                                                     <td class="border-bottom-0">
-                                                        <div class="fw-bold"><strong>{{ data_cabai.jml_panen }}</strong>
+                                                        <div class="fw-bold"><strong>{{ data_cabai.jml_panen/1000
+                                                                }}</strong>
                                                         </div>
                                                         <div class="small">{{ data_cabai.tanggal_panen }}</div>
                                                     </td>
@@ -496,76 +466,79 @@
                                     </div>
                                     <div class="tab-pane fade" id="nav-profile" role="tabpanel"
                                         aria-labelledby="nav-profile-tab" tabindex="0">
-                                        <div class="table-responsive">
-                                            <table class="table text-nowrap mb-0 align-middle">
-                                                <thead class="text-dark fs-4">
-                                                    <tr>
-                                                        <th class="max-width">
-                                                            <h6 class="fw-semibold mb-0">No</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Kebun</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Tanggal</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Estimasi Panen</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Status</h6>
-                                                        </th>
-                                                        <th class="">
-                                                            <h6 class="fw-semibold mb-0">Status</h6>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="border-bottom-0">
-                                                            <h6 class="fw-semibold mb-0">1</h6>
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <h6 class="fw-semibold mb-1">Kebun 3</h6>
-                                                            <!-- <span class="fw-normal">Skala Besar</span> -->
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <p class="mb-0 fw-normal">20kg</p>
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <p class="mb-0 fw-normal">12/03/2024</p>
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <h6 class="mb-0 fs-4">12/06/2024</h6>
-                                                            <span class="fw-normal">20kg</span>
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <div class="d-flex align-items-center gap-2">
-                                                                <span
-                                                                    class="badge bg-red rounded-3 fw-semibold">Pembibitan</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="border-bottom-0">
-                                                            <div class="dropdown">
-                                                                <button class="btn btn-secondary dropdown-toggle"
-                                                                    type="button" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    Dropdown
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li><a class="dropdown-item" href="#">Update</a>
-                                                                    </li>
-                                                                    <li><a class="dropdown-item" href="#">Hapus</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        <table class="table text-nowrap mb-0 align-middle">
+                                            <thead class="text-dark fs-4">
+                                                <tr>
+                                                    <th class="max-width">
+                                                        <h6 class="fw-semibold mb-0">No</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Kebun</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Tanggal Pembibitan</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Status</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
+                                                    </th>
+                                                    <th class="">
+                                                        <h6 class="fw-semibold mb-0">Menu</h6>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for data_tomat in tomat %}
+                                                <tr>
+                                                    <td class="border-bottom-0">
+                                                        <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <h6 class="fw-semibold mb-1">{{ data_tomat.kebun }}</h6>
+                                                        <!-- <span class="fw-normal">Skala Besar</span> -->
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <p class="mb-0 fw-normal">{{ data_tomat.jml_bibit }}</p>
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <p class="mb-0 fw-normal">{{ data_tomat.tanggal_bibit }}</p>
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="badge bg-yellow rounded-3 fw-semibold">{{
+                                                                data_tomat.status }}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <div class="fw-bold"><strong>{{ data_tomat.jml_panen/1000
+                                                                }}</strong>
+                                                        </div>
+                                                        <div class="small">{{ data_tomat.tanggal_panen }}</div>
+                                                    </td>
+                                                    <td class="border-bottom-0">
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-light" type="button"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <ion-icon name="ellipsis-vertical"></ion-icon>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                                <li><a class="dropdown-item" href="#">Update</a>
+                                                                </li>
+                                                                <li><a class="dropdown-item"
+                                                                        href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}">Hapus</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -685,12 +658,15 @@
             chart.render();
 
             // =====================================
-            // Breakup
+            // Jumlah Kebutuhan dan Hasil Produksi
             // =====================================
+            let totalPanenCabai = parseInt('{{totalPanenCabai}}', 10)
+            let totalPanenTomat = parseInt('{{totalPanenTomat}}', 10)
+
             var breakup = {
                 color: "#adb5bd",
-                series: [9, 6, 21],
-                labels: ["2023", "2024", "Kebutuhan Pangan"],
+                series: [totalPanenCabai, totalPanenTomat],
+                labels: ["Cabai", "Tomat"],
                 chart: {
                     width: 180,
                     type: "donut",
@@ -717,7 +693,7 @@
                 legend: {
                     show: false,
                 },
-                colors: ["#89c97b", "#d9ffd0", "#f3f3f3"],
+                colors: ["#ff6b6b", "#fcb45e"],
 
                 responsive: [
                     {
@@ -737,54 +713,6 @@
 
             var chart = new ApexCharts(document.querySelector("#breakup"), breakup);
             chart.render();
-
-            // =====================================
-            // Earning
-            // =====================================
-            var earning = {
-                chart: {
-                    id: "sparkline3",
-                    type: "area",
-                    height: 60,
-                    sparkline: {
-                        enabled: true,
-                    },
-                    group: "sparklines",
-                    fontFamily: "Plus Jakarta Sans', sans-serif",
-                    foreColor: "#adb0bb",
-                },
-                series: [
-                    {
-                        name: "Earnings",
-                        color: "#49BEFF",
-                        data: [25, 66, 20, 40, 12, 58, 20],
-                    },
-                ],
-                stroke: {
-                    curve: "smooth",
-                    width: 2,
-                },
-                fill: {
-                    colors: ["#f3feff"],
-                    type: "solid",
-                    opacity: 0.05,
-                },
-
-                markers: {
-                    size: 0,
-                },
-                tooltip: {
-                    theme: "dark",
-                    fixed: {
-                        enabled: true,
-                        position: "right",
-                    },
-                    x: {
-                        show: false,
-                    },
-                },
-            };
-            new ApexCharts(document.querySelector("#earning"), earning).render();
         });
 
     </script>
