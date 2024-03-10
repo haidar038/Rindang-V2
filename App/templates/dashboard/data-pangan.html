@@ -558,8 +558,10 @@
     <script>
         let statCabai = JSON.parse({{ stat_cabai | tojson }});
         let statTomat = JSON.parse({{ stat_tomat | tojson }});
+        let totalTanggal = JSON.parse({{ tgl_panen | tojson }});
 
-        console.log(statCabai)
+        console.log(statCabai, statTomat)
+        console.log(totalTanggal)
 
         $(function () {
             // =====================================
@@ -614,7 +616,7 @@
 
                 xaxis: {
                     type: "category",
-                    categories: ["16/08", "17/08", "18/08", "19/08", "20/08", "21/08", "22/08", "23/08"],
+                    categories: totalTanggal,
                     labels: {
                         style: { cssClass: "grey--text lighten-2--text fill-color" },
                     },

@@ -241,15 +241,20 @@ def datapangan():
     tomat = DataPangan.query.filter_by(komoditas='Tomat').all()
     stat_cabai = []
     stat_tomat = []
+    tgl_panen = []
     for panenCabai in cabai:
         totalCabai = panenCabai.jml_panen
         stat_cabai.append(totalCabai)
     for panenTomat in tomat:
         totalTomat = panenTomat.jml_panen
         stat_tomat.append(totalTomat)
+    for tglPanen in pangan:
+        totalTanggal = tglPanen.tanggal_panen
+        tgl_panen.append(totalTanggal)
 
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
+    print(tgl_panen)
 
     # stat_pangan = ','.join([str(getattr(pangan, col)) for col in DataPangan.__table__.columns.keys()])
     if request.method == 'POST':
@@ -267,7 +272,7 @@ def datapangan():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat)
+    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen=json.dumps(tgl_panen))
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):
