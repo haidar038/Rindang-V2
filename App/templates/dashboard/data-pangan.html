@@ -209,11 +209,9 @@
                                                 Rindang</strong></h5>
                                     </div>
                                     <div>
-                                        <select class="form-select">
-                                            <option value="1">Okt 2023</option>
-                                            <option value="2">Nov 2023</option>
-                                            <option value="3">Des 2023</option>
-                                            <option value="4">Jan 2024</option>
+                                        <select class="form-select" id="select-pangan">
+                                            <option value="1">Cabai</option>
+                                            <option value="2">Tomat</option>
                                         </select>
                                     </div>
                                 </div>
@@ -555,22 +553,20 @@
     <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script>
     <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
     <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
-    <script>
-        let statCabai = JSON.parse({{ stat_cabai | tojson }});
-        let statTomat = JSON.parse({{ stat_tomat | tojson }});
-        let totalTanggal = JSON.parse({{ tgl_panen | tojson }});
 
-        console.log(statCabai, statTomat)
-        console.log(totalTanggal)
+    <script>
+        let statCabai = {{ stat_cabai | safe }};
+        let statTomat = {{ stat_tomat | safe }};
+        let tanggalCabai = {{ tgl_panen_cabai | safe}};
+        let tanggalTomat = {{ tgl_panen_tomat | safe}};
 
         $(function () {
             // =====================================
             // Profit
             // =====================================
-            var chart = {
+            var cabaiBar = {
                 series: [
                     { name: "Panen Cabai", data: statCabai },
-                    { name: "Panen Tomat", data: statTomat },
                 ],
 
                 chart: {
@@ -616,7 +612,7 @@
 
                 xaxis: {
                     type: "category",
-                    categories: totalTanggal,
+                    categories: tanggalCabai,
                     labels: {
                         style: { cssClass: "grey--text lighten-2--text fill-color" },
                     },
@@ -656,8 +652,8 @@
                 ],
             };
 
-            var chart = new ApexCharts(document.querySelector("#chart"), chart);
-            chart.render();
+            var chartcabai = new ApexCharts(document.querySelector("#chart"), cabaiBar);
+            chartcabai.render();
 
             // =====================================
             // Jumlah Kebutuhan dan Hasil Produksi

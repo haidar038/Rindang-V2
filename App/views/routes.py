@@ -4,9 +4,8 @@ from flask_admin.base import BaseView, expose, AdminIndexView, Admin
 from flask_socketio import emit, join_room, leave_room, send, rooms
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-from babel.dates import format_date, format_datetime, format_time
-from sqlalchemy.sql import func
-import json, locale, babel
+from operator import itemgetter
+import json, locale
 
 from App.models import User, AppAdmin, DataPangan
 from App import db, admin, login_manager, socketio
@@ -241,20 +240,23 @@ def datapangan():
     tomat = DataPangan.query.filter_by(komoditas='Tomat').all()
     stat_cabai = []
     stat_tomat = []
-    tgl_panen = []
+    tgl_panen_cabai = []
+    tgl_panen_tomat = []
     for panenCabai in cabai:
         totalCabai = panenCabai.jml_panen
+        tglPanenCabai = panenCabai.tanggal_panen
         stat_cabai.append(totalCabai)
+        tgl_panen_cabai.append(tglPanenCabai)
     for panenTomat in tomat:
         totalTomat = panenTomat.jml_panen
+        tglPanenTomat = panenTomat.tanggal_panen
         stat_tomat.append(totalTomat)
-    for tglPanen in pangan:
-        totalTanggal = tglPanen.tanggal_panen
-        tgl_panen.append(totalTanggal)
+        tgl_panen_tomat.append(tglPanenTomat)
 
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
-    print(tgl_panen)
+    print(tgl_panen_cabai)
+    print(tgl_panen_tomat)
 
     # stat_pangan = ','.join([str(getattr(pangan, col)) for col in DataPangan.__table__.columns.keys()])
     if request.method == 'POST':
@@ -272,7 +274,7 @@ def datapangan():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen=json.dumps(tgl_panen))
+    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):
