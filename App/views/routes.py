@@ -5,12 +5,10 @@ from flask_socketio import emit, join_room, leave_room, send, rooms
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from operator import itemgetter
-import json, locale
+import json
 
 from App.models import User, AppAdmin, DataPangan
 from App import db, admin, login_manager, socketio
-
-locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
 
 views = Blueprint('views', __name__)
 
