@@ -20,36 +20,36 @@ def load_user(id):
     else:
         return None
 
-@auth.route('/adminLogin', methods=['GET', 'POST'])
-def adminLogin():
-    if current_user.is_authenticated:
-        if current_user.account_type == 'admin':
-            return redirect(url_for('views.dashboard'))
-        elif current_user.account_type == 'user':
-            return redirect(url_for('views.home'))
+# @auth.route('/adminLogin', methods=['GET', 'POST'])
+# def adminLogin():
+#     if current_user.is_authenticated:
+#         if current_user.account_type == 'admin':
+#             return redirect(url_for('views.dashboard'))
+#         elif current_user.account_type == 'user':
+#             return redirect(url_for('views.home'))
     
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['userPassword']
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['userPassword']
         
-        admin_user = AppAdmin.query.filter_by(username=username).first()
+#         admin_user = AppAdmin.query.filter_by(username=username).first()
 
-        if admin_user and check_password_hash(admin_user.password, password):
-            session['account_type'] = 'admin'
-            print("Anda berhasil masuk!")
-            flash("Anda berhasil masuk!", category="success")
-            login_user(admin_user, remember=True)
-            return redirect(url_for('views.dashboard'))
-        elif admin_user is None:
-            print(f"Akun dengan username {username} tidak ditemukan. Mungkin anda telah menggantinya!")
-            flash(f"Akun dengan username {username} tidak ditemukan. Mungkin anda telah menggantinya!", category='warning')
-            return redirect(url_for('auth.adminLogin'))
-        else:
-            print("Kata sandi salah, coba lagi.")
-            flash("Kata sandi salah, coba lagi.", category='danger')
-            return redirect(url_for('auth.adminLogin'))
+#         if admin_user and check_password_hash(admin_user.password, password):
+#             session['account_type'] = 'admin'
+#             print("Anda berhasil masuk!")
+#             flash("Anda berhasil masuk!", category="success")
+#             login_user(admin_user, remember=True)
+#             return redirect(url_for('views.dashboard'))
+#         elif admin_user is None:
+#             print(f"Akun dengan username {username} tidak ditemukan. Mungkin anda telah menggantinya!")
+#             flash(f"Akun dengan username {username} tidak ditemukan. Mungkin anda telah menggantinya!", category='warning')
+#             return redirect(url_for('auth.adminLogin'))
+#         else:
+#             print("Kata sandi salah, coba lagi.")
+#             flash("Kata sandi salah, coba lagi.", category='danger')
+#             return redirect(url_for('auth.adminLogin'))
 
-    return render_template('admin_login.html')
+#     return render_template('admin_login.html')
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():

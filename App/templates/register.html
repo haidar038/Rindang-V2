@@ -51,7 +51,8 @@
     <div class="bg-white h-100 position-absolute w-50 z-0 end-0 d-none d-lg-block"></div>
 
     <div class="position-absolute w-100 top-0 px-lg-5 py-lg-4 px-4 py-3">
-        <a href="../index.html" class="nav-link fw-bold align-items-center mb-5">&larr; Kembali ke Beranda</a>
+        <a href="{{ url_for('views.index' ) }}" class="nav-link fw-bold align-items-center mb-5">&larr; Kembali ke
+            Beranda</a>
     </div>
 
     <div class="container-fluid py-5 h-100">
@@ -83,10 +84,11 @@
                             Saya setuju dengan syarat dan ketentuan yang berlaku
                         </label>
                     </div>
-                    <a href="./login.html" class="btn btn-green text-center fw-bold text-light w-100 mb-3">
+                    <a href="{{ url_for('auth.login' ) }}"
+                        class="btn btn-green text-center fw-bold text-light w-100 mb-3">
                         Daftar Sekarang
                     </a>
-                    <p class="text-center mb-4">Sudah memiliki akun? <a href="./login.html"
+                    <p class="text-center mb-4">Sudah memiliki akun? <a href="{{ url_for('auth.login' ) }}"
                             class="link-green text-decoration-none fw-bold">Masuk Disini</a>
                     </p>
                 </div>
@@ -137,10 +139,10 @@
                         Saya setuju dengan syarat dan ketentuan yang berlaku
                     </label>
                 </div>
-                <a href="./login.html" class="btn btn-green text-center fw-bold text-light w-100 mb-3">
+                <a href="{{ url_for('auth.login' ) }}" class="btn btn-green text-center fw-bold text-light w-100 mb-3">
                     Daftar Sekarang
                 </a>
-                <p class="text-center mb-4">Sudah memiliki akun? <a href="./login.html"
+                <p class="text-center mb-4">Sudah memiliki akun? <a href="{{ url_for('auth.login' ) }}"
                         class="link-green text-decoration-none fw-bold">Masuk Disini</a>
                 </p>
             </div>

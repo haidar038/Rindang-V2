@@ -222,6 +222,10 @@ def dashboard():
     # elif current_user.is_authenticated and current_user.account_type == 'user':
     #     return redirect(url_for('views.home'))
 
+@views.route('/dashboard/penjualan')
+def penjualan():
+    return render_template('dashboard/penjualan.html')
+
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 def datapangan():
     user_data = User.query.all()

@@ -48,7 +48,8 @@
 
 <body class="h-100 bg-green-secondary">
     <div class="container py-5">
-        <a href="../index.html" class="nav-link fw-bold align-items-center mb-5">&larr; Kembali ke Beranda</a>
+        <a href="{{ url_for('views.index' ) }}" class="nav-link fw-bold align-items-center mb-5">&larr; Kembali ke
+            Beranda</a>
         <div class="row justify-content-center">
             <div class="col-12 col-lg-6">
                 <div class="card border-0 shadow rounded-4 px-4">
@@ -76,11 +77,11 @@
                                 Ingat saya
                             </label>
                         </div>
-                        <a href="./dashboard/index.html"
+                        <a href="{{ url_for('views.dashboard' ) }}"
                             class="btn btn-green text-center fw-bold text-light w-100 mb-3">
                             Masuk
                         </a>
-                        <p class="text-center mb-4">Belum punya akun? <a href="./register.html"
+                        <p class="text-center mb-4">Belum punya akun? <a href="{{ url_for('auth.register' ) }}"
                                 class="link-green text-decoration-none fw-bold">Daftar
                                 Disini</a>
                         </p>
