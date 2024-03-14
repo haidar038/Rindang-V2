@@ -13,6 +13,10 @@ def fetch_komoditas(level_harga_id):
       List komoditas dengan informasi detail.
   """
 
+  """
+  https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetGridDataDaerah?price_type_id=1&comcat_id=cat_7%2Ccat_8%2Ccom_13%2Ccom_14%2Ccom_15%2Ccom_16&province_id=32&regency_id=79&market_id=&tipe_laporan=1&start_date=2024-03-06&end_date=2024-03-14&_=1710425298417
+  """
+
   url = f"https://panelharga.badanpangan.go.id/api/komoditas-by-levelharga/{level_harga_id}"
   headers = {"apikey": API_KEY}
 
@@ -41,7 +45,7 @@ def fetch_komoditas(level_harga_id):
       "nama": komoditas["nama"],
       "id": komoditas["id"],
     }
-    print(komoditas)
+    # print(komoditas)
 
     komoditas_list.append(komoditas_detail)
 
@@ -51,5 +55,5 @@ def fetch_komoditas(level_harga_id):
 level_harga_id = 1
 komoditas_list = fetch_komoditas(level_harga_id)
 
-# for komoditas in komoditas_list:
-#   print(komoditas)
+for komoditas in komoditas_list:
+  print(komoditas)
