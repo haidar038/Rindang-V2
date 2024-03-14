@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="../../static/admin/css/base-color.css" />
     <!-- <link rel="stylesheet" href="../../static/admin/css/font-size.css" /> -->
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
@@ -211,13 +214,13 @@
                                     </div>
                                     <div>
                                         <select class="form-select" id="select-pangan">
-                                            <option value="1">Cabai</option>
-                                            <option value="2">Tomat</option>
+                                            <option value="chart">Cabai</option>
+                                            <option value="chart2">Tomat</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div id="chart"></div>
-                                <div id="chart2" style="display: none;"></div>
+                                <!-- <div id="chart2" style="display: none;"></div> -->
                             </div>
                         </div>
                         <!-- Chart End -->
@@ -329,7 +332,6 @@
                                             <!-- <input type="date" class="form-control" id="tglBibit" name="tglBibit"
                                                 required> -->
                                             <select class="form-select" aria-label="Status" id="status" name="status">
-                                                <option value="Pembibitan" selected>Pembibitan</option>
                                                 <option value="Penanaman">Penanaman</option>
                                                 <option value="Panen">Panen</option>
                                             </select>
@@ -389,156 +391,160 @@
                                 <div class="tab-content" id="nav-tabContent">
                                     <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                                         aria-labelledby="nav-home-tab" tabindex="0">
-                                        <table class="table text-nowrap mb-0 align-middle">
-                                            <thead class="text-dark fs-4">
-                                                <tr>
-                                                    <th class="max-width">
-                                                        <h6 class="fw-semibold mb-0">No</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Kebun</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Tanggal Pembibitan</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Status</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Menu</h6>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for data_cabai in cabai %}
-                                                <tr>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-1">{{ data_cabai.kebun }}</h6>
-                                                        <!-- <span class="fw-normal">Skala Besar</span> -->
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">{{ data_cabai.jml_bibit }}</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">{{
-                                                            data_cabai.tanggal_bibit}}</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <span class="badge bg-yellow rounded-3 fw-semibold">{{
-                                                                data_cabai.status }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="fw-bold"><strong>{{ data_cabai.jml_panen/1000
-                                                                }}</strong>
-                                                        </div>
-                                                        <div class="small">{{ data_cabai.tanggal_panen }}</div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-light" type="button"
-                                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <ion-icon name="ellipsis-vertical"></ion-icon>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li><a class="dropdown-item" href="#">Update</a>
-                                                                </li>
-                                                                <li><a class="dropdown-item"
-                                                                        href="{{ url_for('views.delete_data_pangan', id=data_cabai.id ) }}">Hapus</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                        <div class="table-responsive">
+                                            <table class="table text-nowrap mb-0 align-middle">
+                                                <thead class="text-dark fs-4">
+                                                    <tr>
+                                                        <th class="max-width">
+                                                            <h6 class="fw-semibold mb-0">No</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Kebun</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Tanggal Pembibitan</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Status</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Menu</h6>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for data_cabai in cabai %}
+                                                    <tr>
+                                                        <td class="border-bottom-0">
+                                                            <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <h6 class="fw-semibold mb-1">{{ data_cabai.kebun }}</h6>
+                                                            <!-- <span class="fw-normal">Skala Besar</span> -->
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <p class="mb-0 fw-normal">{{ data_cabai.jml_bibit }}</p>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <p class="mb-0 fw-normal">{{
+                                                                data_cabai.tanggal_bibit}}</p>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <span class="badge bg-yellow rounded-3 fw-semibold">{{
+                                                                    data_cabai.status }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="fw-bold"><strong>{{ data_cabai.jml_panen/1000
+                                                                    }}</strong>
+                                                            </div>
+                                                            <div class="small">{{ data_cabai.tanggal_panen }}</div>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-light" type="button"
+                                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <ion-icon name="ellipsis-vertical"></ion-icon>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li><a class="dropdown-item" href="#">Update</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item"
+                                                                            href="{{ url_for('views.delete_data_pangan', id=data_cabai.id ) }}">Hapus</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <div class="tab-pane fade" id="nav-profile" role="tabpanel"
                                         aria-labelledby="nav-profile-tab" tabindex="0">
-                                        <table class="table text-nowrap mb-0 align-middle">
-                                            <thead class="text-dark fs-4">
-                                                <tr>
-                                                    <th class="max-width">
-                                                        <h6 class="fw-semibold mb-0">No</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Kebun</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Tanggal Pembibitan</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Status</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
-                                                    </th>
-                                                    <th class="">
-                                                        <h6 class="fw-semibold mb-0">Menu</h6>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for data_tomat in tomat %}
-                                                <tr>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <h6 class="fw-semibold mb-1">{{ data_tomat.kebun }}</h6>
-                                                        <!-- <span class="fw-normal">Skala Besar</span> -->
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">{{ data_tomat.jml_bibit }}</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <p class="mb-0 fw-normal">{{ data_tomat.tanggal_bibit }}</p>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <span class="badge bg-yellow rounded-3 fw-semibold">{{
-                                                                data_tomat.status }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="fw-bold"><strong>{{ data_tomat.jml_panen/1000
-                                                                }}</strong>
-                                                        </div>
-                                                        <div class="small">{{ data_tomat.tanggal_panen }}</div>
-                                                    </td>
-                                                    <td class="border-bottom-0">
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-light" type="button"
-                                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <ion-icon name="ellipsis-vertical"></ion-icon>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li><a class="dropdown-item" href="#">Update</a>
-                                                                </li>
-                                                                <li><a class="dropdown-item"
-                                                                        href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}">Hapus</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                        <div class="table-responsive">
+                                            <table class="table text-nowrap mb-0 align-middle">
+                                                <thead class="text-dark fs-4">
+                                                    <tr>
+                                                        <th class="max-width">
+                                                            <h6 class="fw-semibold mb-0">No</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Kebun</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Tanggal Pembibitan</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Status</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
+                                                        </th>
+                                                        <th class="">
+                                                            <h6 class="fw-semibold mb-0">Menu</h6>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for data_tomat in tomat %}
+                                                    <tr>
+                                                        <td class="border-bottom-0">
+                                                            <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <h6 class="fw-semibold mb-1">{{ data_tomat.kebun }}</h6>
+                                                            <!-- <span class="fw-normal">Skala Besar</span> -->
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <p class="mb-0 fw-normal">{{ data_tomat.jml_bibit }}</p>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <p class="mb-0 fw-normal">{{ data_tomat.tanggal_bibit }}</p>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <span class="badge bg-yellow rounded-3 fw-semibold">{{
+                                                                    data_tomat.status }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="fw-bold"><strong>{{ data_tomat.jml_panen/1000
+                                                                    }}</strong>
+                                                            </div>
+                                                            <div class="small">{{ data_tomat.tanggal_panen }}</div>
+                                                        </td>
+                                                        <td class="border-bottom-0">
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-light" type="button"
+                                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <ion-icon name="ellipsis-vertical"></ion-icon>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li><a class="dropdown-item" href="#">Update</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item"
+                                                                            href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}">Hapus</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -581,7 +587,7 @@
                     sparkline: { enabled: false },
                 },
 
-                colors: ["#ff6b6b", "#fcb45e"],
+                colors: "#ff6b6b",
 
                 plotOptions: {
                     bar: {
@@ -669,7 +675,7 @@
                     sparkline: { enabled: false },
                 },
 
-                colors: ["#ff6b6b", "#fcb45e"],
+                colors: "#fcb45e",
 
                 plotOptions: {
                     bar: {
@@ -743,18 +749,37 @@
             };
 
             var chartcabai = new ApexCharts(document.querySelector("#chart"), cabaiBar);
+            var charttomat = new ApexCharts(document.querySelector("#chart2"), tomatBar);
             chartcabai.render();
 
             function filterPangan() {
                 var x = document.getElementById("select-pangan").value;
                 if (x === "chart") {
-                    document.getElementById("chart").style.display = "block";
-                    document.getElementById("chart2").style.display = "none";
-                    chart1.render();
-                } else {
-                    document.getElementById("chart1").style.display = "none";
-                    document.getElementById("chart2").style.display = "block";
-                    chart2.render();
+                    chartcabai.updateOptions({
+                        series: [
+                            { name: "Panen Cabai", data: statCabai },
+                        ],
+                        colors: "#ff6b6b",
+                        xaxis: {
+                            categories: tanggalCabai,
+                            labels: {
+                                style: { cssClass: "grey--text lighten-2--text fill-color" },
+                            },
+                        },
+                    })
+                } else if (x === "chart2") {
+                    chartcabai.updateOptions({
+                        series: [
+                            { name: "Panen Tomat", data: statTomat },
+                        ],
+                        colors: "#fcb45e",
+                        xaxis: {
+                            categories: tanggalTomat,
+                            labels: {
+                                style: { cssClass: "grey--text lighten-2--text fill-color" },
+                            },
+                        },
+                    })
                 }
             }
 
