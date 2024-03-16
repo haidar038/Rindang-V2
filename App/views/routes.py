@@ -265,8 +265,11 @@ def datapangan():
         komoditas = request.form['komoditas']
         jumlahBibit = request.form['jumlahBibit']
         tglBibit = request.form['tglBibit']
+        status = request.form['status']
+        jumlahPanen = request.form['jumlahPanen']
+        tglPanen = request.form['tglPanen']
 
-        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, user_id=1)
+        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status=status, jml_panen=jumlahPanen, tanggal_panen=tglPanen, user_id=1)
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
