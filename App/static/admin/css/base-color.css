@@ -123,15 +123,22 @@
 }
 
 .form-check-input {
-    border-color: var(--green) !important;
+    border-color: var(--green);
 }
 
 .form-control,
 .form-select {
-    border-color: var(--green) !important;
+    border-color: var(--green);
 }
 
 .form-check-input:focus,
 .form-control:focus {
-    box-shadow: none !important;
+    box-shadow: none;
+}
+
+.form-check-input:disabled,
+.form-control:disabled,
+.form-select:disabled {
+    border: #dadada; 
+    background-color: #dadada;
 }
