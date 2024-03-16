@@ -44,9 +44,9 @@ class DataPangan(db.Model, UserMixin):
     komoditas = db.Column(db.String, nullable=False)
     jml_bibit = db.Column(db.Integer, nullable=False)
     tanggal_bibit = db.Column(db.String, nullable=False)
-    jml_panen = db.Column(db.Integer, nullable=True)
-    tanggal_panen = db.Column(db.String, nullable=True)
-    status = db.Column(db.String, nullable=False)
+    jml_panen = db.Column(db.Integer, nullable=True, default=0)
+    tanggal_panen = db.Column(db.String, nullable=True, default=0)
+    status = db.Column(db.String, nullable=True, default='Penanaman')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def get_status_text(self):

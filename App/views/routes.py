@@ -260,23 +260,41 @@ def datapangan():
     print(tgl_panen_cabai)
     print(tgl_panen_tomat)
 
-    # stat_pangan = ','.join([str(getattr(pangan, col)) for col in DataPangan.__table__.columns.keys()])
     if request.method == 'POST':
         kebun = request.form['kebun']
         komoditas = request.form['komoditas']
         jumlahBibit = request.form['jumlahBibit']
         tglBibit = request.form['tglBibit']
-        statusPangan = request.form['status']
-        jumlahPanen = request.form['jumlahPanen']
-        tglPanen = request.form['tglPanen']
 
-        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status=statusPangan, tanggal_panen=tglPanen, jml_panen=jumlahPanen, user_id=1)        
+        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, user_id=1)
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
-        return redirect(request.referrer)
     return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+
+@views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
+def updatepangan(id):
+    pangan = DataPangan.query.get_or_404(id)
+    if request.method == 'POST':
+        kebun = request.form['kebun']
+        komoditas = request.form['komoditas']
+        jumlahBibit = request.form['jumlahBibit']
+        tglBibit = request.form['tglBibit']
+        status = request.form['status']
+        jumlahPanen = request.form['jumlahPanen']
+        tglPanen = request.form['tglPanen']
+
+        pangan.kebun = kebun
+        pangan.komoditas = komoditas
+        pangan.jml_bibit = jumlahBibit
+        pangan.tanggal_bibit = tglBibit
+        pangan.status = status
+        pangan.jml_panen = jumlahPanen
+        pangan.tanggal_panen = tglPanen
+
+        db.session.commit()
+        return redirect(url_for('views.datapangan'))
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):

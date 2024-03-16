@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_socketio import SocketIO
 from werkzeug.security import generate_password_hash
+import os
 
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
@@ -14,8 +15,12 @@ DB_NAME = 'rindang_digifarm.db'
 
 def create_app():
     app = Flask(__name__)
+    db_path = os.path.join(os.getcwd(), f"{DB_NAME}")
+    db_uri = 'sqlite:///{}'.format(db_path)
+
+    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SECRET_KEY'] = 'rindang_digifarm'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # app.config['FLASK_ADMIN_SWATCH'] = 'simplex'
