@@ -177,7 +177,19 @@ html {
     color: var(--dark-green) !important;
 }
 
-.accordion-button-village:not(.collapsed) {
+.accordion-button:not(.collapsed) {
+    background-color: var(--green) !important;
+    outline: 1px solid var(--green) !important;
+    box-shadow: none !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.accordion-button:focus {
+    box-shadow: unset !important;
+}
+
+/* .accordion-button-village:not(.collapsed) {
     background-color: #e0eedd !important;
     outline: 1px solid var(--green) !important;
 }
@@ -194,7 +206,7 @@ html {
 
 .accordion-button-faq:focus {
     box-shadow: none !important;
-}
+} */
 
 .tabs-content-1 .my-card-img {
     height: clamp(10rem, 12rem, 16rem);

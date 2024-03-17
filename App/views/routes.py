@@ -365,6 +365,11 @@ def delete_data_pangan(id):
 #     if request.method == 'POST':
 #         if
 
+# ========================= KELURAHAN SECTION =========================
+@views.route('/kelurahan-sasa')
+def kelsasa():
+    return render_template('kelurahan/sasa.html')
+
 class MyHomeView(AdminIndexView):
     @expose('/')
     def index(self):
