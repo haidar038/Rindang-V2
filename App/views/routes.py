@@ -232,6 +232,7 @@ def datapangan():
     pangan = DataPangan.query.all()
 
     total_panen = []
+
     for total in pangan:
         panenTotal = total.jml_panen
         total_panen.append(panenTotal)
@@ -244,6 +245,7 @@ def datapangan():
     stat_tomat = []
     tgl_panen_cabai = []
     tgl_panen_tomat = []
+
     for panenCabai in cabai:
         totalCabai = panenCabai.jml_panen
         tglPanenCabai = panenCabai.tanggal_panen
@@ -257,36 +259,39 @@ def datapangan():
 
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
-    print(tgl_panen_cabai)
-    print(tgl_panen_tomat)
 
     if request.method == 'POST':
         kebun = request.form['kebun']
         komoditas = request.form['komoditas']
         jumlahBibit = request.form['jumlahBibit']
         tglBibit = request.form['tglBibit']
-        status = request.form['status']
-        jumlahPanen = request.form['jumlahPanen']
-        tglPanen = request.form['tglPanen']
+        # status = request.form['status']
+        # jumlahPanen = request.form['jumlahPanen']
+        # tglPanen = request.form['tglPanen']
 
-        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status=status, jml_panen=jumlahPanen, tanggal_panen=tglPanen, user_id=1)
+        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status='Penanaman', jml_panen=0, tanggal_panen=0, user_id=1)
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
+        return redirect(request.referrer)
     return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
     if request.method == 'POST':
-        kebun = request.form['kebun']
-        komoditas = request.form['komoditas']
-        jumlahBibit = request.form['jumlahBibit']
-        tglBibit = request.form['tglBibit']
-        status = request.form['status']
-        jumlahPanen = request.form['jumlahPanen']
-        tglPanen = request.form['tglPanen']
+        kebun = request.form['updateKebun']
+        komoditas = request.form['updateKomoditas']
+        jumlahBibit = request.form['updateJumlahBibit']
+        tglBibit = request.form['updateTglBibit']
+        status = request.form['updateStatus']
+        jumlahPanen = request.form['updateJumlahPanen']
+        tglPanen = request.form['updateTglPanen']
+
+        if status == 'Penanaman':
+            jumlahPanen = DataPangan.query.filter_by(id=id)
+            tglPanen = DataPangan.query.filter_by(id=id)
 
         pangan.kebun = kebun
         pangan.komoditas = komoditas

@@ -2,3 +2,4 @@ venv
 App/venv
 __pycache__
 instance
+rindang_digifarm.db
