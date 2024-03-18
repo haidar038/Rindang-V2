@@ -237,6 +237,10 @@ def datapangan():
         panenTotal = total.jml_panen
         total_panen.append(panenTotal)
 
+    # Persentase Kenaikan Produksi Pangan
+    kenaikan = round(((total_panen[-2] - total_panen[-1])/total_panen[-1])*100) if not 0 in total_panen else 0
+    print(kenaikan)
+
     total_panen = sum(total_panen)
 
     cabai = DataPangan.query.filter_by(komoditas='Cabai').all()
@@ -257,6 +261,8 @@ def datapangan():
         stat_tomat.append(totalTomat)
         tgl_panen_tomat.append(tglPanenTomat)
 
+    print(tgl_panen_cabai)
+
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
 
@@ -275,7 +281,7 @@ def datapangan():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil posting cerita!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', user_data=user_data, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+    return render_template('dashboard/data-pangan.html', user_data=user_data, kenaikan=kenaikan, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
 def updatepangan(id):
