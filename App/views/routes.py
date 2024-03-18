@@ -280,29 +280,39 @@ def datapangan():
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
-    if request.method == 'POST':
-        kebun = request.form['updateKebun']
-        komoditas = request.form['updateKomoditas']
-        jumlahBibit = request.form['updateJumlahBibit']
-        tglBibit = request.form['updateTglBibit']
-        status = request.form['updateStatus']
-        jumlahPanen = request.form['updateJumlahPanen']
-        tglPanen = request.form['updateTglPanen']
 
-        if status == 'Penanaman':
-            jumlahPanen = DataPangan.query.filter_by(id=id)
-            tglPanen = DataPangan.query.filter_by(id=id)
+    updateProd = request.form['updateProduksi']
 
-        pangan.kebun = kebun
-        pangan.komoditas = komoditas
-        pangan.jml_bibit = jumlahBibit
-        pangan.tanggal_bibit = tglBibit
-        pangan.status = status
-        pangan.jml_panen = jumlahPanen
-        pangan.tanggal_panen = tglPanen
+    if updateProd == 'updateProduksi':
+        if request.method == 'POST':
+            kebun = request.form['updateKebun']
+            komoditas = request.form['updateKomoditas']
+            jumlahBibit = request.form['updateJumlahBibit']
+            tglBibit = request.form['updateTglBibit']
 
-        db.session.commit()
-        return redirect(url_for('views.datapangan'))
+            if pangan.status == 'Penanaman':
+                jumlahPanen = DataPangan.query.filter_by(id=id)
+                tglPanen = DataPangan.query.filter_by(id=id)
+
+            pangan.kebun = kebun
+            pangan.komoditas = komoditas
+            pangan.jml_bibit = jumlahBibit
+            pangan.tanggal_bibit = tglBibit
+
+            db.session.commit()
+            return redirect(url_for('views.datapangan'))
+    elif updateProd == 'dataPanen':
+        if request.method == 'POST':
+            jumlahPanen = request.form['updateJumlahPanen']
+            tglPanen = request.form['updateTglPanen']
+
+            pangan.status = 'Panen'
+            pangan.jml_panen = jumlahPanen
+            pangan.tanggal_panen = tglPanen
+
+            db.session.commit()
+            return redirect(request.referrer)
+
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):
