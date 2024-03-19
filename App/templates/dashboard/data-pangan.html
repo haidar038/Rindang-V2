@@ -222,7 +222,7 @@
                     <em class="text-muted">Informasi Bulan Ini</em>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-8">
+                    <div class="col-12">
                       {% if pangan %} {% set jml_panen = total_panen/1000 %}
                       <p class="mb-3 display-5">
                         <strong>{{ jml_panen | default("0") }} kg</strong>
@@ -230,18 +230,7 @@
                       {% else %}
                       <p class="mb-3 display-5"><strong>0 kg</strong></p>
                       {% endif %}
-                      <div class="d-flex align-items-center mb-3">
-                        <span class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
-                          {% if kenaikan > 0 %}
-                          <i class="ti ti-trending-up text-success"></i>
-                          {% elif kenaikan < 0 %}
-                          <i class="ti ti-trending-down text-danger"></i>
-                          {% endif %}
-                        </span>
-                        <p class="text-dark me-1 fs-3 mb-0">{% if kenaikan > 0 %} + {{ kenaikan }}% {% elif kenaikan < 0 %} {{ kenaikan }}% {% endif %}</p>
-                        <p class="fs-3 mb-0">dibandingkan {{tgl_panen_cabai}}</p>
-                      </div>
-                      <div class="d-flex align-items-center">
+                      <!-- <div class="d-flex align-items-center">
                         <div class="me-4">
                           <span class="round-8 rounded-circle me-2 d-inline-block" style="background-color: #ff6b6b"></span>
                           <span class="fs-2">Cabai</span>
@@ -250,9 +239,39 @@
                           <span class="round-8 rounded-circle me-2 d-inline-block" style="background-color: #fcb45e"></span>
                           <span class="fs-2">Tomat</span>
                         </div>
+                      </div> -->
+                    </div>
+                    <div class="col-12">
+                      <div class="row">
+                        <div class="col-6">
+                          <p class="mb-0"><span class="round-8 rounded-circle me-2 d-inline-block" style="background-color: #ff6b6b"></span> Cabai</p>
+                          <div class="d-flex align-items-center mb-3">
+                            <span class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
+                              {% if kenaikan_cabai > 0 %}
+                              <i class="ti ti-trending-up text-success"></i>
+                              {% elif kenaikan_cabai < 0 %}
+                              <i class="ti ti-trending-down text-danger"></i>
+                              {% endif %}
+                            </span>
+                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">{% if kenaikan_cabai > 0 %} + {{ kenaikan_cabai }}% {% elif kenaikan_cabai < 0 %} {{ kenaikan_cabai }}% {% endif %} dibandingkan panen sebelumnya</p>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <p class="mb-0"><span class="round-8 rounded-circle me-2 d-inline-block" style="background-color: #fcb45e"></span> Tomat</p>
+                          <div class="d-flex align-items-center mb-3">
+                            <span class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
+                              {% if kenaikan_tomat > 0 %}
+                              <i class="ti ti-trending-up text-success"></i>
+                              {% elif kenaikan_tomat < 0 %}
+                              <i class="ti ti-trending-down text-danger"></i>
+                              {% endif %}
+                            </span>
+                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">{% if kenaikan_tomat > 0 %} + {{ kenaikan_tomat }}% {% elif kenaikan_tomat < 0 %} {{ kenaikan_tomat }}% {% endif %} dibandingkan panen sebelumnya</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-12">
                       <div class="d-flex justify-content-center">
                         <div id="breakup"></div>
                       </div>
@@ -313,45 +332,45 @@
             </div>
 
             <!-- Modal Update Data Produksi -->
-            {% for dataCabai in cabai %}
-            <div class="modal fade" id="updateData{{dataCabai.id}}" tabindex="-1" aria-labelledby="updateDataLabel{{dataCabai.id}}" aria-hidden="true">
+            {% for dataPangan in pangan %}
+            <div class="modal fade" id="updateData{{dataPangan.id}}" tabindex="-1" aria-labelledby="updateDataLabel{{dataPangan.id}}" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content p-3">
                   <div class="modal-header">
                     <h1 class="modal-title fs-5 fw-bold" id="inputDataLabel">
-                      Update Data Produksi &nbsp; <span class="badge {% if dataCabai.status == 'Penanaman' %} bg-warning {% else %} bg-green {% endif %}">{{ dataCabai.status }}</span>
+                      Update Data Produksi &nbsp; <span class="badge {% if dataPangan.status == 'Penanaman' %} bg-warning {% else %} bg-green {% endif %}">{{ dataPangan.status }}</span>
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     <div class="row mb-4">
                       <div class="col">
-                        <button class="btn btn-success" data-bs-target="#panenModal{{dataCabai.id}}" data-bs-toggle="modal">{% if dataCabai.status == 'Panen' %} Lihat/Update Data Panen {% else %} Panen {% endif %}</button>
+                        <button class="btn btn-success" data-bs-target="#panenModal{{dataPangan.id}}" data-bs-toggle="modal">{% if dataPangan.status == 'Panen' %} Lihat/Update Data Panen {% else %} Panen {% endif %}</button>
                       </div>
                     </div>
-                    <form action="{{ url_for('views.updatepangan', id=dataCabai.id ) }}" method="post">
+                    <form action="{{ url_for('views.updatepangan', id=dataPangan.id ) }}" method="post">
                       <input type="text" class="visually-hidden" value="updateProduksi" name="updateProduksi" />
                       <div class="mb-3">
                         <label for="updateKebun" class="form-label fw-bold fs-4">Kebun</label>
                         <select class="form-select" aria-label="updateKebun" id="updateKebun" name="updateKebun">
-                          <option value="{{dataCabai.kebun}}">{{dataCabai.kebun}}</option>
+                          <option value="{{dataPangan.kebun}}">{{dataPangan.kebun}}</option>
                         </select>
                       </div>
                       <div class="mb-3">
                         <label for="updateKomoditas" class="form-label fw-bold fs-4">Komoditas</label>
                         <select class="form-select" aria-label="Komoditas" id="updateKomoditas" name="updateKomoditas">
-                          <option value="{{dataCabai.komoditas}}">{{dataCabai.komoditas}}</option>
+                          <option value="{{dataPangan.komoditas}}">{{dataPangan.komoditas}}</option>
                         </select>
                       </div>
                       <div class="mb-4">
                         <div class="row">
                           <div class="col">
                             <label for="updateTglBibit" class="form-label fw-bold fs-4">Tanggal Penanaman</label>
-                            <input type="date" class="form-control" id="updateTglBibit" name="updateTglBibit" value="{{dataCabai.tanggal_bibit}}" required />
+                            <input type="date" class="form-control" id="updateTglBibit" name="updateTglBibit" value="{{dataPangan.tanggal_bibit}}" required />
                           </div>
                           <div class="col">
                             <label for="updateJumlahBibit" class="form-label fw-bold fs-4">Jumlah Bibit</label>
-                            <input type="number" class="form-control" id="updateJumlahBibit" name="updateJumlahBibit" value="{{dataCabai.jml_bibit}}" placeholder="contoh: 1000" required />
+                            <input type="number" class="form-control" id="updateJumlahBibit" name="updateJumlahBibit" value="{{dataPangan.jml_bibit}}" placeholder="contoh: 1000" required />
                           </div>
                         </div>
                       </div>
@@ -366,25 +385,25 @@
             {% endfor %}
 
             <!-- UPDATE MODAL PANEN -->
-            {% for dataCabai in cabai %}
-            <div class="modal fade" id="panenModal{{dataCabai.id}}" aria-hidden="true" aria-labelledby="panenModal{{dataCabai.id}}Label" tabindex="-1">
+            {% for dataPangan in pangan %}
+            <div class="modal fade" id="panenModal{{dataPangan.id}}" aria-hidden="true" aria-labelledby="panenModal{{dataPangan.id}}Label" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="panenModal{{dataCabai.id}}Label">Panen</h1>
+                    <h1 class="modal-title fs-5" id="panenModal{{dataPangan.id}}Label">Panen</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     <div class="row mb-2">
-                      <form action="{{ url_for('views.updatepangan', id=dataCabai.id ) }}" method="post">
+                      <form action="{{ url_for('views.updatepangan', id=dataPangan.id ) }}" method="post">
                         <input type="text" class="visually-hidden" value="dataPanen" name="updateProduksi" />
                         <div class="col mb-3">
                           <label for="updateTglPanen" class="form-label fw-bold fs-4">Tanggal Panen</label>
-                          <input type="date" class="form-control panen" id="updateTglPanen" {% if dataCabai.status == 'Panen' %} value="{{dataCabai.tanggal_panen}}" {% endif %} name="updateTglPanen" required />
+                          <input type="date" class="form-control panen" id="updateTglPanen" {% if dataPangan.status == 'Panen' %} value="{{dataPangan.tanggal_panen}}" {% endif %} name="updateTglPanen" required />
                         </div>
                         <div class="col mb-4">
                           <label for="updateJumlahPanen" class="form-label fw-bold fs-4">Hasil Panen (g)</label>
-                          <input type="number" class="form-control panen" id="updateJumlahPanen" name="updateJumlahPanen" {% if dataCabai.status == 'Panen' %} value="{{dataCabai.jml_panen}}" {% endif %} placeholder="contoh: 1000" required
+                          <input type="number" class="form-control panen" id="updateJumlahPanen" name="updateJumlahPanen" {% if dataPangan.status == 'Panen' %} value="{{dataPangan.jml_panen}}" {% endif %} placeholder="contoh: 1000" required
                           />
                         </div>
                         <button class="btn btn-green" type="submit">Submit Hasil Panen</button>
@@ -392,7 +411,7 @@
                     </div>
                     <div class="row">
                       <div class="col">
-                        <button class="btn btn-outline-dark" data-bs-target="#updateData{{dataCabai.id}}" data-bs-toggle="modal">Kembali</button>
+                        <button class="btn btn-outline-dark" data-bs-target="#updateData{{dataPangan.id}}" data-bs-toggle="modal">Kembali</button>
                       </div>
                     </div>
                   </div>
@@ -540,7 +559,7 @@
                               </td>
                               <td class="border-bottom-0 align-middle">
                                 <a class="btn btn-danger fs-6" href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}"><i class="ti ti-trash"></i></a>
-                                <a class="btn btn-green fs-6" href="#"><i class="ti ti-edit"></i></a>
+                                <button id="updateDataBtn" type="button" class="btn btn-green fs-6" data-bs-toggle="modal" data-bs-target="#updateData{{data_tomat.id}}"><i class="ti ti-edit"></i></button>
                               </td>
                             </tr>
                             {% endfor %}
@@ -818,7 +837,7 @@
           series: [totalPanenCabai, totalPanenTomat],
           labels: ["Cabai", "Tomat"],
           chart: {
-            width: 180,
+            width: 260,
             type: "donut",
             fontFamily: "Plus Jakarta Sans', sans-serif",
             foreColor: "#adb0bb",
