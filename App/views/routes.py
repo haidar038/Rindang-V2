@@ -3,6 +3,7 @@ from flask_login import login_required, logout_user, login_user, current_user
 from flask_admin.base import BaseView, expose, AdminIndexView, Admin
 from flask_socketio import emit, join_room, leave_room, send, rooms
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import asc
 from datetime import datetime
 from operator import itemgetter
 import json
@@ -240,8 +241,8 @@ def datapangan():
     # Persentase Kenaikan Produksi Pangan
     # kenaikan = round(((total_panen[-2] - total_panen[-1])/total_panen[-1])*100) if not 0 in total_panen else 0
 
-    cabai = DataPangan.query.filter_by(komoditas='Cabai').all()
-    tomat = DataPangan.query.filter_by(komoditas='Tomat').all()
+    cabai = DataPangan.query.filter_by(komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
+    tomat = DataPangan.query.filter_by(komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
     stat_cabai = []
     stat_tomat = []
     tgl_panen_cabai = []
@@ -281,6 +282,9 @@ def datapangan():
     total_of_panen = sum(total_panen)
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
+
+    print(stat_cabai)
+    print(tgl_panen_cabai)
 
     if request.method == 'POST':
         kebun = request.form['kebun']
@@ -403,9 +407,9 @@ def delete_data_pangan(id):
 #         if
 
 # ========================= KELURAHAN SECTION =========================
-@views.route('/kelurahan-sasa')
-def kelsasa():
-    return render_template('kelurahan/sasa.html')
+@views.route('/kelurahan-kulaba')
+def kelkulaba():
+    return render_template('kelurahan/kulaba.html')
 
 class MyHomeView(AdminIndexView):
     @expose('/')
