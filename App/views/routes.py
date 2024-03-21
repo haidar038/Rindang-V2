@@ -411,6 +411,30 @@ def delete_data_pangan(id):
 def kelkulaba():
     return render_template('kelurahan/kulaba.html')
 
+@views.route('/kelurahan-sasa')
+def kelsasa():
+    return render_template('kelurahan/sasa.html')
+
+@views.route('/kelurahan-kalumpang')
+def kelkalumpang():
+    return render_template('kelurahan/kalumpang.html')
+
+@views.route('/kelurahan-santiong')
+def kelsantiong():
+    return render_template('kelurahan/santiong.html')
+
+@views.route('/kelurahan-foramadiahi')
+def kelforamadiahi():
+    return render_template('kelurahan/foramadiahi.html')
+
+@views.route('/kelurahan-tubo')
+def keltubo():
+    return render_template('kelurahan/tubo.html')
+
+@views.route('/kelurahan-fitu')
+def kelfitu():
+    return render_template('kelurahan/fitu.html')
+
 class MyHomeView(AdminIndexView):
     @expose('/')
     def index(self):

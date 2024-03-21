@@ -3,36 +3,36 @@
   <div class="row row-gap-4">
     <a href="{{ url_for('views.index' ) }}" class="link-green text-decoration-none fw-bold">&larr; Kembali ke Beranda</a>
     <div class="col-12">
-      <h1 class="link-green-dark fw-bold">Kelurahan Kulaba</h1>
+      <h1 class="link-green-dark fw-bold">Kelurahan Foramadiahi</h1>
       <h4 class="opacity-50">Detail Kelurahan</h4>
     </div>
     <div class="col-12">
       <div id="map" class="rounded rounded-4" style="height: 65vh"></div>
     </div>
     <div class="col-12">
-      <p>Kelurahan Kulaba terletak di Kecamatan Ternate Barat. Anggota komunitas Petani Rindang Kulaba didominasi dengan anggota kelompok kerja yang berprofesi sebagai Petani</p>
+      <p>Kelurahan Foramadiahi terletak di Kecamatan Pulau Ternate. Komunitas Petani Rindang di Foramadiahi di dominasi dengan anggota Kelompok kerja yang berprofesi sebagai Petani</p>
     </div>
     <div class="col-12">
       <table class="w-100">
         <tr>
           <th class="w-25">Jumlah Pengurus</th>
-          <td>: 10 Orang</td>
+          <td>: 15 Orang</td>
         </tr>
         <tr>
           <th class="w-25">Ketua</th>
-          <td>: Mini Syarif</td>
+          <td>: Benyamin Abubakar</td>
         </tr>
         <tr>
           <th class="w-25">Luas Lahan</th>
-          <td>: 100 M<sup>2</sup> | Titik Koordinat : <em class="fw-bold">0°50'4''N 127°21'4''E</em></td>
+          <td>: 200 M<sup>2</sup> | Titik Koordinat : <em class="fw-bold">0°46'07''N 127°19'01''E</em></td>
         </tr>
         <tr>
           <th class="w-25"></th>
-          <td><span class="opacity-0">:</span> 1.750 M<sup>2</sup> | Titik Koordinat : <em class="fw-bold">0°50'30''N 127°21'32''E</em></td>
+          <td><span class="opacity-0">:</span> 300 M<sup>2</sup> | Titik Koordinat : <em class="fw-bold">0°46'07''N 127°19'03''E</em></td>
         </tr>
         <tr>
           <th class="w-25">Pekerjaan</th>
-          <td>: Petani</td>
+          <td>: Petani, Pelajar/Mahasiswa</td>
         </tr>
       </table>
     </div>
@@ -40,8 +40,8 @@
 </div>
 
 <script>
-  var kebun1 = L.marker([0.846389, 127.361944]).bindPopup("Kebun 1 Kulaba"),
-    kebun2 = L.marker([0.841667, 127.358889]).bindPopup("Kebun 2 Kulaba");
+  var kebun1 = L.marker([0.768611, 127.316944]).bindPopup("Kebun 1 Foramadihi"),
+    kebun2 = L.marker([0.768611, 127.3175]).bindPopup("Kebun 2 Foramadihi");
 
   var kebun = L.layerGroup([kebun1, kebun2]);
 
@@ -67,7 +67,7 @@
   });
 
   var map = L.map("map", {
-    center: [0.846389, 127.361944],
+    center: [0.768611, 127.316944],
     zoom: 14,
     layers: [normal, kebun],
   });
