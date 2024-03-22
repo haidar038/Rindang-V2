@@ -252,7 +252,9 @@
                               <i class="ti ti-trending-down text-danger"></i>
                               {% endif %}
                             </span>
-                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">{% if kenaikan_cabai > 0 %} + {{ kenaikan_cabai }}% {% elif kenaikan_cabai < 0 %} {{ kenaikan_cabai }}% {% endif %} dibandingkan panen sebelumnya</p>
+                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">
+                              {% if kenaikan_cabai > 0 %} + {{ kenaikan_cabai }}% {% elif kenaikan_cabai < 0 %} {{ kenaikan_cabai }} {% elif not kenaikan_cabai %} {{ kenaikan_cabai }}% {% endif %} dibandingkan panen sebelumnya
+                            </p>
                           </div>
                         </div>
                         <div class="col-6">
@@ -265,7 +267,9 @@
                               <i class="ti ti-trending-down text-danger"></i>
                               {% endif %}
                             </span>
-                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">{% if kenaikan_tomat > 0 %} + {{ kenaikan_tomat }}% {% elif kenaikan_tomat < 0 %} {{ kenaikan_tomat }}% {% endif %} dibandingkan panen sebelumnya</p>
+                            <p class="text-dark me-1 fs-3 mb-0 text-wrap">
+                              {% if kenaikan_tomat > 0 %} + {{ kenaikan_tomat }}% {% elif kenaikan_tomat < 0 %} {{ kenaikan_cabai }} {% elif not kenaikan_cabai %} {{ kenaikan_tomat }}% {% endif %} dibandingkan panen sebelumnya
+                            </p>
                           </div>
                         </div>
                       </div>
