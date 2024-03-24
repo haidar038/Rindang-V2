@@ -4,9 +4,9 @@ from flask_admin.base import BaseView, expose, AdminIndexView, Admin
 from flask_socketio import emit, join_room, leave_room, send, rooms
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import asc
-from datetime import datetime
-from operator import itemgetter
-import json
+from datetime import datetime, timedelta
+from babel.numbers import format_currency
+import json, requests
 
 from App.models import User, AppAdmin, DataPangan
 from App import db, admin, login_manager, socketio
@@ -228,7 +228,7 @@ def penjualan():
     return render_template('dashboard/penjualan.html')
 
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
-def datapangan():
+def dataproduksi():
     user_data = User.query.all()
     pangan = DataPangan.query.all()
 
@@ -326,7 +326,7 @@ def updatepangan(id):
             pangan.tanggal_bibit = tglBibit
 
             db.session.commit()
-            return redirect(url_for('views.datapangan'))
+            return redirect(url_for('views.dataproduksi'))
     elif updateProd == 'dataPanen':
         if request.method == 'POST':
             jumlahPanen = request.form['updateJumlahPanen']
@@ -338,6 +338,65 @@ def updatepangan(id):
 
             db.session.commit()
             return redirect(request.referrer)
+        
+@views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
+def hargapangan():
+    today = datetime.today()
+    kab_kota = 458 #Ternate
+    komoditas_id = 3
+    one_week_ago = today - timedelta(days=7)
+
+    # Format dates as YYYY-MM-DD
+    start_date = one_week_ago.strftime("%Y-%m-%d")
+    end_date = today.strftime("%Y-%m-%d")
+
+    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    data = response.json()
+
+    target = ["Cabai Merah Keriting", "Cabai Rawit Merah", "Bawang Merah"]
+
+    data_harga = []
+    nama_komoditas = []
+    for item in data["data"]:
+        if item["name"] in target:
+            komoditas = item["by_date"]
+            data_harga.append(komoditas)
+            nama_komoditas.append(item['name'])
+            # print(f"Data untuk {item['name']}:")
+    table_data = []
+    for item in data["data"]:
+        for date_data in item["by_date"]:
+            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d/%m/%Y")
+
+            # Handle cases where geomean is '-'
+            geomean_value = date_data["geomean"]
+            if geomean_value == "-":
+                formatted_price = "-"
+            else:
+                geomean_float = float(geomean_value)
+
+                # Remove decimal places
+                # geomean_no_decimals = int(geomean_float)
+
+                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                formatted_price = formatted_price[:-3]
+
+            table_data.append({
+                "date": formatted_date,
+                "name": item["name"],
+                "price": formatted_price
+            })
+    
+    data_tanggal = []
+    for date_str in data['meta']['date']:
+        data_tanggal.append(date_str)
+
+    return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
@@ -359,7 +418,7 @@ def delete_data_pangan(id):
     data = DataPangan.query.get_or_404(id)
     db.session.delete(data)
     db.session.commit()
-    return redirect(url_for('views.datapangan'))
+    return redirect(url_for('views.dataproduksi'))
 
 # todo ============== UPDATE PROFILE ==============
 # @views.route('/dashboard/<int:id>/update', methods=['GET', 'POST'])
