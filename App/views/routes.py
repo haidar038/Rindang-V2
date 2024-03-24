@@ -466,6 +466,10 @@ def delete_data_pangan(id):
 #         if
 
 # ========================= KELURAHAN SECTION =========================
+@views.route('/peta-sebaran')
+def mapbase():
+    return render_template('kelurahan/map.html')
+
 @views.route('/kelurahan-kulaba')
 def kelkulaba():
     return render_template('kelurahan/kulaba.html')

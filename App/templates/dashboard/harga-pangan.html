@@ -198,38 +198,40 @@
             <div class="col-lg-12 col-12 d-flex flex-column">
               <h4><strong>Daftar Harga Eceran Komoditas Per Minggu</strong></h4>
               <p class="mb-4 text-muted"><strong>Ternate, Maluku Utara</strong></p>
-              <table class="table table-striped mb-4">
-                <tr>
-                  <th scope="col">Komoditas</th>
-                  {% for item in table_data if item.name == 'Cabai Rawit Merah' %}
-                  <th scope="col">{{item.date}}</th>
-                  {% endfor %}
-                </tr>
-                <tr>
-                  <td>Cabai Rawit Merah</td>
-                  {% for item in table_data if item.name == 'Cabai Rawit Merah' %}
-                  <td>{{item.price}}</td>
-                  {% endfor %}
-                </tr>
-                <tr>
-                  <td>Cabai Merah Keriting</td>
-                  {% for item in table_data if item.name == 'Cabai Merah Keriting' %}
-                  <td>{{item.price}}</td>
-                  {% endfor %}
-                </tr>
-                <tr>
-                  <td>Bawang Merah</td>
-                  {% for item in table_data if item.name == 'Bawang Merah' %}
-                  <td>{{item.price}}</td>
-                  {% endfor %}
-                </tr>
-                <caption class="small text-muted">
-                  Sumber :
-                  <a href="https://panelharga.badanpangan.go.id/harga-eceran" class="link-green-dark">
-                    <strong>Badan Pangan Nasional | <em>Panel Harga Pangan</em></strong>
-                  </a>
-                </caption>
-              </table>
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered mb-4">
+                  <tr>
+                    <th scope="col">Komoditas</th>
+                    {% for item in table_data if item.name == 'Cabai Rawit Merah' %}
+                    <th scope="col">{{item.date}}</th>
+                    {% endfor %}
+                  </tr>
+                  <tr>
+                    <td>Cabai Rawit Merah</td>
+                    {% for item in table_data if item.name == 'Cabai Rawit Merah' %}
+                    <td>{{item.price}}</td>
+                    {% endfor %}
+                  </tr>
+                  <tr>
+                    <td>Cabai Merah Keriting</td>
+                    {% for item in table_data if item.name == 'Cabai Merah Keriting' %}
+                    <td>{{item.price}}</td>
+                    {% endfor %}
+                  </tr>
+                  <tr>
+                    <td>Bawang Merah</td>
+                    {% for item in table_data if item.name == 'Bawang Merah' %}
+                    <td>{{item.price}}</td>
+                    {% endfor %}
+                  </tr>
+                  <caption class="small text-muted">
+                    Sumber :
+                    <a href="https://panelharga.badanpangan.go.id/harga-eceran" class="link-green-dark">
+                      <strong>Badan Pangan Nasional | <em>Panel Harga Pangan</em></strong>
+                    </a>
+                  </caption>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -242,308 +244,6 @@
     <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script>
     <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
     <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
-
-    <script>
-      let statCabai = {{ stat_cabai | safe }};
-      let statTomat = {{ stat_tomat | safe }};
-      let tanggalCabai = {{ tgl_panen_cabai | safe}};
-      let tanggalTomat = {{ tgl_panen_tomat | safe}};
-
-      let statCabaiConv = statCabai.map(value => value / 1000);
-      let statTomatConv = statTomat.map(value => value / 1000);
-
-      let bulanIndonesia = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-      // let HariIndonesia = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-
-      let formattedDates = tanggalCabai.map(tanggal => {
-        let dateObject = new Date(tanggal); // konversi ke objek Date
-
-        // format tanggal menjadi "Tanggal Bulan Tahun"
-        tanggal = dateObject.getDate();
-        let bulan = bulanIndonesia[dateObject.getMonth()]; // bulan di JavaScript dimulai dari 0
-        let tahun = dateObject.getFullYear();
-
-        return tanggal + ' ' + bulan + ' ' + tahun;
-      });
-
-      console.log(formattedDates); // output: array tanggal dalam format "Tanggal Bulan Tahun"
-      console.log(tanggalCabai);
-
-      $(function () {
-        // =====================================
-        // Profit
-        // =====================================
-        var cabaiBar = {
-          series: [
-            { name: "Panen Cabai", data: statCabaiConv },
-          ],
-
-          chart: {
-            type: "bar",
-            height: 345,
-            offsetX: -15,
-            toolbar: { show: true },
-            foreColor: "#adb0bb",
-            fontFamily: "inherit",
-            sparkline: { enabled: false },
-          },
-
-          colors: "#ff6b6b",
-
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              columnWidth: "35%",
-              borderRadius: [6],
-              borderRadiusApplication: "end",
-              borderRadiusWhenStacked: "all",
-            },
-          },
-          markers: { size: 0 },
-
-          dataLabels: {
-            enabled: false,
-          },
-
-          legend: {
-            show: false,
-          },
-
-          grid: {
-            borderColor: "rgba(0,0,0,0.1)",
-            strokeDashArray: 3,
-            xaxis: {
-              lines: {
-                show: false,
-              },
-            },
-          },
-
-          xaxis: {
-            type: "datetime",
-            categories: tanggalCabai,
-            labels: {
-              style: { cssClass: "grey--text lighten-2--text fill-color" },
-            },
-          },
-
-          yaxis: {
-            show: true,
-            min: 0,
-            max: 20,
-            tickAmount: 4,
-            labels: {
-              style: {
-                cssClass: "grey--text lighten-2--text fill-color",
-              },
-            },
-          },
-          stroke: {
-            show: true,
-            width: 3,
-            lineCap: "butt",
-            colors: ["transparent"],
-          },
-
-          tooltip: { theme: "light" },
-
-          responsive: [
-            {
-              breakpoint: 600,
-              options: {
-                plotOptions: {
-                  bar: {
-                    borderRadius: 3,
-                  },
-                },
-              },
-            },
-          ],
-        };
-
-        var tomatBar = {
-          series: [
-            { name: "Panen Tomat", data: statTomatConv },
-          ],
-
-          chart: {
-            type: "bar",
-            height: 345,
-            offsetX: -15,
-            toolbar: { show: true },
-            foreColor: "#adb0bb",
-            fontFamily: "inherit",
-            sparkline: { enabled: false },
-          },
-
-          colors: "#fcb45e",
-
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              columnWidth: "35%",
-              borderRadius: [6],
-              borderRadiusApplication: "end",
-              borderRadiusWhenStacked: "all",
-            },
-          },
-          markers: { size: 0 },
-
-          dataLabels: {
-            enabled: false,
-          },
-
-          legend: {
-            show: false,
-          },
-
-          grid: {
-            borderColor: "rgba(0,0,0,0.1)",
-            strokeDashArray: 3,
-            xaxis: {
-              lines: {
-                show: false,
-              },
-            },
-          },
-
-          xaxis: {
-            type: "category",
-            categories: tanggalTomat,
-            labels: {
-              style: { cssClass: "grey--text lighten-2--text fill-color" },
-            },
-          },
-
-          yaxis: {
-            show: true,
-            min: 0,
-            max: 20,
-            tickAmount: 4,
-            labels: {
-              style: {
-                cssClass: "grey--text lighten-2--text fill-color",
-              },
-            },
-          },
-          stroke: {
-            show: true,
-            width: 3,
-            lineCap: "butt",
-            colors: ["transparent"],
-          },
-
-          tooltip: { theme: "light" },
-
-          responsive: [
-            {
-              breakpoint: 600,
-              options: {
-                plotOptions: {
-                  bar: {
-                    borderRadius: 3,
-                  },
-                },
-              },
-            },
-          ],
-        };
-
-        var chartcabai = new ApexCharts(document.querySelector("#chart"), cabaiBar);
-        var charttomat = new ApexCharts(document.querySelector("#chart2"), tomatBar);
-        chartcabai.render();
-
-        function filterPangan() {
-          var x = document.getElementById("select-pangan").value;
-          if (x === "chart") {
-            chartcabai.updateOptions({
-              series: [
-                { name: "Panen Cabai", data: statCabaiConv },
-              ],
-              colors: "#ff6b6b",
-              xaxis: {
-                categories: tanggalCabai,
-                labels: {
-                  style: { cssClass: "grey--text lighten-2--text fill-color" },
-                },
-              },
-            })
-          } else if (x === "chart2") {
-            chartcabai.updateOptions({
-              series: [
-                { name: "Panen Tomat", data: statTomatConv },
-              ],
-              colors: "#fcb45e",
-              xaxis: {
-                categories: tanggalTomat,
-                labels: {
-                  style: { cssClass: "grey--text lighten-2--text fill-color" },
-                },
-              },
-            })
-          }
-        }
-
-        document.getElementById("select-pangan").onchange = filterPangan;
-
-        // =====================================
-        // Jumlah Kebutuhan dan Hasil Produksi
-        // =====================================
-        let totalPanenCabai = parseInt('{{totalPanenCabai}}', 10)
-        let totalPanenTomat = parseInt('{{totalPanenTomat}}', 10)
-
-        var breakup = {
-          color: "#adb5bd",
-          series: [totalPanenCabai, totalPanenTomat],
-          labels: ["Cabai", "Tomat"],
-          chart: {
-            width: 260,
-            type: "donut",
-            fontFamily: "Plus Jakarta Sans', sans-serif",
-            foreColor: "#adb0bb",
-          },
-          plotOptions: {
-            pie: {
-              startAngle: 0,
-              endAngle: 360,
-              donut: {
-                size: "75%",
-              },
-            },
-          },
-          stroke: {
-            show: false,
-          },
-
-          dataLabels: {
-            enabled: false,
-          },
-
-          legend: {
-            show: false,
-          },
-          colors: ["#ff6b6b", "#fcb45e"],
-
-          responsive: [
-            {
-              breakpoint: 991,
-              options: {
-                chart: {
-                  width: 150,
-                },
-              },
-            },
-          ],
-          tooltip: {
-            theme: "dark",
-            fillSeriesColor: false,
-          },
-        };
-
-        var chart = new ApexCharts(document.querySelector("#breakup"), breakup);
-        chart.render();
-      });
-    </script>
     <script>
       //const inputBtn = document.getElementById("inputDataBtn");
       //const updateBtn = document.getElementById("updateDataBtn");

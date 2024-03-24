@@ -207,7 +207,7 @@
             <div class="col-lg-12">
               <div class="row align-items-start">
                 <div class="col-12 col-lg-4">
-                  <a href="./harga-pangan.html" class="link-dark">
+                  <a href="{{ url_for('views.hargapangan' ) }}" target="_blank" class="link-dark">
                     <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
                       <div class="d-flex gap-3 align-items-center">
                         <div class="d-block">
@@ -227,7 +227,7 @@
                   </a>
                 </div>
                 <div class="col-12 col-lg-4">
-                  <a href="{{ url_for('views.dataproduksi' ) }}" class="link-dark">
+                  <a href="{{ url_for('views.dataproduksi' ) }}" target="_blank" class="link-dark">
                     <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
                       <div class="d-flex gap-3 align-items-center">
                         <div class="d-block">
@@ -237,7 +237,10 @@
                           <h3 class="text-red fw-bold">
                             <strong>Jumlah Panen</strong>
                           </h3>
-                          <p class="mb-0">Informasi jumlah panen di kelurahan</p>
+                          <p class="mb-0">
+                            Informasi jumlah panen di kelurahan
+                            <i class="ti ti-arrow-right align-middle"></i>
+                          </p>
                         </div>
                       </div>
                     </div>
