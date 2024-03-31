@@ -313,6 +313,13 @@ html {
     animation: none;
 }
 
+.mask {
+    width: 350px;
+    right: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
 @-webkit-keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 #fff;

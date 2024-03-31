@@ -31,9 +31,11 @@ def create_app():
 
     from .auth.routes import auth
     from .views.routes import views
+    from .admin.routes import admin_page
 
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(admin_page, url_prefix='/')
 
     login_manager.login_view = 'auth.login'
 

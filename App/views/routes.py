@@ -6,6 +6,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import asc
 from datetime import datetime, timedelta
 from babel.numbers import format_currency
+from xml.etree import ElementTree as ET
+import urllib.request
 import json, requests
 
 from App.models import User, AppAdmin, DataPangan
@@ -398,6 +400,12 @@ def hargapangan():
 
     return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
+@views.route('/dashboard/data-pangan/delete-data/<int:id>', methods=['GET'])
+def delete_data_pangan(id):
+    data = DataPangan.query.get_or_404(id)
+    db.session.delete(data)
+    db.session.commit()
+    return redirect(url_for('views.dataproduksi'))
 
 # @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
 # def approve_post(id):
@@ -413,12 +421,53 @@ def hargapangan():
 #     db.session.commit()
 #     return redirect(url_for('views.dashboard'))
 
-@views.route('/dashboard/data-pangan/delete-data/<int:id>', methods=['GET'])
-def delete_data_pangan(id):
-    data = DataPangan.query.get_or_404(id)
-    db.session.delete(data)
-    db.session.commit()
-    return redirect(url_for('views.dataproduksi'))
+# todo ============== PROFILE PAGE ==============
+@views.route('/dashboard/profil', methods=['GET', 'POST'])
+def profil():
+    user = User.query.all()
+    return render_template('dashboard/profil.html', user=user)
+
+@views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
+def settigs():
+    user = User.query.all()
+    return render_template('dashboard/settings.html', user=user)
+
+@views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
+def weather():
+    # url = "https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-MalukuUtara.xml"
+    # response = urllib.request.urlopen(url)
+    # data = response.read()
+    tree = ET.parse('./App/static/api/DigitalForecast-MalukuUtara.xml')
+    root = tree.getroot()
+    
+    # Memanggil area berdasarkan id
+    def find_area_by_id(area_id):
+        for area in root.findall('.//area'):
+            if area.get('id') == area_id:
+                return area
+        return None
+
+    # Contoh pemanggilan area dengan id tertentu
+    area_id_to_find = "501394"
+    found_area = find_area_by_id(area_id_to_find)
+
+    if found_area is not None:
+        print("Area ditemukan:")
+        print("ID:", found_area.get('id'))
+        print("Latitude:", found_area.get('latitude'))
+        print("Longitude:", found_area.get('longitude'))
+        print("Type:", found_area.get('type'))
+        print("Description:", found_area.get('description'))
+        for name in found_area.findall('name'):
+            lang = name.get('{http://www.w3.org/XML/1998/namespace}lang')
+            name_text = name.text
+            print(f'Name ({lang}): {name_text}')
+    else:
+        print("Area dengan ID", area_id_to_find, "tidak ditemukan.")
+
+    print(root)
+    return render_template('dashboard/weather.html', cuaca=root)
+
 
 # todo ============== UPDATE PROFILE ==============
 # @views.route('/dashboard/<int:id>/update', methods=['GET', 'POST'])

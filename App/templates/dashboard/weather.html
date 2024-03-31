@@ -90,7 +90,7 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link active" href="{{ url_for('views.penjualan' ) }}" aria-expanded="false">
+                                <a class="sidebar-link" href="{{ url_for('views.penjualan' ) }}" aria-expanded="false">
                                     <span>
                                         <i class="ti ti-truck"></i>
                                     </span>
@@ -198,17 +198,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-12 d-flex flex-column">
                             <div class="card">
-                                <div class="card-body position-relative">
-                                    <h3 class="mb-4">
-                                        Beli Hasil Pertanian Terbaik dari <br />
-                                        Petani <strong>RINDANG</strong>
-                                    </h3>
-                                    <p class="mb-4">
-                                        Dapatkan hasil pertanian berkualitas dan terjamin <br />
-                                        dengan membeli langsung ke Petani <strong>RINDANG</strong>
-                                    </p>
-                                    <a href="#" class="btn btn-green btn-lg">Hubungi</a>
-                                </div>
+                                <div class="card-body weather-container" id="weather-data"></div>
                             </div>
                         </div>
                     </div>
@@ -223,29 +213,76 @@
         <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
         <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
         <script>
-            //const inputBtn = document.getElementById("inputDataBtn");
-            //const updateBtn = document.getElementById("updateDataBtn");
-            //const updtStat = document.getElementById("updateStatus");
-            //
-            //function changeStat() {
-            //  const updtPanen = document.getElementsByClassName("panen");
-            //
-            //  if (updtStat.value === "Penanaman") {
-            //    for (let i = 0; i < updtPanen.length; i++) {
-            //      updtPanen[i].disabled = true;
-            //    }
-            //  } else if (updtStat.value === "Panen") {
-            //    for (let i = 0; i < updtPanen.length; i++) {
-            //      updtPanen[i].disabled = false;
-            //    }
-            //  }
-            //}
-            //
-            //updtStat.onchange = changeStat;
-            //
-            //window.onload = function () {
-            //  changeStat();
-            //};
+            // Replace with the actual URL if you're fetching from the remote API
+            const url = "https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-MalukuUtara.xml";
+
+            fetch(url)
+                .then((response) => response.text()) // Convert response to text (XML)
+                .then((xmlString) => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+                    // Function to find area by ID
+                    function findAreaById(areaId) {
+                        const areas = xmlDoc.querySelectorAll("area");
+                        for (let i = 0; i < areas.length; i++) {
+                            if (areas[i].getAttribute("id") === areaId) {
+                                return areas[i];
+                            }
+                        }
+                        return null;
+                    }
+
+                    // Function to extract data from a parameter element
+                    function extractParameterData(parameterElement, unit) {
+                        const timeranges = parameterElement.querySelectorAll("timerange");
+                        const values = [];
+                        for (let i = 0; i < timeranges.length; i++) {
+                            const valueElement = timeranges[i].querySelector(`value[unit='${unit}']`);
+                            if (valueElement) {
+                                values.push(valueElement.textContent);
+                            }
+                        }
+                        return values;
+                    }
+
+                    // Example usage: Find area with ID 501394
+                    const areaIdToFind = "501394";
+                    const foundArea = findAreaById(areaIdToFind);
+
+                    if (foundArea) {
+                        // Extract data
+                        const humidityData = extractParameterData(foundArea.querySelector("parameter[id='hu']"), "%");
+                        const temperatureData = extractParameterData(foundArea.querySelector("parameter[id='t']"), "C");
+                        const weatherData = extractParameterData(foundArea.querySelector("parameter[id='weather']"), "icon");
+                        const windDirectionData = extractParameterData(foundArea.querySelector("parameter[id='wd']"), "deg");
+                        const windSpeedData = extractParameterData(foundArea.querySelector("parameter[id='ws']"), "Kt");
+
+                        // Process and display the data as needed
+                        for (let i = 0; i < humidityData.length; i++) {
+                            const humidity = humidityData[i];
+                            const temperature = temperatureData[i];
+                            const weatherCode = weatherData[i];
+                            const windDirection = windDirectionData[i];
+                            const windSpeed = windSpeedData[i];
+
+                            // ... (display or process data)
+                        }
+
+                        console.log(humidityData);
+                        console.log(temperatureData);
+                        console.log(weatherData);
+                        console.log(windDirectionData);
+                        console.log(windSpeedData);
+                    } else {
+                        console.log("Area dengan ID", areaIdToFind, "tidak ditemukan.");
+                    }
+
+                    // ... (rest of the script)
+                })
+                .catch((error) => {
+                    console.error("Error fetching or parsing XML data:", error);
+                });
         </script>
     </body>
 </html>

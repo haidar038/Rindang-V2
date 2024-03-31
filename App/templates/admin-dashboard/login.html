@@ -21,7 +21,7 @@
         <link rel="mask-icon" href="../static/favicons/safari-pinned-tab.svg" color="#5bbad5" />
         <meta name="msapplication-TileColor" content="#b91d47" />
         <meta name="theme-color" content="#ffffff" />
-        <title>RINDANG - Registrasi</title>
+        <title>RINDANG - Admin Login</title>
 
         <!-- FONTS -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans" />
@@ -42,83 +42,33 @@
     </head>
 
     <body class="h-100 bg-green-secondary">
-        <!-- BACKGROUND WHITE -->
-        <div class="bg-white h-100 position-absolute w-50 z-0 end-0 d-none d-lg-block"></div>
-
-        <div class="position-absolute w-100 top-0 px-lg-5 py-lg-4 px-4 py-3">
+        <div class="container py-5">
             <a href="{{ url_for('views.index' ) }}" class="nav-link fw-bold align-items-center mb-5">&larr; Kembali ke Beranda</a>
-        </div>
-
-        <div class="container-fluid py-5 h-100">
-            <div class="row h-100 d-none d-lg-flex">
-                <div class="col-12 col-lg-6 px-lg-5 position-relative d-flex flex-column justify-content-center">
-                    <div class="mx-lg-5">
-                        <form action="" method="post">
-                            <div class="mb-4">
-                                <h2 class="fw-bold text-body-secondary">Daftar</h2>
-                            </div>
-                            <div class="mb-3">
-                                <label for="emailAddress" class="form-label fw-medium">Email</label>
-                                <input type="email" class="form-control" id="emailAddress" name="emailAddress" placeholder="contoh: example@gmail.com" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPass" class="form-label fw-medium">Kata Sandi</label>
-                                <input type="password" class="form-control" id="userPass" placeholder="Minimal 8 karakter" required />
-                            </div>
-                            <div class="mb-4">
-                                <label for="userPassConf" class="form-label fw-medium">Konfirmasi Kata Sandi</label>
-                                <input type="password" class="form-control" id="userPassConf" placeholder="Ulangi kata sandi anda" required />
-                            </div>
-                            <div class="form-check mb-5">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                <label class="form-check-label" for="flexCheckDefault"> Saya setuju dengan syarat dan ketentuan yang berlaku </label>
-                            </div>
-                            <a href="{{ url_for('auth.login' ) }}" class="btn btn-green text-center fw-bold text-light w-100 mb-3"> Daftar Sekarang </a>
-                        </form>
-                        <p class="text-center mb-4">Sudah memiliki akun? <a href="{{ url_for('auth.login' ) }}" class="link-green text-decoration-none fw-bold">Masuk Disini</a></p>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-6 h-100 order-lg-first">
-                    <div class="mx-lg-5 h-100 d-flex flex-column justify-content-center">
-                        <div class="mb-5">
-                            <h2 class="fw-bold text-body-secondary">Daftar sekarang untuk menjadi bagian dari jejaring Rindang</h2>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <div class="d-flex gap-2">
-                                <ion-icon name="checkmark-sharp"></ion-icon>
-                                <p>Didampingi langsung oleh penyuluh pertanian</p>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <ion-icon name="checkmark-sharp"></ion-icon>
-                                <p>Mengembangkan pertanian menggunakan teknologi</p>
-                            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow rounded-4 px-4 py-4">
+                        <div class="card-body login-form">
+                            <form action="" method="post">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold text-body-secondary">Admin Login</h2>
+                                    <p class="text-body-secondary">Masukkan Email dan Kata Sandi untuk masuk ke Dashboard Admin</p>
+                                </div>
+                                <div class="mb-3 text-center">
+                                    <label for="username" class="form-label fw-medium">Email</label>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="contoh: example@gmail.com" required />
+                                </div>
+                                <div class="mb-3 text-center">
+                                    <label for="userPassword" class="form-label fw-medium">Kata Sandi</label>
+                                    <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Minimal 8 karakter" required />
+                                </div>
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                                    <label class="form-check-label" for="flexCheckDefault"> Ingat saya </label>
+                                </div>
+                                <button type="submit" class="btn btn-green text-center fw-bold text-light w-100 mb-3">Masuk</button>
+                            </form>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="my-4">
-                <div class="card card-body d-block d-lg-none rounded-4 border-0 shadow p-4">
-                    <div class="mb-4">
-                        <h2 class="fw-bold text-body-secondary">Daftar</h2>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label fw-medium">Email</label>
-                        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="contoh: example@gmail.com" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label fw-medium">Kata Sandi</label>
-                        <input type="password" class="form-control" id="exampleFormControlInput2" placeholder="Minimal 8 karakter" required />
-                    </div>
-                    <div class="mb-4">
-                        <label for="exampleFormControlTextarea1" class="form-label fw-medium">Konfirmasi Kata Sandi</label>
-                        <input type="password" class="form-control" id="exampleFormControlInput3" placeholder="Ulangi kata sandi anda" required />
-                    </div>
-                    <div class="form-check mb-5">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                        <label class="form-check-label" for="flexCheckDefault"> Saya setuju dengan syarat dan ketentuan yang berlaku </label>
-                    </div>
-                    <button type="submit" class="btn btn-green text-center fw-bold text-light w-100 mb-3">Daftar Sekarang!</button>
-                    <p class="text-center mb-4">Sudah memiliki akun? <a href="{{ url_for('auth.login' ) }}" class="link-green text-decoration-none fw-bold">Masuk Disini</a></p>
                 </div>
             </div>
         </div>

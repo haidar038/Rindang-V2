@@ -90,7 +90,7 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link active" href="{{ url_for('views.penjualan' ) }}" aria-expanded="false">
+                                <a class="sidebar-link" href="{{ url_for('views.penjualan' ) }}" aria-expanded="false">
                                     <span>
                                         <i class="ti ti-truck"></i>
                                     </span>
@@ -197,17 +197,24 @@
                     <!--  Row 1 -->
                     <div class="row">
                         <div class="col-lg-12 col-12 d-flex flex-column">
+                            <h3 class=""><strong>Akun Saya</strong></h3>
+                            <p class="mb-4">Anda dapat mengubah alamat E-Mail dan Kata Sandi disini</p>
                             <div class="card">
-                                <div class="card-body position-relative">
-                                    <h3 class="mb-4">
-                                        Beli Hasil Pertanian Terbaik dari <br />
-                                        Petani <strong>RINDANG</strong>
-                                    </h3>
-                                    <p class="mb-4">
-                                        Dapatkan hasil pertanian berkualitas dan terjamin <br />
-                                        dengan membeli langsung ke Petani <strong>RINDANG</strong>
-                                    </p>
-                                    <a href="#" class="btn btn-green btn-lg">Hubungi</a>
+                                <div class="card-body text-lg-start d-flex flex-column gap-3 text-center">
+                                    <div class="text-lg-start text-center d-flex justify-content-between">
+                                        <div class="d-flex flex-wrap flex-column text-start my-auto">
+                                            <h4><strong class="text-muted">Email</strong></h4>
+                                            <p class="mb-0">haidar038@gmai.com</p>
+                                        </div>
+                                        <a href="#" class="btn btn-outline-dark my-auto">Ubah Email</a>
+                                    </div>
+                                    <div class="text-lg-start text-center d-flex flex justify-content-between">
+                                        <div class="d-flex flex-wrap flex-column text-start my-auto">
+                                            <h4><strong class="text-muted">Kata Sandi</strong></h4>
+                                            <p class="mb-0">*********</p>
+                                        </div>
+                                        <a href="#" class="btn btn-outline-dark my-auto">Ubah Kata Sandi</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
