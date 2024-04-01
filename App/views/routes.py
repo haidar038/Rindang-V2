@@ -17,29 +17,29 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
-    if current_user.is_authenticated:
-        if current_user.account_type == 'admin':
-            return redirect(url_for('admin_page.dashboard'))
-        elif current_user.account_type == 'user':
-            return redirect(url_for('views.dashboard'))
+    # if current_user.is_authenticated:
+    #     if current_user.account_type == 'admin':
+    #         return redirect(url_for('admin_page.dashboard'))
+    #     elif current_user.account_type == 'user':
+    #         return redirect(url_for('views.dashboard'))
 
-    if request.method == 'POST':
-        email = request.form['emailAddress']
-        password = request.form['userPassword']
+    # if request.method == 'POST':
+    #     email = request.form['emailAddress']
+    #     password = request.form['userPassword']
         
-        user = User.query.filter_by(email=email).first()
+    #     user = User.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password, password):
-            session['account_type'] = 'user'
-            flash("Berhasil Masuk!", category='success')
-            login_user(user, remember=True)
-            return redirect(url_for('views.dashboard'))
-        elif user is None:
-            flash(f"Akun dengan email {email} tidak ditemukan. Silakan daftar terlebih dahulu!",'warning')
-            return redirect(url_for('auth.login'))
-        else:
-            flash("Kata sandi salah, coba lagi.", 'error')
-            return redirect(url_for('auth.login'))
+    #     if user and check_password_hash(user.password, password):
+    #         session['account_type'] = 'user'
+    #         flash("Berhasil Masuk!", category='success')
+    #         login_user(user, remember=True)
+    #         return redirect(url_for('views.dashboard'))
+    #     elif user is None:
+    #         flash(f"Akun dengan email {email} tidak ditemukan. Silakan daftar terlebih dahulu!",'warning')
+    #         return redirect(url_for('auth.login'))
+    #     else:
+    #         flash("Kata sandi salah, coba lagi.", 'error')
+    #         return redirect(url_for('auth.login'))
     return render_template('index.html')
 
 # @views.route('/beranda', methods=['GET', 'POST'])
@@ -212,7 +212,7 @@ def index():
 #         return redirect(url_for('auth.adminlogin'))
 
 @views.route('/dashboard', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def dashboard():
     user_data = User.query.all()
     pangan = DataPangan.query.all()
@@ -226,10 +226,12 @@ def dashboard():
     #     return redirect(url_for('views.home'))
 
 @views.route('/dashboard/penjualan')
+@login_required
 def penjualan():
     return render_template('dashboard/penjualan.html')
 
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
+@login_required
 def dataproduksi():
     user_data = User.query.all()
     pangan = DataPangan.query.all()
@@ -306,6 +308,7 @@ def dataproduksi():
     return render_template('dashboard/data-pangan.html', user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
+@login_required
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
 
@@ -342,6 +345,7 @@ def updatepangan(id):
             return redirect(request.referrer)
         
 @views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
+@login_required
 def hargapangan():
     today = datetime.today()
     kab_kota = 458 #Ternate
@@ -401,6 +405,7 @@ def hargapangan():
     return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
 @views.route('/dashboard/data-pangan/delete-data/<int:id>', methods=['GET'])
+@login_required
 def delete_data_pangan(id):
     data = DataPangan.query.get_or_404(id)
     db.session.delete(data)
@@ -423,11 +428,13 @@ def delete_data_pangan(id):
 
 # todo ============== PROFILE PAGE ==============
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
+@login_required
 def profil():
     user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/profil.html', user=user)
 
 @views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
+@login_required
 def updateprofil(id):
     user = User.query.get_or_404(id)
     if request.method == 'POST':
@@ -442,11 +449,13 @@ def updateprofil(id):
         return redirect(url_for('views.profil'))
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
+@login_required
 def settings():
     user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/settings.html', user=user)
 
 @views.route('/dashboard/pengaturan/<int:id>/update-email', methods=['GET', 'POST'])
+@login_required
 def updateemail(id):
     user = User.query.get_or_404(id)
     if request.method == 'POST':
@@ -463,6 +472,7 @@ def updateemail(id):
 #         user.password = request.form['userPass']
 
 @views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
+@login_required
 def weather():
     return render_template('dashboard/weather.html')
 
