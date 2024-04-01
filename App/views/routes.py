@@ -19,9 +19,9 @@ views = Blueprint('views', __name__)
 def index():
     if current_user.is_authenticated:
         if current_user.account_type == 'admin':
-            return redirect(url_for('views.dashboard'))
+            return redirect(url_for('admin_page.dashboard'))
         elif current_user.account_type == 'user':
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.dashboard'))
 
     if request.method == 'POST':
         email = request.form['emailAddress']
@@ -33,7 +33,7 @@ def index():
             session['account_type'] = 'user'
             flash("Berhasil Masuk!", category='success')
             login_user(user, remember=True)
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.dashboard'))
         elif user is None:
             flash(f"Akun dengan email {email} tidak ditemukan. Silakan daftar terlebih dahulu!",'warning')
             return redirect(url_for('auth.login'))
@@ -424,95 +424,81 @@ def delete_data_pangan(id):
 # todo ============== PROFILE PAGE ==============
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
 def profil():
-    user = User.query.all()
+    user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/profil.html', user=user)
 
+@views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
+def updateprofil(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        user.nama_lengkap = request.form['nama']
+        user.username = request.form['username']
+        user.pekerjaan = request.form['pekerjaan']
+        user.kelamin = request.form['kelamin']
+        user.kelurahan = request.form['kelurahan']
+        user.bio = request.form['bio']
+        db.session.commit()
+        flash('Profil Berhasil Diubah')
+        return redirect(url_for('views.profil'))
+
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
-def settigs():
-    user = User.query.all()
+def settings():
+    user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/settings.html', user=user)
+
+@views.route('/dashboard/pengaturan/<int:id>/update-email', methods=['GET', 'POST'])
+def updateemail(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        password = request.form['userPass']
+        if password == check_password_hash(user.password, password):
+            user.email = request.form['emailAddress']
+            db.session.commit()
+            return redirect(url_for('views.settings'))
+
+# @views.route('/dashboard/pengaturan/update-password/<int:id>', methods=['GET', 'POST'])
+# def updatepassword(id):
+#     user = User.query.get_or_404(id)
+#     if request.method == 'POST':
+#         user.password = request.form['userPass']
 
 @views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
 def weather():
-    # url = "https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-MalukuUtara.xml"
-    # response = urllib.request.urlopen(url)
-    # data = response.read()
-    tree = ET.parse('./App/static/api/DigitalForecast-MalukuUtara.xml')
-    root = tree.getroot()
-    
-    # Memanggil area berdasarkan id
-    def find_area_by_id(area_id):
-        for area in root.findall('.//area'):
-            if area.get('id') == area_id:
-                return area
-        return None
+    return render_template('dashboard/weather.html')
 
-    # Contoh pemanggilan area dengan id tertentu
-    area_id_to_find = "501394"
-    found_area = find_area_by_id(area_id_to_find)
-
-    if found_area is not None:
-        print("Area ditemukan:")
-        print("ID:", found_area.get('id'))
-        print("Latitude:", found_area.get('latitude'))
-        print("Longitude:", found_area.get('longitude'))
-        print("Type:", found_area.get('type'))
-        print("Description:", found_area.get('description'))
-        for name in found_area.findall('name'):
-            lang = name.get('{http://www.w3.org/XML/1998/namespace}lang')
-            name_text = name.text
-            print(f'Name ({lang}): {name_text}')
-    else:
-        print("Area dengan ID", area_id_to_find, "tidak ditemukan.")
-
-    print(root)
-    return render_template('dashboard/weather.html', cuaca=root)
-
-
-# todo ============== UPDATE PROFILE ==============
-# @views.route('/dashboard/<int:id>/update', methods=['GET', 'POST'])
+# @views.route('/profil/<string:username>', methods=['GET', 'POST'])
 # @login_required
-# def update_profile(id):
-#     user = User.query.filter_by(id=id).first()
+# def profil(username):
+#     if current_user.is_authenticated and session['account_type'] == 'user':
+#         # user = User.query.filter_by(username=username)
+#         user = User.query.filter_by(username=username).first()
 
-#     if request.method == 'POST':
-#         if user:
-#             db.session.delete(user)
-#             db.session.commit()
-#             full_name = request.form['full_name']
-#             username = request.form['username']
-#             student_id = request.form['student_id']
-#             grade = request.form['grade']
-#             address = request.form['address']
-#             region_group = request.form['region_group']
-#             subdistrict = request.form['subdistrict']
-#             district = request.form['district']
-#             province = request.form['province']
-#             zipcode = request.form['zipcode']
-#             parents = request.form['parents']
-#             phone = request.form['phone']
-#             best_friend = request.form['best_friend']
-#             ambition = request.form['ambition']
-#             motto = request.form['motto']
-#             disease = request.form['disease']
-#             password = request.form['password']   
-            
-#             user = User(full_name=full_name, username=username, student_id=student_id, grade=grade, address=address, region_group=region_group, subdistrict=subdistrict, district=district, province=province, zipcode=zipcode, parents=parents, phone=phone, best_friend=best_friend, ambition=ambition, motto=motto, disease=disease, password=user.password)
-            
-#             db.session.add(user)
-#             db.session.commit()
-#             flash('Profile Updated!', category='success')
-#             return redirect(url_for('views.dashboard'))
-        
-#         return f"Student with id = {id} Does not exist"
+#         if request.method == 'POST':
+#             if user:
+#                 password = request.form['password']
+#                 if check_password_hash(user.password, password):
+#                     user.nama_lengkap = request.form['nama_lengkap']
+#                     user.username = request.form['username']
+#                     user.email = request.form['email']
+#                     user.password = generate_password_hash(request.form['password'], method='pbkdf2')
+#                     db.session.commit()
+#                     flash('Akun berhasil diubah!', category='success')
+#                     print('Akun berhasil diperbarui!')
+#                     return redirect(url_for('views.profil', username=username))
+#                 else:
+#                     flash("Kata sandi salah, silakan coba lagi.", category='danger')
+#                     return redirect(url_for('views.profil', username=user.username))
 
-#     return render_template('update_profile.html', user=user)
+#         post = DataPangan.query.filter_by(user_id=current_user.id).all()
+#         return render_template("profil.html", user=user, post=post)
+#     elif current_user.is_authenticated and session['account_type'] == 'admin':
+#         return render_template("admin_profile.html")
+#     else:
+#         return redirect(url_for('auth.login'))
 
-# @views.route('/dashboard/<int:id>/change_password', methods=['GET', 'POST'])
-# def change_pass():
-#     passd = Student.query.filter_by(password=current_user.password).first()
-#     if request.method == 'POST':
-#         if
+# @views.route('/about')
+# def about():
+#     return render_template('about.html')
 
 # ========================= KELURAHAN SECTION =========================
 @views.route('/peta-sebaran')

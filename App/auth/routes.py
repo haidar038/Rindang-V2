@@ -1,12 +1,9 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session, Response
 from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from string import ascii_uppercase
 
 from App.models import User, AppAdmin
 from App import db, login_manager
-
-import random
 
 auth = Blueprint('auth', __name__)
 
@@ -55,9 +52,9 @@ def adminLogin():
 def login():
     if current_user.is_authenticated:
         if current_user.account_type == 'admin':
-            return redirect(url_for('views.dashboard'))
+            return redirect(url_for('admin_page.index'))
         elif current_user.account_type == 'user':
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.index'))
     if request.method == 'POST':
         email = request.form['emailAddress']
         password = request.form['userPassword']
@@ -68,7 +65,7 @@ def login():
             session['account_type'] = 'user'
             flash("Berhasil Masuk!", category='success')
             login_user(user, remember=True)
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.dashboard'))
         elif user is None:
             flash("Akun anda belum terdaftar, silakan daftar terlebih dahulu", category='warning')
         else:
@@ -94,12 +91,16 @@ def register():
         elif confirm_password != password:
             flash('Kata sandi tidak cocok.', category='danger')
         elif User.query.filter_by(email=email).first():
-            flash('Nama pengguna sudah digunakan, silakan buat yang lain.', category='danger')
+            flash('Email sudah digunakan, silakan buat yang lain.', category='danger')
         else:
             add_User = User(email=email, password=generate_password_hash(password, method='pbkdf2'))
             db.session.add(add_User)
             db.session.commit()
             flash('Akun berhasil dibuat!', category='success')
+
+            # Log the user out explicitly
+            logout_user()
+
             return redirect(url_for('auth.login'))
 
     return render_template('register.html', page='User')

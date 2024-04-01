@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="min-vh-100 h-100">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>RINDANG - Admin Dashboard</title>
+        <title>{% block page_title %} {% endblock %}</title>
+
         <meta name="keywords" content="rindang sistem informasi pangan kota ternate kebutuhan cabai barito rica tanam petani" />
         <meta property="og:title" content="RINDANG - Rica Tanam Dalam Kampung" />
         <meta property="og:description" content="Sistem Informasi kebutuhan pangan dan informasi pangan Kota Ternate" />
@@ -20,23 +21,28 @@
         <meta name="msapplication-TileColor" content="#ffc40d" />
         <meta name="theme-color" content="#ffffff" />
 
-        <!-- STYLES -->
         <link rel="stylesheet" href="../../static/admin/css/styles.min.css" />
         <link rel="stylesheet" href="../../static/admin/css/base-color.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.css" />
+        <!-- <link rel="stylesheet" href="../../static/admin/css/font-size.css" /> -->
 
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
         <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/air-datepicker@3.5.0/air-datepicker.min.js"></script>
+
+        {{ toastr.include_jquery() }} {{ toastr.include_toastr_css() }} {{ toastr.message() }}
     </head>
 
-    <body class="h-100 bg-body-secondary">
+    <body>
         <!--  Body Wrapper -->
-        <div class="page-wrapper h-100" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+        <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
             <!-- Sidebar Start -->
             <aside class="left-sidebar">
                 <!-- Sidebar scroll-->
                 <div>
                     <div class="brand-logo d-flex align-items-center justify-content-between">
-                        <a href="{{ url_for('admin_page.index' ) }}" class="text-nowrap logo-img">
+                        <a href="{{ url_for('views.dashboard' ) }}" class="text-nowrap logo-img">
                             <img src="../../static/img/rindang-logo-red.svg" width="180" alt="" />
                         </a>
                         <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -51,11 +57,75 @@
                                 <span class="hide-menu">Home</span>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ url_for('admin_page.index' ) }}" aria-expanded="false">
+                                <a class="sidebar-link" href="{{ url_for('views.dashboard' ) }}" aria-expanded="false">
                                     <span>
-                                        <i class="ti ti-grid-dots"></i>
+                                        <i class="ti ti-home"></i>
                                     </span>
                                     <span class="hide-menu">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="nav-small-cap">
+                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                <span class="hide-menu">DATA & STATISTIK</span>
+                            </li>
+                            <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
+                                <span>
+                                    <i class="ti ti-currency-dollar"></i>
+                                </span>
+                                <span class="hide-menu">Harga Pangan</span>
+                            </a>
+                        </li> -->
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ url_for('views.hargapangan' ) }}" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-currency-dollar"></i>
+                                    </span>
+                                    <span class="hide-menu">Harga Pangan</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ url_for('views.dataproduksi' ) }}" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-seeding"></i>
+                                    </span>
+                                    <span class="hide-menu">Data Produksi</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ url_for('views.penjualan' ) }}" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-truck"></i>
+                                    </span>
+                                    <span class="hide-menu">Penjualan</span>
+                                </a>
+                            </li>
+                            <li class="nav-small-cap">
+                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                <span class="hide-menu">Fitur Rindang</span>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ url_for('views.weather' ) }}" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-haze"></i>
+                                    </span>
+                                    <span class="hide-menu">Pantauan Cuaca</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="#" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-message"></i>
+                                    </span>
+                                    <span class="hide-menu">Forum</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="#" aria-expanded="false">
+                                    <span>
+                                        <i class="ti ti-article"></i>
+                                    </span>
+                                    <span class="hide-menu">Artikel</span>
                                 </a>
                             </li>
                         </ul>
@@ -66,7 +136,7 @@
             </aside>
             <!--  Sidebar End -->
             <!--  Main wrapper -->
-            <div class="body-wrapper bg-body-secondary h-100">
+            <div class="body-wrapper">
                 <!--  Header Start -->
                 <header class="app-header">
                     <nav class="navbar navbar-expand-lg navbar-light">
@@ -86,17 +156,17 @@
                                     <div class="message-body">
                                         <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                                             <i class="ti ti-user fs-6"></i>
-                                            <p class="mb-0 fs-3">Profil Saya</p>
+                                            <p class="mb-0 fs-3">My Profile</p>
                                         </a>
                                         <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                                             <i class="ti ti-mail fs-6"></i>
-                                            <p class="mb-0 fs-3">Pegaturan</p>
+                                            <p class="mb-0 fs-3">My Account</p>
                                         </a>
                                         <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                                             <i class="ti ti-list-check fs-6"></i>
                                             <p class="mb-0 fs-3">My Task</p>
                                         </a>
-                                        <a href="#" class="btn btn-outline-green mx-3 mt-2 d-block">Logout</a>
+                                        <a href="{{ url_for('views.weather' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block">Logout</a>
                                     </div>
                                 </div>
                             </li> -->
@@ -104,27 +174,20 @@
                         <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link nav-icon-hover gap-3 d-flex d-lg-none" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                                         <img src="../../static/admin/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle" />
-                                    </a>
-                                    <a class="btn btn-light nav-icon-hover gap-3 d-none d-lg-flex" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="../../static/admin/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle" />
-                                        <div class="d-flex flex-column justify-content-center">
-                                            <span>Menu</span>
-                                            <!-- <small class="text-muted">Personal</small> -->
-                                        </div>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                         <div class="message-body">
-                                            <!-- <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                            <a href="{{ url_for('views.profil' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
                                                 <i class="ti ti-user fs-6"></i>
-                                                <p class="mb-0 fs-3">Profil Saya</p>
+                                                <p class="mb-0 fs-3">Edit Profil</p>
                                             </a>
-                                            <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                            <a href="{{ url_for('views.settings' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
                                                 <i class="ti ti-settings fs-6"></i>
                                                 <p class="mb-0 fs-3">Pengaturan</p>
-                                            </a> -->
-                                            <a href="{{ url_for('auth.logout' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block"><i class="ti ti-power"></i> Keluar</a>
+                                            </a>
+                                            <a href="{{ url_for('auth.logout' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block">Keluar</a>
                                         </div>
                                     </div>
                                 </li>
@@ -142,6 +205,8 @@
         <script src="../../static/admin/js/app.min.js"></script>
         <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script>
         <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
-        <script src="../../static/admin/js/dashboard.js"></script>
+        <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
+
+        {% block scripts %} {% endblock %} {{ toastr.include_toastr_js() }}
     </body>
 </html>

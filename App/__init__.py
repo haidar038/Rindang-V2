@@ -4,11 +4,13 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_socketio import SocketIO
 from werkzeug.security import generate_password_hash
+from flask_toastr import Toastr
 import os
 
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
 login_manager = LoginManager()
+toastr = Toastr()
 admin = Admin(name='admin')
 
 DB_NAME = 'rindang_digifarm.db'
@@ -28,6 +30,7 @@ def create_app():
     admin.init_app(app)
     socketio.init_app(app)
     login_manager.init_app(app)
+    toastr.init_app(app)
 
     from .auth.routes import auth
     from .views.routes import views
