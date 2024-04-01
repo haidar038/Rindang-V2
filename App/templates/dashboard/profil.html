@@ -1,4 +1,5 @@
-{% extends 'dashboard/layout.html' %} {% block page_title %} Dashboard - Profil Pengguna {% endblock %} {% block container %}
+{% extends 'dashboard/layout.html' %} {% block page_title %} Dashboard - Profil Pengguna {% endblock %} {% block
+container %}
 <!--  Header End -->
 <div class="container-fluid">
     <!--  Row 1 -->
@@ -11,7 +12,8 @@
                         <div class="row gap-3 col text-lg-start text-center">
                             <div class="d-flex gap-4 flex-column flex-lg-row">
                                 <div class="">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg" alt="Profile Picture.svg" style="width: 200px" />
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+                                        alt="Profile Picture.svg" style="width: 200px" />
                                 </div>
                                 <table class="table text-start">
                                     <tr>
@@ -41,7 +43,8 @@
                                     </tr>
                                 </table>
                             </div>
-                            <button id="updateProfileBtn" type="button" class="btn btn-green rounded-4 w-auto" data-bs-toggle="modal" data-bs-target="#updateProfile">Ubah Profil</button>
+                            <button id="updateProfileBtn" type="button" class="btn btn-green rounded-4 w-auto"
+                                data-bs-toggle="modal" data-bs-target="#updateProfile">Ubah Profil</button>
                         </div>
                     </div>
                 </div>
@@ -67,21 +70,23 @@
                 <form action="{{ url_for('views.updateprofil', id=current_user.id ) }}" method="post">
                     <div class="mb-3">
                         <label for="nama" class="form-label fw-bold fs-4">Nama Lengkap</label>
-                        <input class="form-control" type="text" name="nama" id="nama" placeholder="contoh : Yusuf Hi Bisnu" value="{{ user.nama_lengkap }}" />
+                        <input class="form-control" type="text" name="nama" id="nama"
+                            placeholder="contoh : Yusuf Hi Bisnu" value="{{ user.nama_lengkap }}" />
                     </div>
                     <div class="mb-3">
                         <label for="username" class="form-label fw-bold fs-4">Username</label>
-                        <input class="form-control" type="text" name="username" id="username" placeholder="contoh : ucup123" value="{{ user.username }}" />
+                        <input class="form-control" type="text" name="username" id="username"
+                            placeholder="contoh : ucup123" value="{{ user.username }}" />
                     </div>
                     <div class="mb-3">
-                        <label for="kelamin" class="form-label fw-bold fs-4">Jenis Kelamin</label>
-                        <select class="form-select" aria-label="kelamin" id="kelamin" name="kelamin">
-                            <option value="Laki-Laki">Laki-Laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
                         <div class="row">
+                            <div class="col">
+                                <label for="kelamin" class="form-label fw-bold fs-4">Jenis Kelamin</label>
+                                <select class="form-select" aria-label="kelamin" id="kelamin" name="kelamin">
+                                    <option value="Laki-Laki">Laki-Laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
                             <div class="col">
                                 <label for="pekerjaan" class="form-label fw-bold fs-4">Pekerjaan</label>
                                 <select class="form-select" aria-label="pekerjaan" id="pekerjaan" name="pekerjaan">
@@ -94,6 +99,10 @@
                                     <option value="IRT">IRT</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="row">
                             <div class="col">
                                 <label for="kelurahan" class="form-label fw-bold fs-4">Kelurahan</label>
                                 <select class="form-select" aria-label="kelurahan" id="kelurahan" name="kelurahan">
@@ -105,6 +114,11 @@
                                     <option value="Kalumpang">Kalumpang</option>
                                     <option value="Santiong">Santiong</option>
                                 </select>
+                            </div>
+                            <div class="col">
+                                <label for="kebun" class="form-label fw-bold fs-4">Kebun</label>
+                                <input class="form-control" type="number" name="kebun" id="kebun"
+                                    placeholder="contoh: 1" value="{{ kelurahan.kebun }}">
                             </div>
                         </div>
                     </div>

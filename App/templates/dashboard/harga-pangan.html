@@ -1,4 +1,5 @@
-{% extends 'dashboard/layout.html' %} {% block page_title %} Dashboard - Informasi Harga Pangan {% endblock %} {% block container %}
+{% extends 'dashboard/layout.html' %} {% block page_title %} Dashboard - Informasi Harga Pangan {% endblock %} {% block
+container %}
 <div class="container-fluid">
     <!--  Row 1 -->
     <div class="row">
@@ -14,19 +15,19 @@
                         {% endfor %}
                     </tr>
                     <tr>
-                        <td>Cabai Rawit Merah</td>
+                        <td class="fw-bold">Cabai Rawit Merah</td>
                         {% for item in table_data if item.name == 'Cabai Rawit Merah' %}
                         <td>{{item.price}}</td>
                         {% endfor %}
                     </tr>
                     <tr>
-                        <td>Cabai Merah Keriting</td>
+                        <td class="fw-bold">Cabai Merah Keriting</td>
                         {% for item in table_data if item.name == 'Cabai Merah Keriting' %}
                         <td>{{item.price}}</td>
                         {% endfor %}
                     </tr>
                     <tr>
-                        <td>Bawang Merah</td>
+                        <td class="fw-bold">Bawang Merah</td>
                         {% for item in table_data if item.name == 'Bawang Merah' %}
                         <td>{{item.price}}</td>
                         {% endfor %}

@@ -9,9 +9,6 @@ from flask_admin.base import BaseView, expose
 
 now = datetime.now()
 
-# class AppAdmin(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nama_lengkap = db.Column(db.String, nullable=True, default='')
@@ -20,12 +17,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String, nullable=False)
     kelamin = db.Column(db.String, nullable=True, default='')
     pekerjaan = db.Column(db.String, nullable=True, default='')
-    lokasi = db.Column(db.String, nullable=True, default='')
     bio = db.Column(db.String, nullable=True, default='') 
     kelurahan = db.Column(db.String, nullable=True, default='')
+    kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
     account_type = db.Column(db.String, nullable=False, default='user')
-    # cerita = db.relationship('Cerita', backref='user', lazy=True)
-    # chat = db.relationship('Chat', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"User('{self.nama_lengkap}','{self.email}','{self.username}')"
@@ -33,11 +28,12 @@ class User(db.Model, UserMixin):
 class Kelurahan(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nama = db.Column(db.String, nullable=True)
-    kebun = db.Column(db.String, nullable=True)
+    kebun = db.Column(db.Integer, nullable=True)
+    jml_panen = db.Column(db.Integer, nullable=True)
     komoditas = db.Column(db.String, nullable=True)
-    jml_panen = db.Column(db.String, nullable=True)
     pangan_data = db.relationship('DataPangan', backref='kelurahan', lazy=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
     
 class AppAdmin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -57,8 +53,8 @@ class DataPangan(db.Model, UserMixin):
     jml_panen = db.Column(db.Integer, nullable=True, default=0)
     tanggal_panen = db.Column(db.String, nullable=True, default=0)
     status = db.Column(db.String, nullable=True, default='Penanaman')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
 
     def get_status_text(self):
         return "Active" if self.status else "Inactive"

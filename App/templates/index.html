@@ -47,6 +47,87 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            width: 100%;
+            height: 3rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: solid rgba(0, 0, 0, 0.15);
+            border-width: 1px 0;
+            box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1), inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -0.125em;
+            fill: currentColor;
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .btn-bd-primary {
+            --bd-violet-bg: #712cf9;
+            --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+
+            --bs-btn-font-weight: 600;
+            --bs-btn-color: var(--bs-white);
+            --bs-btn-bg: var(--bd-violet-bg);
+            --bs-btn-border-color: var(--bd-violet-bg);
+            --bs-btn-hover-color: var(--bs-white);
+            --bs-btn-hover-bg: #6528e0;
+            --bs-btn-hover-border-color: #6528e0;
+            --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+            --bs-btn-active-color: var(--bs-btn-hover-color);
+            --bs-btn-active-bg: #5a23c8;
+            --bs-btn-active-border-color: #5a23c8;
+        }
+
+        .bd-mode-toggle {
+            z-index: 1500;
+        }
+
+        .bd-mode-toggle .dropdown-menu .active .bi {
+            display: block !important;
+        }
+    </style>
 </head>
 
 <body class="h-100">
@@ -621,9 +702,7 @@
                     </div>
                     <div class="tabs-content-2" id="tabs-content-2">
                         <div class="collapse fade" id="category-tab-collapse">
-                            <div class="card">
-                                <div class="card-body">THIS IS CATEGORY TAB</div>
-                            </div>
+                            <!-- <div id="map" style="width: auto; height: 400px"></div> -->
                         </div>
                     </div>
                 </div>
@@ -1223,6 +1302,56 @@
         mediaQuery.addEventListener("change", function () {
             mdQuery(mediaQuery);
         });
+    </script>
+    <script>
+        //var center_spot = L.marker([0.805211567917295, 127.33528798258935])
+        var kebun1sasa = L.marker([0.755278, 127.326389]).bindPopup("Kebun 1 Sasa"),
+            kebun1kulaba = L.marker([0.846389, 127.361944]).bindPopup("Kebun 1 Kulaba"),
+            kebun2kulaba = L.marker([0.841667, 127.358889]).bindPopup("Kebun 2 Kulaba"),
+            kebun1kalumpang = L.marker([0.825278, 127.378056]).bindPopup("Kebun 1 Kalumpang"),
+            kebun1fora = L.marker([0.768611, 127.316944]).bindPopup("Kebun 1 Foramadihi"),
+            kebun2fora = L.marker([0.768611, 127.3175]).bindPopup("Kebun 2 Foramadihi");
+
+        var kebun = L.layerGroup([kebun1sasa, kebun1kalumpang, kebun1kulaba, kebun2kulaba, kebun1fora, kebun2fora]);
+
+        var normal = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 20,
+            attribution: "© OpenStreetMap",
+        });
+
+        var ligth_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}", {
+            minZoom: 0,
+            maxZoom: 20,
+            attribution:
+                '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            ext: "png",
+        });
+
+        var dark_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}", {
+            minZoom: 0,
+            maxZoom: 20,
+            attribution:
+                '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            ext: "png",
+        });
+
+        var map = L.map("map", {
+            center: [0.8016929, 127.3569173],
+            zoom: 12,
+            layers: [normal, kebun],
+        });
+
+        var baseMaps = {
+            Normal: normal,
+            Light: ligth_map,
+            Dark: dark_map,
+        };
+
+        var overlayMaps = {
+            Kebun: kebun,
+        };
+
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
     </script>
 </body>
 

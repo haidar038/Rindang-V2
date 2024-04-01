@@ -10,7 +10,7 @@ from xml.etree import ElementTree as ET
 import urllib.request
 import json, requests
 
-from App.models import User, AppAdmin, DataPangan
+from App.models import User, DataPangan, Kelurahan
 from App import db, admin, login_manager, socketio
 
 views = Blueprint('views', __name__)
@@ -233,8 +233,8 @@ def penjualan():
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 @login_required
 def dataproduksi():
-    user_data = User.query.all()
-    pangan = DataPangan.query.all()
+    user_data = User.query.filter_by(id=current_user.id).first()
+    pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
 
     total_panen = []
 
@@ -245,8 +245,8 @@ def dataproduksi():
     # Persentase Kenaikan Produksi Pangan
     # kenaikan = round(((total_panen[-2] - total_panen[-1])/total_panen[-1])*100) if not 0 in total_panen else 0
 
-    cabai = DataPangan.query.filter_by(komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
-    tomat = DataPangan.query.filter_by(komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
+    cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
+    tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
     stat_cabai = []
     stat_tomat = []
     tgl_panen_cabai = []
@@ -311,6 +311,10 @@ def dataproduksi():
 @login_required
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
+    user = User.query.filter_by(id=current_user.id).first()
+    kel = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
+
+    print(kel.id)
 
     updateProd = request.form['updateProduksi']
 
@@ -337,9 +341,23 @@ def updatepangan(id):
             jumlahPanen = request.form['updateJumlahPanen']
             tglPanen = request.form['updateTglPanen']
 
+            # totalKomod = DataPangan.query.filter_by()
+
+            # total_panen = []
+
+            # for total in pangan:
+            #     panenTotal = total.jml_panen
+            #     total_panen.append(panenTotal)
+
+            # total_of_panen = sum(total_panen)
+
             pangan.status = 'Panen'
             pangan.jml_panen = jumlahPanen
             pangan.tanggal_panen = tglPanen
+            pangan.kelurahan_id = kel.id
+
+            kel.jml_panen = jumlahPanen
+            # kel.komoditas = total_of_panen
 
             db.session.commit()
             return redirect(request.referrer)
@@ -431,12 +449,14 @@ def delete_data_pangan(id):
 @login_required
 def profil():
     user = User.query.filter_by(id=current_user.id).first()
-    return render_template('dashboard/profil.html', user=user)
+    kelurahan = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
+    return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
 @views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
 @login_required
 def updateprofil(id):
     user = User.query.get_or_404(id)
+    kelurahan = Kelurahan.query.filter_by(user_id=current_user.id).first()
     if request.method == 'POST':
         user.nama_lengkap = request.form['nama']
         user.username = request.form['username']
@@ -444,9 +464,19 @@ def updateprofil(id):
         user.kelamin = request.form['kelamin']
         user.kelurahan = request.form['kelurahan']
         user.bio = request.form['bio']
-        db.session.commit()
-        flash('Profil Berhasil Diubah')
-        return redirect(url_for('views.profil'))
+        if not kelurahan:
+            add_kelurahan = Kelurahan(nama=request.form['kelurahan'], user_id=current_user.id)
+            db.session.add(add_kelurahan)
+            db.session.commit()
+            flash('Profil Berhasil Diubah', 'success')
+            return redirect(url_for('views.profil'))
+        else:
+            kelurahan.nama = request.form['kelurahan']
+            kelurahan.kebun = request.form['kebun']
+            user.kelurahan_id = kelurahan.id
+            db.session.commit()
+            flash('Profil Berhasil diubah!', 'success')
+            return redirect(url_for('views.profil'))
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 @login_required
