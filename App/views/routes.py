@@ -353,7 +353,7 @@ def updatepangan(id):
             pangan.status = 'Panen'
             pangan.jml_panen = jumlahPanen
             pangan.tanggal_panen = tglPanen
-            pangan.kelurahan_id = kel.id
+            # pangan.kelurahan_id = kel.id
 
             kel.jml_panen = jumlahPanen
             # kel.komoditas = total_of_panen
