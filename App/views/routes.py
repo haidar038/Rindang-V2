@@ -312,7 +312,7 @@ def dataproduksi():
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
     user = User.query.filter_by(id=current_user.id).first()
-    kel = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
+    kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
     print(kel.id)
 

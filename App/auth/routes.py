@@ -23,7 +23,7 @@ def adminLogin():
         if current_user.account_type == 'admin':
             return redirect(url_for('admin_page.index'))
         elif current_user.account_type == 'user':
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.index'))
     
     if request.method == 'POST':
         username = request.form['username']
