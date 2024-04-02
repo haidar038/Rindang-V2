@@ -299,7 +299,7 @@ def dataproduksi():
         # jumlahPanen = request.form['jumlahPanen']
         # tglPanen = request.form['tglPanen']
 
-        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status='Penanaman', jml_panen=0, tanggal_panen=0, user_id=1)
+        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status='Penanaman', jml_panen=0, tanggal_panen=0, user_id=current_user.id)
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
