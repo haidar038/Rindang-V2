@@ -303,7 +303,7 @@ def dataproduksi():
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
-        flash('Berhasil posting cerita!', 'success')
+        flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
     return render_template('dashboard/data-pangan.html', user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
