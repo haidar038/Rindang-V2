@@ -235,6 +235,7 @@ def penjualan():
 def dataproduksi():
     user_data = User.query.filter_by(id=current_user.id).first()
     pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
+    kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
     total_panen = []
 
@@ -313,8 +314,6 @@ def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
     user = User.query.filter_by(id=current_user.id).first()
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
-
-    print(kel.id)
 
     updateProd = request.form['updateProduksi']
 
