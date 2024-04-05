@@ -8,8 +8,7 @@
                 <h1 class="text-dark-emphasis mb-1">
                     <strong>Selamat Datang Admin</strong>
                 </h1>
-                <p>Dashboard khusus Admin untuk monitoring perkembangan produksi setiap kelurahan yang bermitra di
-                    program RINDANG</p>
+                <p>Dashboard khusus Admin untuk monitoring perkembangan produksi setiap kelurahan yang bermitra di program RINDANG</p>
             </div>
         </div>
         <h4 class="text-dark-emphasis mb-4">
@@ -19,8 +18,7 @@
             <div class="row align-items-start">
                 <div class="col-12 col-lg-6">
                     <a href="#" target="_blank" class="link-dark">
-                        <div
-                            class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
+                        <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
                             <div class="d-flex gap-3 align-items-center">
                                 <div class="d-block">
                                     <div class="text-white display-6 card-icons-yellow-fill p-3 rounded-3 text-dark">
@@ -39,12 +37,11 @@
                 </div>
                 <div class="col-12 col-lg-6">
                     <a href="#" target="_blank" class="link-dark">
-                        <div
-                            class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
+                        <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
                             <div class="d-flex gap-3 align-items-center">
                                 <div class="d-block">
                                     <div class="text-white display-6 card-icons-red-fill p-3 rounded-3 text-dark">
-                                        <strong>{{total_panen/1000}} <sup>kg</sup></strong>
+                                        <strong>{{total_panen}} <sup>kg</sup></strong>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
@@ -85,25 +82,24 @@
                                     <div><strong>{{data_kel.kebun}} Kebun</strong></div>
                                 </td>
                                 <td>
-                                    <div><strong>
-                                            {% if data_kel.jml_panen %}
-                                            {{ data_kel.jml_panen/1000 }} kg
-                                            {% else %}
-                                            0 kg
-                                            {% endif %}
-                                        </strong></div>
+                                    <div><strong> {% if data_kel.jml_panen %} {{ data_kel.jml_panen/1000 }} kg {% else %} 0 kg {% endif %} </strong></div>
                                     <div class="small"></div>
                                 </td>
                                 <td class="border-bottom-0 align-middle">
-                                    <div class="dropdown">
-                                        <button class="btn btn-light" type="button" data-bs-toggle="dropdown"
-                                            aria-expanded="false"><i class="ti ti-dots-vertical"></i></button>
-                                        <ul class="dropdown-menu">
-                                            <li><a target="_blank" class="dropdown-item"
-                                                    href="{{ url_for('admin_page.report' ) }}">Download Laporan</a></li>
-                                            <li><a class="dropdown-item" href="#">Lihat Statistik</a></li>
-                                        </ul>
-                                    </div>
+                                    <a
+                                        href="{{ url_for('admin_page.report', id=data_kel.id ) }}"
+                                        role="button"
+                                        target="_blank"
+                                        class="btn btn-green fs-5"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-custom-class="custom-tooltip"
+                                        data-bs-title="Export Laporan"
+                                        ><i class="ti ti-download"></i
+                                    ></a>
+                                    <a href="#" target="_blank" role="button" class="btn btn-yellow fs-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Lihat Statistik"
+                                        ><i class="ti ti-chart-line"></i
+                                    ></a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -114,10 +110,12 @@
         </div>
     </div>
 
-    <!-- <div class="py-6 px-6 text-center">
-<p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank"
-class="pe-1 text-primary text-decoration-underline">AdminMart.com</a></p>
-</div> -->
+    <!-- TOOLTIPS -->
+
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
 </div>
 
 {% endblock %}

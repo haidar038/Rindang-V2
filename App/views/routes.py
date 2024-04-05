@@ -17,11 +17,11 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
-    # if current_user.is_authenticated:
-    #     if current_user.account_type == 'admin':
-    #         return redirect(url_for('admin_page.dashboard'))
-    #     elif current_user.account_type == 'user':
-    #         return redirect(url_for('views.dashboard'))
+    if current_user.is_authenticated:
+        if current_user.account_type == 'admin':
+            return redirect(url_for('admin_page.index'))
+        elif current_user.account_type == 'user':
+            return redirect(url_for('views.dashboard'))
 
     # if request.method == 'POST':
     #     email = request.form['emailAddress']
