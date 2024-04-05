@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for, jsonify, session, send_file
+from flask import Blueprint, request, render_template, flash, redirect, url_for, make_response
 from flask_login import login_required, logout_user, login_user, current_user
 from datetime import datetime
 import pdfkit
@@ -24,7 +24,7 @@ def index():
         total_panen.append(panenTotal)
 
     for total in kelurahan:
-        kebunTotal = total.kebun
+        kebunTotal = int(total.kebun)  # Konversi ke integer
         kebun.append(kebunTotal)
 
     total_of_panen = sum(total_panen)
@@ -38,9 +38,21 @@ def index():
 def report():
     today = datetime.utcnow()
 
-    if request.method == ['POST']:
-        html_string = request.form.get('.report')
-        pdf = pdfkit.from_string(html_string, False)
+    if request.method == 'POST':
+        # Get the HTML content of the div with id "report"
+        report_html = request.form['report_html']
 
-        return send_file(pdf, mimetype='application/pdf', download_name='laporan.pdf')
+        path_to_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'  # Replace with your path
+        pdfkit.from_string(report_html, False, configuration=pdfkit.configuration(wkhtmltopdf=path_to_wkhtmltopdf))
+
+        # Generate PDF using pdfkit
+        pdf = pdfkit.from_string(report_html, False)
+
+        # Create a response with the PDF data
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+        return response
+
     return render_template('admin-dashboard/laporan.html', today=today)

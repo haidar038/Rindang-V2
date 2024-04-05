@@ -6,7 +6,6 @@
         <title>Laporan</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
         <style>
             @import url("https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/plus-jakarta-display.min.css");
 
@@ -21,43 +20,82 @@
             body {
                 height: 100%;
             }
-
-            .report {
-                height: 297mm;
-                width: 210mm;
-                padding: 100px;
-            }
         </style>
     </head>
 
-    <body class="d-flex flex-column align-items-center bg-secondary">
-        <div class="my-4">
-            <button type="button" class="btn btn-dark mb-2" id="cmd">Download</button>
-            <div class="report bg-light" id="report">
-                <div class="d-flex justify-content-between align-items-center">
-                    <img class="mb-3" src="{{ url_for('static', filename='logo/rindang-logo-green.svg' ) }}" alt="" />
-                    <div class="small text-muted">{{today}}</div>
+    <body class="p-3 bg-secondary">
+        <div class="container">
+            <div class="row">
+                <div class="d-flex gap-3 mb-3">
+                    <button type="button" class="btn btn-dark" id="openFrame">Open iFrame</button>
+                    <button type="button" class="btn btn-dark" id="reportBtn1">Download PDF</button>
                 </div>
-                <div class="h4 text-center">Report Rindang</div>
+                <div class="col-lg-6 col-12">
+                    <div class="report bg-light" id="report">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <img class="mb-3" src="{{ url_for('static', filename='logo/rindang-logo-green.svg' ) }}" alt="" />
+                            <div class="small text-muted">{{today}}</div>
+                        </div>
+                        <div class="h4 text-center">Report Rindang</div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-12">
+                    <iframe id="frame" style="width: 100%; border: 0; height: 0" src=""></iframe>
+                </div>
+                <div class="receipt-wrap" id="content"></div>
             </div>
-            <div id="editor"></div>
         </div>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+            integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+
         <script>
-            // Default export is a4 paper, portrait, using millimeters for units
-            const doc = new jsPDF();
+            jQuery(document).ready(function () {
+                //////////////
+                //////////////
+                $("#openFrame").click(function () {
+                    // window.print();
 
-            var specialElementHandlers = {
-                "#editor": function (element, renderer) {
-                    return true;
-                },
-            };
-
-            $("#cmd").click(function () {
-                doc.fromHTML($("#report").html(), 15, 15, {
-                    width: 170,
-                    elementHandlers: specialElementHandlers,
+                    let wspFrame = document.getElementById("frame").contentWindow;
+                    wspFrame.focus();
+                    wspFrame.print();
                 });
-                doc.save("sample-file.pdf");
+                //////////////
+                //////////////
+
+                $("#reportBtn1").click(function () {
+                    html2canvas(document.querySelector("#content")).then((canvas) => {
+                        let base64image = canvas.toDataURL("image/png");
+                        // console.log(base64image);
+                        let pdf = new jsPDF("p", "px", [1600, 1131]);
+                        pdf.addImage(base64image, "PNG", 15, 15, 1110, 360);
+                        pdf.save("webtylepress-two.pdf");
+                    });
+                });
+                //////////////
+                //////////////
+                $("#reportBtn").click(function () {
+                    html2canvas(document.querySelector("iframe").contentWindow.document.querySelector(".report")).then((canvas) => {
+                        let base64image = canvas.toDataURL("image/png");
+                        // console.log(base64image);
+                        let pdf = new jsPDF("p", "px", [1600, 1131]);
+                        pdf.addImage(base64image, "PNG", 15, 15, 1140, 966);
+                        pdf.save("webtylepress-receipt.pdf");
+                    });
+                });
+                //////////////
+                //////////////
             });
         </script>
     </body>
