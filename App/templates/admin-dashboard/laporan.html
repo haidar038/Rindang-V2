@@ -42,12 +42,13 @@
                 </div>
                 <div class="h4 text-center mb-4">Report Rindang</div>
                 <div><strong>Kelurahan</strong> : {{ kel.nama }}</div>
-                <div><strong>Jumlah Kebun</strong> : {{ kel.kebun }}</div>
+                <div><strong>Jumlah Kebun</strong> : {{ kel.kebun }} Kebun</div>
                 <table class="table mt-4 mb-4">
                     <thead class="table-success">
                         <tr class="text-center">
                             <th scope="col">#</th>
                             <th scope="col">Kebun</th>
+                            <th scope="col">Komoditas</th>
                             <th scope="col">Tanggal</th>
                             <th scope="col">Jumlah Panen</th>
                         </tr>
@@ -57,6 +58,7 @@
                         <tr class="text-center">
                             <th scope="row">{{ loop.index }}</th>
                             <td>{{ komoditas.kebun }}</td>
+                            <td>{{ komoditas.komoditas }}</td>
                             <td>{{ komoditas.tanggal_panen }}</td>
                             <td>{{ round_numb(komoditas.jml_panen/1000, 1) }} kg</td>
                         </tr>
@@ -79,6 +81,8 @@
         ></script>
 
         <script>
+            let filename = "{{kel.nama}}";
+
             jQuery(document).ready(function () {
                 function generatePDFfromDiv(divId) {
                     const element = document.getElementById(divId);
@@ -110,7 +114,7 @@
                             format: "a4", // Ukuran halaman A4
                         });
                         pdf.addImage(base64image, "JPEG", 0, 0, 210, 297); // Menyesuaikan dimensi gambar dengan ukuran halaman
-                        pdf.save("webtylepress-two.pdf");
+                        pdf.save("Report of " + filename + ".pdf");
                     });
                 });
 

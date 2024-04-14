@@ -41,7 +41,7 @@
                             <div class="d-flex gap-3 align-items-center">
                                 <div class="d-block">
                                     <div class="text-white display-6 card-icons-red-fill p-3 rounded-3 text-dark">
-                                        <strong>{{total_panen}} <sup>kg</sup></strong>
+                                        <strong>{{round_num(total_panen/1000, 1)}} <sup>kg</sup></strong>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
@@ -82,24 +82,11 @@
                                     <div><strong>{{data_kel.kebun}} Kebun</strong></div>
                                 </td>
                                 <td>
-                                    <div><strong> {% if data_kel.jml_panen %} {{ data_kel.jml_panen/1000 }} kg {% else %} 0 kg {% endif %} </strong></div>
-                                    <div class="small"></div>
+                                    <div><strong>{{ round_num(total_panen_per_kelurahan[data_kel.id]/1000, 1) }} kg</strong></div>
                                 </td>
                                 <td class="border-bottom-0 align-middle">
-                                    <a
-                                        href="{{ url_for('admin_page.report', id=data_kel.id ) }}"
-                                        role="button"
-                                        target="_blank"
-                                        class="btn btn-green fs-5"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-custom-class="custom-tooltip"
-                                        data-bs-title="Export Laporan"
-                                        ><i class="ti ti-download"></i
-                                    ></a>
-                                    <a href="#" target="_blank" role="button" class="btn btn-yellow fs-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Lihat Statistik"
-                                        ><i class="ti ti-chart-line"></i
-                                    ></a>
+                                    <a id="dwldBtn" href="{{ url_for('admin_page.report', id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"><i class="ti ti-download"></i></a>
+                                    <a id="statBtn" href="#" target="_blank" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -113,8 +100,12 @@
     <!-- TOOLTIPS -->
 
     <script>
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+        tippy("#dwldBtn", {
+            content: "Export Laporan",
+        });
+        tippy("#statBtn", {
+            content: "Lihat Statistik",
+        });
     </script>
 </div>
 

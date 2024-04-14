@@ -130,13 +130,11 @@ html {
 .btn-red {
     background-color: var(--red) !important;
     border: 1px solid var(--red) !important;
-    color: white !important;
 }
 
 .btn-yellow {
     background-color: var(--yellow) !important;
     border: 1px solid var(--yellow) !important;
-    color: white !important;
 }
 
 .btn-green {

@@ -1,46 +1,90 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, jsonify, session
-from flask_login import login_required, logout_user, login_user, current_user
-from flask_admin.base import BaseView, expose, AdminIndexView, Admin
-from flask_socketio import emit, join_room, leave_room, send, rooms
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import login_required, current_user
+from flask_admin.base import expose, AdminIndexView, Admin
+from werkzeug.security import check_password_hash
 from sqlalchemy import asc
 from datetime import datetime, timedelta
 from babel.numbers import format_currency
-from xml.etree import ElementTree as ET
-import urllib.request
-import json, requests
+import json, requests, ast
 
 from App.models import User, DataPangan, Kelurahan
-from App import db, admin, login_manager, socketio
+from App import db
 
 views = Blueprint('views', __name__)
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
+    kelurahan = Kelurahan.query.all()
+    produksi = DataPangan.query.all()
+
     if current_user.is_authenticated:
         if current_user.account_type == 'admin':
             return redirect(url_for('admin_page.index'))
         elif current_user.account_type == 'user':
             return redirect(url_for('views.dashboard'))
 
-    # if request.method == 'POST':
-    #     email = request.form['emailAddress']
-    #     password = request.form['userPassword']
-        
-    #     user = User.query.filter_by(email=email).first()
+    today = datetime.today()
+    kab_kota = 458 #Ternate
+    komoditas_id = 3
+    one_week_ago = today - timedelta(days=7)
 
-    #     if user and check_password_hash(user.password, password):
-    #         session['account_type'] = 'user'
-    #         flash("Berhasil Masuk!", category='success')
-    #         login_user(user, remember=True)
-    #         return redirect(url_for('views.dashboard'))
-    #     elif user is None:
-    #         flash(f"Akun dengan email {email} tidak ditemukan. Silakan daftar terlebih dahulu!",'warning')
-    #         return redirect(url_for('auth.login'))
-    #     else:
-    #         flash("Kata sandi salah, coba lagi.", 'error')
-    #         return redirect(url_for('auth.login'))
-    return render_template('index.html')
+    # Format dates as YYYY-MM-DD
+    start_date = one_week_ago.strftime("%Y-%m-%d")
+    end_date = today.strftime("%Y-%m-%d")
+
+    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    data = response.json()
+
+    target = ["Cabai Merah Keriting"]
+
+    data_harga = []
+    nama_komoditas = []
+
+    for item in data["data"]:
+        if item["name"] in target:
+            komoditas = item["by_date"]
+            data_harga.append(komoditas)
+            nama_komoditas.append(item['name'])
+
+    table_data = []
+
+    for item in data["data"]:
+        for date_data in item["by_date"]:
+            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d/%m/%Y")
+
+            # Handle cases where geomean is '-'
+            geomean_value = date_data["geomean"]
+            if geomean_value == "-":
+                formatted_price = "-"
+            else:
+                geomean_float = float(geomean_value)
+
+                # Remove decimal places
+                # geomean_no_decimals = int(geomean_float)
+
+                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                formatted_price = formatted_price[:-3]
+
+            table_data.append({
+                "date": formatted_date,
+                "name": item["name"],
+                "price": formatted_price
+            })
+    
+    data_tanggal = []
+
+    total_kebun = sum(kel.kebun for kel in kelurahan)
+    total_panen = sum(prod.jml_panen for prod in produksi)
+
+    for date_str in data['meta']['date']:
+        data_tanggal.append(date_str)
+
+    return render_template('index.html', table_data=table_data, kebun=total_kebun, produksi=total_panen, round=round)
 
 # @views.route('/beranda', methods=['GET', 'POST'])
 # @login_required
@@ -235,7 +279,7 @@ def penjualan():
 def dataproduksi():
     user_data = User.query.filter_by(id=current_user.id).first()
     pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
-    kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
+    # kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
     total_panen = []
 
@@ -312,7 +356,6 @@ def dataproduksi():
 @login_required
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
-    user = User.query.filter_by(id=current_user.id).first()
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
     updateProd = request.form['updateProduksi']
@@ -389,7 +432,6 @@ def hargapangan():
             komoditas = item["by_date"]
             data_harga.append(komoditas)
             nama_komoditas.append(item['name'])
-            # print(f"Data untuk {item['name']}:")
     table_data = []
     for item in data["data"]:
         for date_data in item["by_date"]:
