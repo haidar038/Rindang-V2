@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
+from flask_sqlalchemy import pagination
 from flask_admin.base import expose, AdminIndexView, Admin
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import asc
@@ -34,57 +35,64 @@ def index():
 
     url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
 
-    response = requests.get(url)
-    response.raise_for_status()
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
 
-    data = response.json()
+        data = response.json()
 
-    target = ["Cabai Merah Keriting"]
+        target = ["Cabai Merah Keriting"]
 
-    data_harga = []
-    nama_komoditas = []
+        data_harga = []
+        nama_komoditas = []
 
-    for item in data["data"]:
-        if item["name"] in target:
-            komoditas = item["by_date"]
-            data_harga.append(komoditas)
-            nama_komoditas.append(item['name'])
+        for item in data["data"]:
+            if item["name"] in target:
+                komoditas = item["by_date"]
+                data_harga.append(komoditas)
+                nama_komoditas.append(item['name'])
 
-    table_data = []
+        table_data = []
 
-    for item in data["data"]:
-        for date_data in item["by_date"]:
-            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
-            formatted_date = date_obj.strftime("%d/%m/%Y")
+        for item in data["data"]:
+            for date_data in item["by_date"]:
+                date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+                formatted_date = date_obj.strftime("%d/%m/%Y")
 
-            # Handle cases where geomean is '-'
-            geomean_value = date_data["geomean"]
-            if geomean_value == "-":
-                formatted_price = "-"
-            else:
-                geomean_float = float(geomean_value)
+                # Handle cases where geomean is '-'
+                geomean_value = date_data["geomean"]
+                if geomean_value == "-":
+                    formatted_price = "-"
+                else:
+                    geomean_float = float(geomean_value)
 
-                # Remove decimal places
-                # geomean_no_decimals = int(geomean_float)
+                    # Remove decimal places
+                    # geomean_no_decimals = int(geomean_float)
 
-                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                formatted_price = formatted_price[:-3]
+                    formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                    formatted_price = formatted_price[:-3]
 
-            table_data.append({
-                "date": formatted_date,
-                "name": item["name"],
-                "price": formatted_price
-            })
-    
-    data_tanggal = []
+                table_data.append({
+                    "date": formatted_date,
+                    "name": item["name"],
+                    "price": formatted_price
+                })
+
+        data_tanggal = []
+
+        for date_str in data['meta']['date']:
+            data_tanggal.append(date_str)
+
+    except requests.exceptions.RequestException as e:
+        # Handle request errors gracefully (e.g., network issues, server errors)
+        flash(f"Error fetching data: {e}", category='error')
+        table_data = []  # Set table_data to empty list in case of errors
 
     total_kebun = sum(kel.kebun for kel in kelurahan)
     total_panen = sum(prod.jml_panen for prod in produksi)
 
-    for date_str in data['meta']['date']:
-        data_tanggal.append(date_str)
-
     return render_template('index.html', table_data=table_data, kebun=total_kebun, produksi=total_panen, round=round)
+
 
 # @views.route('/beranda', methods=['GET', 'POST'])
 # #@login_required
@@ -281,6 +289,9 @@ def dataproduksi():
     pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
+    page = request.args.get('page', 1, type=int)  # Get page number from query string
+    per_page = 7  # Number of items per page
+
     total_panen = []
 
     for total in pangan:
@@ -290,8 +301,9 @@ def dataproduksi():
     # Persentase Kenaikan Produksi Pangan
     # kenaikan = round(((total_panen[-2] - total_panen[-1])/total_panen[-1])*100) if not 0 in total_panen else 0
 
-    cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
-    tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
+    cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
+    tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
+
     stat_cabai = []
     stat_tomat = []
     tgl_panen_cabai = []
@@ -351,6 +363,64 @@ def dataproduksi():
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
     return render_template('dashboard/data-pangan.html', kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+
+@views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
+#@login_required
+def import_data_pangan():
+    from openpyxl import load_workbook
+
+    if request.method == 'POST':
+        import_type = request.form['import_type']
+        excel_file = request.files['excel_file'] 
+
+        if excel_file:
+            wb = load_workbook(excel_file)
+            sheet = wb.active
+
+            for row in sheet.iter_rows(min_row=2):
+                kebun = row[0].value
+                komoditas = row[1].value
+                jml_bibit = row[2].value
+                tanggal_bibit = row[3].value.strftime('%Y-%m-%d') if isinstance(row[3].value, datetime) else row[3].value 
+
+                if import_type == 'penanaman':
+                    data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
+                                            jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
+                                            status='Penanaman', jml_panen=0, tanggal_panen=0, 
+                                            user_id=current_user.id)
+                elif import_type == 'panen':
+                    jml_panen = row[4].value 
+                    tanggal_panen = row[5].value.strftime('%Y-%m-%d') if isinstance(row[5].value, datetime) else row[5].value
+
+                    data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
+                                            jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
+                                            status='Panen', jml_panen=jml_panen, tanggal_panen=tanggal_panen, 
+                                            user_id=current_user.id)
+                else:
+                    flash('Tipe impor tidak valid!', 'error')
+                    return redirect(url_for('views.import_data_pangan'))
+
+                db.session.add(data_pangan)
+
+            db.session.commit()
+            flash('Data berhasil diimpor!', 'success')
+            return redirect(url_for('views.dataproduksi'))
+
+    return render_template('dashboard/import_data.html')
+
+@views.route('/dashboard/data-pangan/delete_selected', methods=['POST'])
+#@login_required
+def delete_selected_data_pangan():
+    delete_ids = request.form.getlist('delete_ids')  # Get list of selected IDs
+
+    if delete_ids:
+        DataPangan.query.filter(DataPangan.id.in_(delete_ids)).delete(synchronize_session=False)
+        db.session.commit()
+        flash('Data yang dipilih berhasil dihapus!', 'success')
+    else:
+        flash('Tidak ada data yang dipilih!', 'warning')
+
+    return redirect(url_for('views.dataproduksi'))
 
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
 #@login_required
@@ -508,33 +578,27 @@ def updateprofil(id):
             user.pekerjaan = request.form['pekerjaan']
             user.kelamin = request.form['kelamin']
             user.bio = request.form['bio']
+
             if not kelurahan:
-                add_kelurahan = Kelurahan(user_id=current_user.id)
+                add_kelurahan = Kelurahan(user_id=id)
                 db.session.add(add_kelurahan)
                 db.session.commit()
                 flash('Profil Berhasil Diubah', 'success')
                 return redirect(url_for('views.profil'))
-            else:
-                user.kelurahan_id = kelurahan.id
-                db.session.commit()
-                flash('Profil Berhasil diubah!', 'success')
-                return redirect(url_for('views.profil'))
+
     elif form_type == 'Data Kelurahan':
         if request.method == 'POST':
-            if not kelurahan:
-                add_kelurahan = Kelurahan(nama=request.form['kelurahan'], user_id=current_user.id)
-                db.session.add(add_kelurahan)
-                db.session.commit()
-                flash('Profil Berhasil Diubah', 'success')
-                return redirect(url_for('views.profil'))
-            else:
+            if kelurahan:  # Check if kelurahan exists before updating
                 kelurahan.nama = request.form['kelurahan']
                 kelurahan.kebun = request.form['kebun']
                 kelurahan.luas_kebun = request.form['luaskebun']
                 user.kelurahan_id = kelurahan.id
                 db.session.commit()
-                flash('Profil Berhasil diubah!', 'success')
-                return redirect(url_for('views.profil'))
+            else:
+                flash('Tidak ada data kelurahan untuk diperbaharui!', 'danger')  # Flash error message
+
+            flash('Profil Berhasil diubah!', 'success')
+            return redirect(url_for('views.profil'))
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 #@login_required
@@ -565,8 +629,8 @@ def resetprofil(id):
 
     if kelurahan:
         db.session.delete(kelurahan)
+        db.session.add(Kelurahan(user_id=id))
         db.session.commit()
-
         flash('Profil anda berhasil direset!', 'warning')
         return redirect(url_for('views.profil'))
     else:

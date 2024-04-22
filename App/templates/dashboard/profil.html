@@ -79,7 +79,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="d-flex gap-3">
+                            <div class="d-flex flex-column flex-lg-row column-gap-3">
                                 <button id="updateKelBtn" type="button" class="btn btn-green rounded-4 w-auto" data-bs-toggle="modal" data-bs-target="#updateKel">Ubah Informasi Kelurahan</button>
                                 <button id="resetProfileBtn" type="button" class="btn btn-outline-dark rounded-4 w-auto" data-bs-toggle="modal" data-bs-target="#resetProfile">Reset Informasi Kelurahan</button>
                             </div>
@@ -190,11 +190,11 @@
                         <div class="row">
                             <div class="col">
                                 <label for="kebun" class="form-label fw-bold fs-4">Jumlah Kebun</label>
-                                <input class="form-control" type="number" name="kebun" id="kebun" placeholder="contoh : 3" value="{{ user.username }}" />
+                                <input class="form-control" type="number" name="kebun" id="kebun" placeholder="contoh : 3" value="{{ kelurahan.kebun }}" />
                             </div>
                             <div class="col">
                                 <label for="luaskebun" class="form-label fw-bold fs-4">Luas Lahan</label>
-                                <input class="form-control" type="number" name="luaskebun" id="luaskebun" placeholder="contoh : 12" value="{{ user.username }}" />
+                                <input class="form-control" type="number" name="luaskebun" id="luaskebun" placeholder="contoh : 12" value="{{ kelurahan.luas_kebun }}" />
                             </div>
                         </div>
                     </div>

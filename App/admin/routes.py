@@ -18,11 +18,26 @@ def index():
     # Mengakumulasi total panen berdasarkan kelurahan_id
     total_panen_per_kelurahan = defaultdict(int)
     for data in produksi:
-        total_panen_per_kelurahan[data.kelurahan_id] += data.jml_panen
+        try:
+            total_panen_per_kelurahan[data.kelurahan_id] += data.jml_panen
+        except Exception as e:
+            # Menangani error jika terjadi saat menambahkan data ke total_panen_per_kelurahan
+            print(f"Error saat menambahkan data panen ke total_panen_per_kelurahan: {e}")
 
-    total_kebun = sum(kel.kebun for kel in kelurahan)
-    total_panen = sum(prod.jml_panen for prod in produksi)
-    
+    try:
+        total_kebun = sum(kel.kebun for kel in kelurahan)
+    except Exception as e:
+        # Menangani error jika terjadi saat menghitung total_kebun
+        print(f"Error saat menghitung total kebun: {e}")
+        total_kebun = 0
+
+    try:
+        total_panen = sum(prod.jml_panen for prod in produksi)
+    except Exception as e:
+        # Menangani error jika terjadi saat menghitung total_panen
+        print(f"Error saat menghitung total panen: {e}")
+        total_panen = 0
+
     if not current_user.is_authenticated:
         redirect(url_for('views.adminLogin'))
     return render_template('admin-dashboard/index.html', user=user, kelurahan=kelurahan, produksi=produksi, total_panen_per_kelurahan=total_panen_per_kelurahan, total_kebun=total_kebun, total_panen=total_panen, round_num=round)

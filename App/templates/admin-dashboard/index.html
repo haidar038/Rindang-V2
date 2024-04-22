@@ -66,31 +66,33 @@
                         <h4 class="text-dark-emphasis mb-3">
                             <strong>Data & Informasi Kelurahan</strong>
                         </h4>
-                        <table class="table table-bordered">
-                            <tr class="bg-green text-light text-center">
-                                <th>#</th>
-                                <th>Kelurahan</th>
-                                <th>Jumlah Kebun</th>
-                                <th>Jumlah Panen Total</th>
-                                <th>Action</th>
-                            </tr>
-                            {% for data_kel in kelurahan %}
-                            <tr class="text-center align-middle">
-                                <td>{{loop.index}}</td>
-                                <td><strong>{{data_kel.nama}}</strong></td>
-                                <td>
-                                    <div><strong>{{data_kel.kebun}} Kebun</strong></div>
-                                </td>
-                                <td>
-                                    <div><strong>{{ round_num(total_panen_per_kelurahan[data_kel.id]/1000, 2) }} kg</strong></div>
-                                </td>
-                                <td class="border-bottom-0 align-middle">
-                                    <a id="dwldBtn" href="{{ url_for('admin_page.report', id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"><i class="ti ti-download"></i></a>
-                                    <a id="statBtn" href="#" target="_blank" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tr class="bg-green text-light text-center">
+                                    <th>#</th>
+                                    <th>Kelurahan</th>
+                                    <th>Jumlah Kebun</th>
+                                    <th>Jumlah Panen Total</th>
+                                    <th>Action</th>
+                                </tr>
+                                {% for data_kel in kelurahan %}
+                                <tr class="text-center align-middle">
+                                    <td>{{loop.index}}</td>
+                                    <td><strong>{{data_kel.nama}}</strong></td>
+                                    <td>
+                                        <div><strong>{{data_kel.kebun}} Kebun</strong></div>
+                                    </td>
+                                    <td>
+                                        <div><strong>{{ round_num(total_panen_per_kelurahan[data_kel.id]/1000, 2) }} kg</strong></div>
+                                    </td>
+                                    <td class="border-bottom-0 align-middle gap-2 d-sm-flex d-lg-block">
+                                        <a id="dwldBtn" href="{{ url_for('admin_page.report', id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"><i class="ti ti-download"></i></a>
+                                        <a id="statBtn" href="#" target="_blank" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
