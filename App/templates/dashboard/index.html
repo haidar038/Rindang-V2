@@ -1,0 +1,139 @@
+{% extends 'dashboard/layout.html' %} {% block page_title %} Dashboard {% endblock %} {% block container %}
+<div class="container-fluid">
+    <!--  Row 1 -->
+    <div class="row">
+        <div class="col-lg-12 d-flex align-items-strech">
+            <div class="d-flex flex-column mb-3">
+                <h1 class="text-dark-emphasis mb-1">
+                    <strong>Selamat Datang</strong>
+                </h1>
+                <p>Dashboard satu pintu untuk kolaborasi dan pemantauan aktivitas Rindang</p>
+            </div>
+        </div>
+        <h4 class="text-dark-emphasis mb-4">
+            <strong>Data & Informasi Umum Rindang</strong>
+        </h4>
+        <div class="col-lg-12">
+            <div class="row align-items-start">
+                <div class="col-12 col-lg-6">
+                    <a href="{{ url_for('views.hargapangan' ) }}" target="_blank" class="link-dark">
+                        <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="d-block">
+                                    <i class="fa-solid fa-rupiah-sign display-4 card-icons-yellow-fill p-3 rounded-3 text-dark"></i>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h3 class="text-yellow fw-bold">
+                                        <strong>Harga Pangan</strong>
+                                    </h3>
+                                    <p class="mb-0 align-middle fs-3">
+                                        Informasi harga pangan di pasaran
+                                        <i class="ti ti-arrow-right align-middle"></i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <a href="{{ url_for('views.dataproduksi' ) }}" target="_blank" class="link-dark">
+                        <div class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="d-block">
+                                    <i class="fa-solid fa-seedling text-white display-4 card-icons-red-fill p-3 rounded-3 text-dark"></i>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h3 class="text-red fw-bold">
+                                        <strong>Jumlah Panen</strong>
+                                    </h3>
+                                    <p class="mb-0">
+                                        Informasi jumlah panen di kelurahan
+                                        <i class="ti ti-arrow-right align-middle"></i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- <div class="col-12 col-lg-4">
+                    <a href="{{ url_for('views.penjualan' ) }}" class="link-dark">
+                        <div
+                            class="card card-body border-0 shadow border border-dark border-opacity-25 border-1 rounded-4">
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="d-block">
+                                    <i
+                                        class="ti ti-shopping-bag display-4 card-icons-green-fill p-3 rounded-3 text-dark"></i>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h3 class="text-green fw-bold">
+                                        <strong>Penjualan</strong>
+                                    </h3>
+                                    <p class="mb-0">
+                                        Informasi penjualan per bulan dan komunikasi petani
+                                        <i class="ti ti-arrow-right align-middle"></i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex mb-4 justify-content-between align-items-start">
+                        <div class="">
+                            <h4 class="text-dark-emphasis">
+                                <strong>Lengkapi Profil Kamu!</strong>
+                            </h4>
+                            <p>Lengkapi profil anda untuk mengakses fitur di bawah</p>
+                        </div>
+                        <a href="#" class="btn btn-green btn-lg d-flex">Lengkapi Profil &rarr;</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-4">
+                            <div class="card card-body border border-dark border-opacity-25 border-1 rounded-4">
+                                <div class="disabled">
+                                    <i class="ti ti-haze display-4"></i>
+                                    <p class="fs-6"><strong>Pantauan Cuaca</strong></p>
+                                    <p>
+                                        Monitoring kondisi cuaca secara
+                                        <em>real-time</em> dan berkala
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="card card-body border border-dark border-opacity-25 border-1 rounded-4">
+                                <div class="disabled">
+                                    <i class="ti ti-message display-4"></i>
+                                    <p class="fs-6"><strong>Forum</strong></p>
+                                    <p>Ikut serta dalam ruang obrolan untuk saling berbagi antar petani Rindang lainnya</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="card card-body border border-dark border-opacity-25 border-1 rounded-4">
+                                <div class="disabled">
+                                    <i class="ti ti-article display-4"></i>
+                                    <p class="fs-6"><strong>Artikel</strong></p>
+                                    <p>Berbagai informasi menarik mengenai pengolahan, perawatan dan lain-lain</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <div class="py-6 px-6 text-center">
+<p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank"
+class="pe-1 text-primary text-decoration-underline">AdminMart.com</a></p>
+</div> -->
+</div>
+
+{% endblock %}

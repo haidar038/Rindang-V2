@@ -1,0 +1,6 @@
+venv
+App/static/js
+App/venv
+__pycache__
+instance
+rindang_digifarm.db
