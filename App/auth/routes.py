@@ -33,11 +33,8 @@ def adminLogin():
 
         if admin_user and check_password_hash(admin_user.password, password):
             session['account_type'] = 'admin'
-
-            print("Anda berhasil masuk!")
-            flash("Anda berhasil masuk!", category="success")
             login_user(admin_user, remember=True)
-            print(session['account_type'])
+            flash("Anda berhasil masuk!", category="success")
             return redirect(url_for('admin_page.index'))
         elif admin_user is None:
             flash(f"Akun dengan username {username} tidak ditemukan. Mungkin anda telah menggantinya!", category='warning')
@@ -63,9 +60,8 @@ def login():
 
         if user and check_password_hash(user.password, password):
             session['account_type'] = 'user'
-            flash("Berhasil Masuk!", category='success')
             login_user(user, remember=True)
-            print(session['account_type'])
+            flash("Berhasil Masuk!", category='success')
             return redirect(url_for('views.dashboard'))
         elif user is None:
             flash("Akun anda belum terdaftar, silakan daftar terlebih dahulu", category='warning')
