@@ -266,16 +266,12 @@ def index():
 @views.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    user_data = User.query.all()
-    pangan = DataPangan.query.all()
-    return render_template('dashboard/index.html', user_data=user_data, pangan=pangan)
-    # if current_user.is_authenticated:
-    # else:
-    #     return redirect(url_for('auth.login'))
-        # chat = Chat.query.filter_by(read=False).all()
-        # chat_counts = {user.room_id: sum(1 for chats in chat if chats.room_id == user.room_id and chats.read == False) for user in user_data}
-    # elif current_user.is_authenticated and current_user.account_type == 'user':
-    #     return redirect(url_for('views.home'))
+    if current_user.account_type == 'user':
+        pass
+    elif current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+    
+    return render_template('dashboard/index.html')
 
 @views.route('/dashboard/penjualan')
 @login_required
@@ -285,6 +281,9 @@ def penjualan():
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 @login_required
 def dataproduksi():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+
     user_data = User.query.filter_by(id=current_user.id).first()
     pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
@@ -304,17 +303,20 @@ def dataproduksi():
     cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
     tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
 
+    allDataCabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
+    allDataTomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
+
     stat_cabai = []
     stat_tomat = []
     tgl_panen_cabai = []
     tgl_panen_tomat = []
 
-    for panenCabai in cabai:
+    for panenCabai in allDataCabai:
         totalCabai = panenCabai.jml_panen
         tglPanenCabai = panenCabai.tanggal_panen
         stat_cabai.append(totalCabai)
         tgl_panen_cabai.append(tglPanenCabai)
-    for panenTomat in tomat:
+    for panenTomat in allDataTomat:
         totalTomat = panenTomat.jml_panen
         tglPanenTomat = panenTomat.tanggal_panen
         stat_tomat.append(totalTomat)
@@ -362,11 +364,14 @@ def dataproduksi():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
 @login_required
 def import_data_pangan():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+    
     from openpyxl import load_workbook
 
     if request.method == 'POST':
@@ -477,6 +482,9 @@ def updatepangan(id):
 @views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
 @login_required
 def hargapangan():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+
     today = datetime.today()
     kab_kota = 458 #Ternate
     komoditas_id = 3
@@ -559,6 +567,9 @@ def delete_data_pangan(id):
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
 @login_required
 def profil():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+
     user = User.query.filter_by(id=current_user.id).first()
     kelurahan = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
     return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
@@ -603,6 +614,9 @@ def updateprofil(id):
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 @login_required
 def settings():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+
     user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/settings.html', user=user)
 

@@ -139,6 +139,6 @@
 .form-check-input:disabled,
 .form-control:disabled,
 .form-select:disabled {
-    border: #dadada; 
+    border: #dadada;
     background-color: #dadada;
 }

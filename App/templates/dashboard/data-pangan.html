@@ -90,8 +90,8 @@
                                             {% endif %}
                                         </span>
                                         <p class="text-dark me-1 fs-3 mb-0 text-wrap">
-                                            {% if kenaikan_cabai > 0 %} + {{ kenaikan_cabai }}% dibandingkan panen sebelumnya {% elif kenaikan_cabai < 0 %} {{ kenaikan_cabai }}% dibandingkan panen sebelumnya {% elif kenaikan_cabai==0 %}
-                                            <em class="text-muted"> <strong>belum ada data perbandingan</strong></em> {% endif %}
+                                            {% if kenaikan_cabai > 0 %} <span class="text-green-dark">+ {{ kenaikan_cabai }}% dibandingkan panen sebelumnya</span> {% elif kenaikan_cabai < 0 %}
+                                            <span class="fw-bold text-red">{{ kenaikan_cabai }}% dibandingkan panen sebelumnya</span> {% elif kenaikan_cabai== 0 %} <em class="text-muted">belum ada data perbandingan</em> {% endif %}
                                         </p>
                                     </div>
                                 </div>
@@ -105,8 +105,9 @@
                                             {% endif %}
                                         </span>
                                         <p class="text-dark me-1 fs-3 mb-0 text-wrap">
-                                            {% if kenaikan_tomat > 0 %} + {{ kenaikan_tomat }}% {% elif kenaikan_tomat < 0 %} {{ kenaikan_tomat }} {% elif kenaikan_tomat==0 %}
-                                            <em class="text-muted"><strong>belum ada data perbandingan</strong></em> {% endif %}
+                                            {% if kenaikan_tomat > 0 %} <span class="text-green-dark">+ {{ kenaikan_tomat }}% dibandingkan panen sebelumnya</span> {% elif kenaikan_tomat < 0 %}
+                                            <span class="text-red"> {{ kenaikan_tomat }}% dibandingkan panen sebelumnya</span> {% elif kenaikan_tomat== 0 %} <em class="text-muted"><strong>belum ada data perbandingan</strong></em> {% endif
+                                            %}
                                         </p>
                                     </div>
                                 </div>
@@ -309,8 +310,12 @@
                                                 <th class="align-middle text-center">
                                                     <h6 class="fw-semibold mb-0">Menu</h6>
                                                 </th>
-                                                <th>
+                                                <th class="justify-content-center align-items-center d-flex flex-column gap-2">
                                                     <button type="button" class="btn btn-sm btn-danger btn-delete-selected" disabled>Hapus Pilihan</button>
+                                                    <div class="form-check align-middle mb-0">
+                                                        <input class="form-check-input" type="checkbox" value="" id="selectDelAllCabai" />
+                                                        <label class="form-check-label small" for="selectDelAllCabai"> Pilih Semua </label>
+                                                    </div>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -354,100 +359,139 @@
                                             {% endfor %}
                                         </tbody>
                                     </table>
+                                    <nav aria-label="Page navigation for table" class="mt-4">
+                                        <ul class="pagination justify-content-center">
+                                            {% if cabai.has_prev %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.prev_num) }}">Sebelumnya</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Sebelumnya</span>
+                                            </li>
+                                            {% endif %} {% for page_num in cabai.iter_pages() %} {% if page_num %} {% if page_num != cabai.page %}
+                                            <li class="page-item"><a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a></li>
+                                            {% else %}
+                                            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                            {% endif %} {% else %} ... {% endif %} {% endfor %} {% if cabai.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.next_num) }}">Selanjutnya</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#">Selanjutnya</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
                                 </form>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
                             <div class="table-responsive">
-                                <table class="table text-nowrap mb-0 align-middle">
-                                    <thead class="text-dark fs-4">
-                                        <tr>
-                                            <th class="align-middle text-center max-width">
-                                                <h6 class="fw-semibold mb-0">No</h6>
-                                            </th>
-                                            <th class="align-middle text-center">
-                                                <h6 class="fw-semibold mb-0">Kebun</h6>
-                                            </th>
-                                            <th class="align-middle text-center">
-                                                <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
-                                            </th>
-                                            <th class="align-middle text-center">
-                                                <h6 class="fw-semibold mb-0">Tanggal Penanaman</h6>
-                                            </th>
-                                            <th class="align-middle text-center">
-                                                <h6 class="fw-semibold mb-0">Status</h6>
-                                            </th>
-                                            <th class="align-middle text-center">
-                                                <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
-                                            </th>
-                                            <th class="">
-                                                <h6 class="fw-semibold mb-0">Menu</h6>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for data_tomat in tomat %}
-                                        <tr>
-                                            <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-1">{{ data_tomat.kebun }}</h6>
-                                                <!-- <span class="fw-normal">Skala Besar</span> -->
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <p class="mb-0 fw-normal">{{ data_tomat.jml_bibit }}</p>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <p class="mb-0 fw-normal">{{ data_tomat.tanggal_bibit }}</p>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <span class="badge {% if data_tomat.status == 'Panen' %} bg-green {% else %} bg-yellow {% endif %} rounded-3 fw-semibold">{{ data_tomat.status }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <div class="fw-bold">
-                                                    <strong>{{ data_tomat.jml_panen/1000 }}</strong>
-                                                </div>
-                                                <div class="small">{{ data_tomat.tanggal_panen }}</div>
-                                            </td>
-                                            <td class="border-bottom-0 align-middle">
-                                                <a class="btn btn-danger fs-6" href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}"><i class="ti ti-trash"></i></a>
-                                                <button id="updateDataBtn" type="button" class="btn btn-green fs-6" data-bs-toggle="modal" data-bs-target="#updateData{{data_tomat.id}}"><i class="ti ti-edit"></i></button>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                <form action="#" method="post">
+                                    <table class="table text-nowrap mb-0 align-middle">
+                                        <thead class="text-dark fs-4">
+                                            <tr>
+                                                <th class="align-middle text-center max-width">
+                                                    <h6 class="fw-semibold mb-0">No</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Kebun</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Jumlah Bibit</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Tanggal Penanaman</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Status</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Hasil Panen (kg)</h6>
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    <h6 class="fw-semibold mb-0">Menu</h6>
+                                                </th>
+                                                <th class="justify-content-center align-items-center d-flex flex-column gap-2">
+                                                    <button type="button" class="btn btn-sm btn-danger btn-delete-selected" disabled>Hapus Pilihan</button>
+                                                    <div class="form-check align-middle mb-0">
+                                                        <input class="form-check-input" type="checkbox" value="" id="selectDelAllTomat" />
+                                                        <label class="form-check-label small" for="selectDelAllTomat"> Pilih Semua </label>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for data_tomat in tomat %}
+                                            <tr>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">{{ loop.index }}</h6>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-1">{{ data_tomat.kebun }}</h6>
+                                                    <!-- <span class="fw-normal">Skala Besar</span> -->
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <p class="mb-0 fw-normal">{{ data_tomat.jml_bibit }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <p class="mb-0 fw-normal">{{ data_tomat.tanggal_bibit }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge {% if data_tomat.status == 'Panen' %} bg-green {% else %} bg-yellow {% endif %} rounded-3 fw-semibold">{{ data_tomat.status }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <div class="fw-bold">
+                                                        <strong>{{ data_tomat.jml_panen/1000 }}</strong>
+                                                    </div>
+                                                    <div class="small">{{ data_tomat.tanggal_panen }}</div>
+                                                </td>
+                                                <td class="border-bottom-0 align-middle">
+                                                    <a class="btn btn-danger fs-6" href="{{ url_for('views.delete_data_pangan', id=data_tomat.id ) }}"><i class="ti ti-trash"></i></a>
+                                                    <button id="updateDataBtn" type="button" class="btn btn-green fs-6" data-bs-toggle="modal" data-bs-target="#updateData{{data_tomat.id}}"><i class="ti ti-edit"></i></button>
+                                                </td>
+                                                <td class="border-bottom-0 align-middle text-center">
+                                                    <div class="form-check d-flex justify-content-center">
+                                                        <input class="form-check-input delete_ids" type="checkbox" name="delete_ids" value="{{ data_tomat.id }}" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <nav aria-label="Page navigation for table" class="mt-4">
+                                        <ul class="pagination justify-content-center">
+                                            {% if tomat.has_prev %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.prev_num) }}">Sebelumnya</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Sebelumnya</span>
+                                            </li>
+                                            {% endif %} {% for page_num in tomat.iter_pages() %} {% if page_num %} {% if page_num != tomat.page %}
+                                            <li class="page-item"><a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a></li>
+                                            {% else %}
+                                            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                            {% endif %} {% else %} ... {% endif %} {% endfor %} {% if tomat.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.next_num) }}">Selanjutnya</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#">Selanjutnya</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <nav aria-label="Page navigation for table" class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            {% if cabai.has_prev %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.prev_num) }}">Sebelumnya</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">Sebelumnya</span>
-                            </li>
-                            {% endif %} {% for page_num in cabai.iter_pages() %} {% if page_num %} {% if page_num != cabai.page %}
-                            <li class="page-item"><a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="#">{{ page_num }}</a></li>
-                            {% endif %} {% else %} ... {% endif %} {% endfor %} {% if cabai.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.next_num) }}">Selanjutnya</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">Selanjutnya</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </div>
@@ -455,33 +499,50 @@
 </div>
 {% endblock %} {% block scripts %}
 <script>
-    const checkDelBtns = document.getElementsByName("delete_ids"); // Menggunakan checkDelBtns untuk menyimpan semua checkbox
-    const delBtns = document.querySelectorAll(".btn-delete-selected"); // Select all buttons with the class
+    const delBtns = document.querySelectorAll(".btn-delete-selected");
+    const checkDelBtns = document.getElementsByName("delete_ids");
+    const checkAllCabai = document.getElementById("selectDelAllCabai");
+    const checkAllTomat = document.getElementById("selectDelAllTomat");
 
-    delBtns.forEach((delBtn) => {
-        const checkDelBtns = delBtn.closest("table").querySelectorAll('input[type="checkbox"].delete_ids'); // Find checkboxes within the same table
+    // Fungsi untuk mengupdate state tombol "Delete Selected"
+    const updateButtonState = () => {
+        let isChecked = false;
+        checkDelBtns.forEach((checkbox) => {
+            isChecked = isChecked || checkbox.checked;
+        });
+        delBtns.forEach((btn) => {
+            btn.disabled = !isChecked;
+        });
+    };
 
-        const updateButtonState = () => {
-            let isChecked = false;
-            checkDelBtns.forEach((checkbox) => {
-                isChecked = isChecked || checkbox.checked; // Check if any checkbox is selected (OR operator)
-            });
-            delBtn.disabled = !isChecked;
-        };
-
-        // Add event listeners to checkboxes within the same table
-        checkDelBtns.forEach((checkbox) => checkbox.addEventListener("change", updateButtonState));
-
-        // Initial button state based on initial checkbox states
+    // Event listener untuk checkbox "Select All"
+    checkAllCabai.addEventListener("change", () => {
+        checkDelBtns.forEach((checkbox) => {
+            checkbox.checked = checkAllCabai.checked;
+        });
         updateButtonState();
     });
 
+    // Event listener untuk checkbox "Select All"
+    checkAllTomat.addEventListener("change", () => {
+        checkDelBtns.forEach((checkbox) => {
+            checkbox.checked = checkAllTomat.checked;
+        });
+        updateButtonState();
+    });
+
+    // Event listener untuk setiap checkbox individual
+    checkDelBtns.forEach((checkbox) => {
+        checkbox.addEventListener("change", updateButtonState);
+    });
+
+    // Inisialisasi state tombol "Delete Selected"
+    updateButtonState();
+
+    // Fungsi untuk submit form ketika tombol "Delete Selected" diklik
     $(function () {
         $(delBtns).click(function () {
-            // Get form element containing the checkboxes
             var form = $(this).closest("form");
-
-            // Submit the form to the delete_selected route
             form.attr("action", "{{ url_for('views.delete_selected_data_pangan') }}");
             form.submit();
         });
@@ -572,8 +633,8 @@
             yaxis: {
                 show: true,
                 min: 0,
-                max: 20,
-                tickAmount: 4,
+                max: 25,
+                tickAmount: 5,
                 labels: {
                     style: {
                         cssClass: "grey--text lighten-2--text fill-color",
@@ -582,7 +643,7 @@
             },
             stroke: {
                 show: true,
-                width: 3,
+                width: 4,
                 lineCap: "butt",
                 colors: ["transparent"],
             },
@@ -658,8 +719,8 @@
             yaxis: {
                 show: true,
                 min: 0,
-                max: 20,
-                tickAmount: 4,
+                max: 25,
+                tickAmount: 5,
                 labels: {
                     style: {
                         cssClass: "grey--text lighten-2--text fill-color",
