@@ -18,11 +18,11 @@ def index():
     kelurahan = Kelurahan.query.all()
     produksi = DataPangan.query.all()
 
-    if current_user.is_authenticated:
-        if current_user.account_type == 'admin':
-            return redirect(url_for('admin_page.index'))
-        elif current_user.account_type == 'user':
-            return redirect(url_for('views.dashboard'))
+    # if current_user.is_authenticated:
+    #     if current_user.account_type == 'admin':
+    #         return redirect(url_for('admin_page.index'))
+    #     elif current_user.account_type == 'user':
+    #         return redirect(url_for('views.dashboard'))
 
     today = datetime.today()
     kab_kota = 458 #Ternate
@@ -95,7 +95,7 @@ def index():
 
 
 # @views.route('/beranda', methods=['GET', 'POST'])
-# #@login_required
+# @login_required
 # def home():
 #     if current_user.is_authenticated and session['account_type'] == 'user':
 #         postingan = DataPangan.query.all()
@@ -118,7 +118,7 @@ def index():
 #         return redirect(url_for('auth.login'))
     
 # @views.route('/profil/<string:username>', methods=['GET', 'POST'])
-# #@login_required
+# @login_required
 # def profil(username):
 #     if current_user.is_authenticated and session['account_type'] == 'user':
 #         # user = User.query.filter_by(username=username)
@@ -161,7 +161,7 @@ def index():
 
 # @views.route('/chat/<string:room>/', defaults={'page_num': 1})
 # @views.route('/chat/<string:room>/<int:page_num>')
-# #@login_required
+# @login_required
 # def chat(room, page_num):
 #     user = User.query.all()
 #     superuser = Admin.query.filter_by(account_type='admin').first()
@@ -237,7 +237,7 @@ def index():
 
 # todo =========================== ADMIN SECTION =================================
 # @views.route('/adminProfile/<string:username>', methods=['GET', 'POST'])
-# #@login_required
+# @login_required
 # def adminProfile(username):
 #     if current_user.is_authenticated and current_user.account_type == 'admin':
 #         user = Admin.query.filter_by(username=username).first()
@@ -264,7 +264,7 @@ def index():
 #         return redirect(url_for('auth.adminlogin'))
 
 @views.route('/dashboard', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def dashboard():
     user_data = User.query.all()
     pangan = DataPangan.query.all()
@@ -278,19 +278,19 @@ def dashboard():
     #     return redirect(url_for('views.home'))
 
 @views.route('/dashboard/penjualan')
-#@login_required
+@login_required
 def penjualan():
     return render_template('dashboard/penjualan.html')
 
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
-#@login_required
+@login_required
 def dataproduksi():
     user_data = User.query.filter_by(id=current_user.id).first()
     pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
     page = request.args.get('page', 1, type=int)  # Get page number from query string
-    per_page = 7  # Number of items per page
+    per_page = 5 # Number of items per page
 
     total_panen = []
 
@@ -365,7 +365,7 @@ def dataproduksi():
     return render_template('dashboard/data-pangan.html', kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def import_data_pangan():
     from openpyxl import load_workbook
 
@@ -409,21 +409,21 @@ def import_data_pangan():
     return render_template('dashboard/import_data.html')
 
 @views.route('/dashboard/data-pangan/delete_selected', methods=['POST'])
-#@login_required
+@login_required
 def delete_selected_data_pangan():
     delete_ids = request.form.getlist('delete_ids')  # Get list of selected IDs
 
     if delete_ids:
         DataPangan.query.filter(DataPangan.id.in_(delete_ids)).delete(synchronize_session=False)
         db.session.commit()
-        flash('Data yang dipilih berhasil dihapus!', 'success')
+        flash('Data yang dipilih berhasil dihapus!', 'warning')
     else:
         flash('Tidak ada data yang dipilih!', 'warning')
 
     return redirect(url_for('views.dataproduksi'))
 
 @views.route('/dashboard/data-pangan/update-data/<int:id>', methods=['POST', 'GET'])
-#@login_required
+@login_required
 def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
@@ -475,7 +475,7 @@ def updatepangan(id):
             return redirect(request.referrer)
         
 @views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
-#@login_required
+@login_required
 def hargapangan():
     today = datetime.today()
     kab_kota = 458 #Ternate
@@ -534,7 +534,7 @@ def hargapangan():
     return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
 @views.route('/dashboard/data-pangan/delete-data/<int:id>', methods=['GET'])
-#@login_required
+@login_required
 def delete_data_pangan(id):
     data = DataPangan.query.get_or_404(id)
     db.session.delete(data)
@@ -557,14 +557,14 @@ def delete_data_pangan(id):
 
 # todo ============== PROFILE PAGE ==============
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def profil():
     user = User.query.filter_by(id=current_user.id).first()
     kelurahan = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
     return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
 @views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def updateprofil(id):
     user = User.query.get_or_404(id)
     kelurahan = Kelurahan.query.filter_by(user_id=current_user.id).first()
@@ -601,13 +601,13 @@ def updateprofil(id):
             return redirect(url_for('views.profil'))
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def settings():
     user = User.query.filter_by(id=current_user.id).first()
     return render_template('dashboard/settings.html', user=user)
 
 @views.route('/dashboard/pengaturan/<int:id>/update-email', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def updateemail(id):
     user = User.query.get_or_404(id)
     password = request.form['userPass']
@@ -638,7 +638,7 @@ def resetprofil(id):
         return redirect(url_for('views.profil'))
 
 @views.route('/dashboard/pengaturan/<int:id>/update-password', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def updatepassword(id):
     user = User.query.get_or_404(id)
     oldpass = request.form['old-pass']
@@ -666,12 +666,12 @@ def updatepassword(id):
 #         user.password = request.form['userPass']
 
 @views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def weather():
     return render_template('dashboard/weather.html')
 
 # @views.route('/profil/<string:username>', methods=['GET', 'POST'])
-# #@login_required
+# @login_required
 # def profil(username):
 #     if current_user.is_authenticated and session['account_type'] == 'user':
 #         # user = User.query.filter_by(username=username)

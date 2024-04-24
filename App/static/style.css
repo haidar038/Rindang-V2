@@ -35,7 +35,7 @@
 }
 
 * {
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: "Plus Jakarta Display", sans-serif;
 }
 
 /* todo +++++++++++++++++++++++ TAGS +++++++++++++++++++++++ */
@@ -258,13 +258,13 @@ html {
 .logos img {
     width: auto;
     height: 60px;
-    transition: ease-in-out 0.25s;
+    transition: ease-in-out 0.1s;
     -webkit-filter: grayscale(1);
     filter: grayscale(1);
 }
 
 .logos img:hover {
-    transform: translateY(-0.7rem);
+    transform: translateY(-0.4rem);
     -webkit-filter: grayscale(0);
     filter: grayscale(0);
 }
@@ -275,8 +275,8 @@ html {
 }
 
 .logos:hover img:not(:hover) {
-    -webkit-filter: blur(4px);
-    filter: blur(4px);
+    /* -webkit-filter: blur(4px); */
+    /* filter: blur(4px); */
 }
 
 .detail-card,
@@ -346,6 +346,14 @@ html {
     position: absolute;
     top: 0;
     left: -7rem;
+}
+
+.galery-img {
+    aspect-ratio: 1/1;
+}
+
+.border-green {
+    outline: 1px solid #ddd;
 }
 
 /* todo +++++++++++++++++++++++ IDs +++++++++++++++++++++++ */
