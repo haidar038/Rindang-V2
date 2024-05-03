@@ -23,7 +23,7 @@ from App.models import User, AppAdmin, DataPangan, Kelurahan, db
 
 admin_page = Blueprint('admin_page', __name__)
 
-locale.setlocale(locale.LC_ALL, 'id_ID')
+# locale.setlocale(locale.LC_ALL, 'id_ID')
 
 @admin_page.route("/admin-dashboard", methods=['POST', 'GET'])
 @login_required
