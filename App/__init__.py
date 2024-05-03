@@ -3,15 +3,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_socketio import SocketIO
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
-import os
+import os, io
 
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
 login_manager = LoginManager()
 toastr = Toastr()
+jwt = JWTManager()
 admin = Admin(name='admin')
+buffer = io.BytesIO()
 
 DB_NAME = 'rindang_digifarm.db'
 
@@ -27,10 +30,11 @@ def create_app():
 
     # app.config['FLASK_ADMIN_SWATCH'] = 'simplex'
     db.init_app(app)
-    admin.init_app(app)
+    # admin.init_app(app)
     socketio.init_app(app)
     login_manager.init_app(app)
     toastr.init_app(app)
+    jwt.init_app(app)
 
     from .auth.routes import auth
     from .views.routes import views

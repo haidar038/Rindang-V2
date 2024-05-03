@@ -6,30 +6,198 @@
             <div class="row align-items-start">
                 <div class="col-12">
                     <div class="card card-body">
-                        <h1 class="text-dark-emphasis mb-3">
-                            <strong>Data & Informasi Kelurahan</strong>
-                        </h1>
-                        <table class="table table-bordered">
-                            <tr class="bg-red text-light text-center">
-                                <th>Kelurahan</th>
-                                <th>Panen Tertinggi</th>
-                                <th>Panen Terendah</th>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table>
+                        <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                            <div class="mb-3 mb-sm-0">
+                                <h5 class="card-title text-dark-emphasis">
+                                    <strong>Informasi Statistik Produksi - <span class="text-red">Kelurahan {{ kelurahan.nama }}</span></strong>
+                                </h5>
+                            </div>
+                            <div>
+                                <select class="form-select" id="select-pangan">
+                                    <option value="chart">Cabai</option>
+                                    <option value="chart2">Tomat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="date-filter mb-3 row-gap-3 row">
+                            <div class="col d-flex flex-column">
+                                <label for="start-date">Start Date:</label>
+                                <input class="form-control" type="date" id="start-date" name="start-date" />
+                            </div>
+                            <div class="col d-flex flex-column">
+                                <label for="end-date">End Date:</label>
+                                <input class="form-control" type="date" id="end-date" name="end-date" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <button class="w-100 btn btn-green" id="filter-button">Filter</button>
+                            </div>
+                            <div class="col-6">
+                                <button class="w-100 btn btn-outline-dark" id="reset-button">Reset</button>
+                            </div>
+                        </div>
+                        <div id="chart"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- <div class="py-6 px-6 text-center">
-<p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank"
-class="pe-1 text-primary text-decoration-underline">AdminMart.com</a></p>
-</div> -->
 </div>
-{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        const chartData = JSON.parse('{{ chart_data | tojson }}');
+
+        const seriesData = [];
+        const colorMap = {
+            Cabai: '#ff6b6b',
+            Tomat: '#fcb45e',
+        };
+
+        for (const kelurahan in chartData) {
+            for (const komoditas in chartData[kelurahan]) {
+                const panenData = chartData[kelurahan][komoditas];
+                const jmlPanen = panenData.jml_panen.map((value) => value / 1000);
+                const tglPanen = panenData.tgl_panen;
+
+                // Buat series data untuk setiap komoditas di setiap kelurahan
+                seriesData.push({
+                    name: `${kelurahan} - ${komoditas}`,
+                    data: jmlPanen,
+                    color: colorMap[komoditas],
+                });
+            }
+        }
+
+        // Menggabungkan semua tanggal panen dan menghapus duplikat (tidak berubah)
+        const allDates = [];
+        for (const kelurahan in chartData) {
+            for (const komoditas in chartData[kelurahan]) {
+                allDates.push(...chartData[kelurahan][komoditas].tgl_panen);
+            }
+        }
+        const labels = [...new Set(allDates)];
+
+        var chart = {
+            series: seriesData,
+
+            chart: {
+                default_locale: 'en',
+                locales: [
+                    {
+                        name: 'en',
+                        options: {
+                            months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                            shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                            days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                            shortDays: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                            toolbar: {
+                                download: 'Download SVG',
+                                selection: 'Selection',
+                                selectionZoom: 'Selection Zoom',
+                                zoomIn: 'Zoom In',
+                                zoomOut: 'Zoom Out',
+                                pan: 'Panning',
+                                reset: 'Reset Zoom',
+                            },
+                        },
+                    },
+                ],
+                type: 'bar',
+                height: 345,
+                offsetX: -15,
+                toolbar: { show: true },
+                foreColor: '#adb0bb',
+                fontFamily: 'inherit',
+                sparkline: { enabled: false },
+            },
+
+            colors: ['#ff6b6b', '#fcb45e'],
+
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '35%',
+                    borderRadius: [6],
+                    borderRadiusApplication: 'end',
+                    borderRadiusWhenStacked: 'all',
+                },
+            },
+            markers: { size: 0 },
+
+            dataLabels: {
+                enabled: false,
+            },
+
+            legend: {
+                show: false,
+            },
+
+            grid: {
+                borderColor: 'rgba(0,0,0,0.1)',
+                strokeDashArray: 3,
+                xaxis: {
+                    lines: {
+                        show: false,
+                    },
+                },
+            },
+
+            xaxis: {
+                type: 'datetime',
+                categories: labels,
+                labels: {
+                    style: { cssClass: 'grey--text lighten-2--text fill-color' },
+                },
+            },
+
+            yaxis: {
+                show: true,
+                min: 0,
+                max: 25,
+                tickAmount: 5,
+                labels: {
+                    style: {
+                        cssClass: 'grey--text lighten-2--text fill-color',
+                    },
+                },
+            },
+            stroke: {
+                show: true,
+                width: 3,
+                lineCap: 'butt',
+                colors: ['transparent'],
+            },
+
+            tooltip: {
+                theme: 'dark',
+                x: {
+                    format: 'dd MMM yyyy',
+                },
+                y: {
+                    formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                        return `${value} kg`;
+                    },
+                },
+            },
+
+            responsive: [
+                {
+                    breakpoint: 600,
+                    options: {
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 3,
+                            },
+                        },
+                    },
+                },
+            ],
+        };
+
+        var chart = new ApexCharts(document.querySelector('#chart'), chart);
+        chart.render();
+    });
+</script>
+{% endblock %} {% endblock %}

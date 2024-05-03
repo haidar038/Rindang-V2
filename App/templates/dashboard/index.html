@@ -26,8 +26,11 @@
                                     <h3 class="text-yellow fw-bold">
                                         <strong>Harga Pangan</strong>
                                     </h3>
+                                    <h5>
+                                        <strong>{% for item in harga if item.name == 'Cabai Rawit Merah' %}{{ item.price if loop.last }}{% endfor %}/kg (Cabai Rawit Merah)</strong>
+                                    </h5>
                                     <p class="mb-0 align-middle fs-3">
-                                        Informasi harga pangan di pasaran
+                                        Lihat informasi harga lebih lanjut
                                         <i class="ti ti-arrow-right align-middle"></i>
                                     </p>
                                 </div>
@@ -46,8 +49,11 @@
                                     <h3 class="text-red fw-bold">
                                         <strong>Jumlah Panen</strong>
                                     </h3>
+                                    <h5>
+                                        <strong>{{ round(total_panen/1000, 2) }} kg</strong>
+                                    </h5>
                                     <p class="mb-0">
-                                        Informasi jumlah panen di kelurahan
+                                        Lihat informasi jumlah panen lebih lanjut
                                         <i class="ti ti-arrow-right align-middle"></i>
                                     </p>
                                 </div>

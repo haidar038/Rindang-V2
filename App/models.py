@@ -29,11 +29,8 @@ class Kelurahan(db.Model, UserMixin):
     nama = db.Column(db.String, nullable=True)
     kebun = db.Column(db.Integer, nullable=True)
     luas_kebun = db.Column(db.Float, nullable=True)
-    komoditas = db.Column(db.String, nullable=True)
-    jml_panen = db.Column(db.Integer, nullable=True)
     pangan_data = db.relationship('DataPangan', backref='kelurahan', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
     
 class AppAdmin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

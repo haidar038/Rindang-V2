@@ -137,11 +137,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
-                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="{{ url_for('views.index' ) }}">Beranda</a>
-                            </li>
-                        </ul>
+                        {% if not current_user.is_authenticated %}
                         <ul class="navbar-nav ms-lg-auto flex-column flex-lg-row mb-lg-0 column-gap-lg-3">
                             <li class="nav-item mb-2 mb-lg-0">
                                 <a id="nav" class="nav-link" aria-current="page" href="{{ url_for('auth.login' ) }}">Masuk</a>
@@ -150,6 +146,7 @@
                                 <a class="btn btn-warning btn-yellow px-4" href="{{ url_for('auth.register' ) }}">Daftar</a>
                             </li>
                         </ul>
+                        {% endif %}
                     </div>
                 </div>
             </div>

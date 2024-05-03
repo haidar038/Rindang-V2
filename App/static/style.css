@@ -35,7 +35,7 @@
 }
 
 * {
-    font-family: "Plus Jakarta Display", sans-serif;
+    font-family: 'Plus Jakarta Display', sans-serif;
 }
 
 /* todo +++++++++++++++++++++++ TAGS +++++++++++++++++++++++ */
@@ -44,11 +44,12 @@ html {
     height: 100%;
     /* overflow-y: scroll;*/
     overflow-x: hidden;
+    color: rgb(137, 201, 123);
 }
 
 /* todo +++++++++++++++++++++++ CLASSES +++++++++++++++++++++++ */
 .body-font {
-    font-family: "Plus Jakarta Sans";
+    font-family: 'Plus Jakarta Sans';
 }
 
 .text-red {
@@ -272,11 +273,6 @@ html {
 .logos:hover {
     -webkit-filter: grayscale(0);
     filter: grayscale(0);
-}
-
-.logos:hover img:not(:hover) {
-    /* -webkit-filter: blur(4px); */
-    /* filter: blur(4px); */
 }
 
 .detail-card,

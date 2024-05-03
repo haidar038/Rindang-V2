@@ -1,7 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session, Response
 from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from App.models import User, AppAdmin
 from App import db, login_manager
 
@@ -52,6 +51,9 @@ def login():
             return redirect(url_for('admin_page.index'))
         elif current_user.account_type == 'user':
             return redirect(url_for('views.index'))
+        
+    email = request.form.get('emailAddress', '')
+
     if request.method == 'POST':
         email = request.form['emailAddress']
         password = request.form['userPassword']
@@ -65,11 +67,12 @@ def login():
             return redirect(url_for('views.dashboard'))
         elif user is None:
             flash("Akun anda belum terdaftar, silakan daftar terlebih dahulu", category='warning')
+            return redirect(url_for('auth.login', email=email))
         else:
             flash("Kata sandi salah, silakan coba lagi.", category='error')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login', email=email))
 
-    return render_template('login.html', page='User')
+    return render_template('login.html', page='User', email=email)
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():

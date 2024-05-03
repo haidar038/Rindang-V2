@@ -66,9 +66,6 @@ def index():
                 else:
                     geomean_float = float(geomean_value)
 
-                    # Remove decimal places
-                    # geomean_no_decimals = int(geomean_float)
-
                     formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
                     formatted_price = formatted_price[:-3]
 
@@ -266,17 +263,145 @@ def index():
 @views.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    if current_user.account_type == 'user':
-        pass
-    elif current_user.account_type == 'admin':
+    if current_user.account_type == 'admin':
         return redirect(url_for('admin_page.index'))
     
-    return render_template('dashboard/index.html')
+    data_pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
+
+    today = datetime.today()
+    kab_kota = 458 #Ternate
+    komoditas_id = 3
+    one_week_ago = today - timedelta(days=7)
+
+    # Format dates as YYYY-MM-DD
+    start_date = one_week_ago.strftime("%Y-%m-%d")
+    end_date = today.strftime("%Y-%m-%d")
+
+    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        data = response.json()
+
+        target = ["Cabai Merah Keriting"]
+
+        data_harga = []
+        nama_komoditas = []
+
+        for item in data["data"]:
+            if item["name"] in target:
+                komoditas = item["by_date"]
+                data_harga.append(komoditas)
+                nama_komoditas.append(item['name'])
+
+        table_data = []
+
+        for item in data["data"]:
+            for date_data in item["by_date"]:
+                date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+                formatted_date = date_obj.strftime("%d/%m/%Y")
+
+                # Handle cases where geomean is '-'
+                geomean_value = date_data["geomean"]
+                if geomean_value == "-":
+                    formatted_price = "-"
+                else:
+                    geomean_float = float(geomean_value)
+
+                    # Remove decimal places
+                    # geomean_no_decimals = int(geomean_float)
+
+                    formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                    formatted_price = formatted_price[:-3]
+
+                table_data.append({
+                    "date": formatted_date,
+                    "name": item["name"],
+                    "price": formatted_price
+                })
+
+        data_tanggal = []
+
+        for date_str in data['meta']['date']:
+            data_tanggal.append(date_str)
+
+    except requests.exceptions.RequestException as e:
+        # Handle request errors gracefully (e.g., network issues, server errors)
+        flash(f"Error fetching data: {e}", category='error')
+        table_data = []  # Set table_data to empty list in case of errors
+
+    total_panen = sum(prod.jml_panen for prod in data_pangan if data_pangan)
+    
+    return render_template('dashboard/index.html', data=data, total_panen=total_panen, harga=table_data, round=round)
 
 @views.route('/dashboard/penjualan')
 @login_required
 def penjualan():
     return render_template('dashboard/penjualan.html')
+
+@views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
+@login_required
+def hargapangan():
+    if current_user.account_type == 'admin':
+        return redirect(url_for('admin_page.index'))
+
+    today = datetime.today()
+    kab_kota = 458 #Ternate
+    komoditas_id = 3
+    one_week_ago = today - timedelta(days=7)
+
+    # Format dates as YYYY-MM-DD
+    start_date = one_week_ago.strftime("%Y-%m-%d")
+    end_date = today.strftime("%Y-%m-%d")
+
+    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    data = response.json()
+
+    target = ["Cabai Merah Keriting", "Cabai Rawit Merah", "Bawang Merah"]
+
+    data_harga = []
+    nama_komoditas = []
+    for item in data["data"]:
+        if item["name"] in target:
+            komoditas = item["by_date"]
+            data_harga.append(komoditas)
+            nama_komoditas.append(item['name'])
+    table_data = []
+    for item in data["data"]:
+        for date_data in item["by_date"]:
+            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d/%m/%Y")
+
+            # Handle cases where geomean is '-'
+            geomean_value = date_data["geomean"]
+            if geomean_value == "-":
+                formatted_price = "-"
+            else:
+                geomean_float = float(geomean_value)
+
+                # Remove decimal places
+                # geomean_no_decimals = int(geomean_float)
+
+                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                formatted_price = formatted_price[:-3]
+
+            table_data.append({
+                "date": formatted_date,
+                "name": item["name"],
+                "price": formatted_price
+            })
+    
+    data_tanggal = []
+    for date_str in data['meta']['date']:
+        data_tanggal.append(date_str)
+
+    return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 @login_required
@@ -358,13 +483,57 @@ def dataproduksi():
         # jumlahPanen = request.form['jumlahPanen']
         # tglPanen = request.form['tglPanen']
 
-        add_data = DataPangan(kebun=kebun, komoditas=komoditas, tanggal_bibit=tglBibit, jml_bibit=jumlahBibit, status='Penanaman', jml_panen=0, tanggal_panen=0, user_id=current_user.id)
+        add_data = DataPangan(kebun=kebun, komoditas=komoditas,
+                              tanggal_bibit=tglBibit, jml_bibit=jumlahBibit,
+                              status='Penanaman', jml_panen=0, tanggal_panen=0,
+                              user_id=current_user.id)
         db.session.add(add_data)
         db.session.commit()
         print('DataPangan berhasil dibuat!')
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
-    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+    
+    sortBy = request.args.get('sort_by')
+    sortOrder = request.args.get('sort_order', 'asc')
+
+    if sortBy:
+        if sortBy == 'kebun':
+            if sortOrder == 'asc':
+                cabai = cabai.order_by(DataPangan.kebun.asc())
+                tomat = tomat.order_by(DataPangan.kebun.asc())
+            else:
+                cabai = cabai.order_by(DataPangan.kebun.desc())
+                tomat = tomat.order_by(DataPangan.kebun.desc())
+        elif sortBy == 'bibit':
+            if sortOrder == 'asc':
+                cabai = cabai.order_by(DataPangan.kebun.asc())
+                tomat = tomat.order_by(DataPangan.kebun.asc())
+            else:
+                cabai = cabai.order_by(DataPangan.kebun.desc())
+                tomat = tomat.order_by(DataPangan.kebun.desc())
+        elif sortBy == 'tanam':
+            if sortOrder == 'asc':
+                cabai = cabai.order_by(DataPangan.kebun.asc())
+                tomat = tomat.order_by(DataPangan.kebun.asc())
+            else:
+                cabai = cabai.order_by(DataPangan.kebun.desc())
+                tomat = tomat.order_by(DataPangan.kebun.desc())
+        elif sortBy == 'status':
+            if sortOrder == 'asc':
+                cabai = cabai.order_by(DataPangan.kebun.asc())
+                tomat = tomat.order_by(DataPangan.kebun.asc())
+            else:
+                cabai = cabai.order_by(DataPangan.kebun.desc())
+                tomat = tomat.order_by(DataPangan.kebun.desc())
+        elif sortBy == 'hasil':
+            if sortOrder == 'asc':
+                cabai = cabai.order_by(DataPangan.kebun.asc())
+                tomat = tomat.order_by(DataPangan.kebun.asc())
+            else:
+                cabai = cabai.order_by(DataPangan.kebun.desc())
+                tomat = tomat.order_by(DataPangan.kebun.desc())
+
+    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat), sortBy=sortBy, sortOrder=sortOrder)
 
 @views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
 @login_required
@@ -392,7 +561,7 @@ def import_data_pangan():
                     data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
                                             jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
                                             status='Penanaman', jml_panen=0, tanggal_panen=0, 
-                                            user_id=current_user.id)
+                                            user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
                 elif import_type == 'panen':
                     jml_panen = row[4].value 
                     tanggal_panen = row[5].value.strftime('%Y-%m-%d') if isinstance(row[5].value, datetime) else row[5].value
@@ -400,13 +569,12 @@ def import_data_pangan():
                     data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
                                             jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
                                             status='Panen', jml_panen=jml_panen, tanggal_panen=tanggal_panen, 
-                                            user_id=current_user.id)
+                                            user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
                 else:
                     flash('Tipe impor tidak valid!', 'error')
                     return redirect(url_for('views.import_data_pangan'))
-
                 db.session.add(data_pangan)
-
+    
             db.session.commit()
             flash('Data berhasil diimpor!', 'success')
             return redirect(url_for('views.dataproduksi'))
@@ -478,68 +646,6 @@ def updatepangan(id):
 
             db.session.commit()
             return redirect(request.referrer)
-        
-@views.route('/dashboard/harga-pangan', methods=['POST', 'GET'])
-@login_required
-def hargapangan():
-    if current_user.account_type == 'admin':
-        return redirect(url_for('admin_page.index'))
-
-    today = datetime.today()
-    kab_kota = 458 #Ternate
-    komoditas_id = 3
-    one_week_ago = today - timedelta(days=7)
-
-    # Format dates as YYYY-MM-DD
-    start_date = one_week_ago.strftime("%Y-%m-%d")
-    end_date = today.strftime("%Y-%m-%d")
-
-    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
-
-    response = requests.get(url)
-    response.raise_for_status()
-
-    data = response.json()
-
-    target = ["Cabai Merah Keriting", "Cabai Rawit Merah", "Bawang Merah"]
-
-    data_harga = []
-    nama_komoditas = []
-    for item in data["data"]:
-        if item["name"] in target:
-            komoditas = item["by_date"]
-            data_harga.append(komoditas)
-            nama_komoditas.append(item['name'])
-    table_data = []
-    for item in data["data"]:
-        for date_data in item["by_date"]:
-            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
-            formatted_date = date_obj.strftime("%d/%m/%Y")
-
-            # Handle cases where geomean is '-'
-            geomean_value = date_data["geomean"]
-            if geomean_value == "-":
-                formatted_price = "-"
-            else:
-                geomean_float = float(geomean_value)
-
-                # Remove decimal places
-                # geomean_no_decimals = int(geomean_float)
-
-                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                formatted_price = formatted_price[:-3]
-
-            table_data.append({
-                "date": formatted_date,
-                "name": item["name"],
-                "price": formatted_price
-            })
-    
-    data_tanggal = []
-    for date_str in data['meta']['date']:
-        data_tanggal.append(date_str)
-
-    return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
 
 @views.route('/dashboard/data-pangan/delete-data/<int:id>', methods=['GET'])
 @login_required
@@ -567,11 +673,15 @@ def delete_data_pangan(id):
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
 @login_required
 def profil():
-    if current_user.account_type == 'admin':
+    print(current_user.account_type)
+    if current_user.account_type != 'user':
         return redirect(url_for('admin_page.index'))
 
     user = User.query.filter_by(id=current_user.id).first()
     kelurahan = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
+
+    #list_kelurahan = ['Sasa', 'Kalumpang', 'Kulaba', 'Tubo', '']
+
     return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
 @views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
