@@ -31,7 +31,6 @@ def create_app():
     login_manager.init_app(app)
     toastr.init_app(app)
     jwt.init_app(app)
-    # mongo.init_app(app)
 
     from .auth.routes import auth
     from .views.routes import views
