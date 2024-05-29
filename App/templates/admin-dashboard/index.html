@@ -1,4 +1,6 @@
-{% extends 'admin-dashboard/layout.html' %} {% block container %}
+{% extends 'admin-dashboard/layout.html' %} {% block title %} Admin Dashboard {% endblock %} {% block head %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+{% endblock %} {% block container %}
 
 <div class="container-fluid">
     <!--  Row 1 -->
@@ -21,20 +23,25 @@
                         <h4 class="text-dark-emphasis mb-3">
                             <strong>Informasi Produksi RINDANG</strong>
                         </h4>
-                        <table class="table">
-                            <tr>
-                                <td style="width: 13%">Jumlah Kebun</td>
-                                <td style="width: 0">:</td>
-                                <td><strong class="badge bg-red fw-bold">{{ total_kebun }} Kebun</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Hasil Produksi</td>
-                                <td style="width: 0">:</td>
-                                <td>
-                                    <strong><span class="badge bg-red fw-bold">{{round_num(total_panen/1000, 2)}} kg</span></strong>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="row mb-4">
+                            <div class="col-12 col-lg-4" id="grafik"></div>
+                            <div class="col-12 col-lg-8">
+                                <table class="table">
+                                    <tr>
+                                        <td style="width: 20%">Jumlah Kebun</td>
+                                        <td style="width: 0">:</td>
+                                        <td><strong class="badge bg-red fw-bold">{{ total_kebun }} Kebun</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hasil Produksi</td>
+                                        <td style="width: 0">:</td>
+                                        <td>
+                                            <strong><span class="badge bg-red fw-bold">{{round_num(total_panen/1000, 2)}} kg</span></strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered" id="info-kelurahan">
                                 <tr class="bg-green text-light text-center">
@@ -58,7 +65,7 @@
                                         <a id="dwldBtn" href="{{ url_for('admin_page.report', nama=genhash(data_kel.nama, method='pbkdf2'), id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"
                                             ><i class="ti ti-download"></i
                                         ></a>
-                                        <a id="statBtn" href="{{ url_for('admin_page.dataproduksikel', id=data_kel.id ) }}" target="_blank" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
+                                        <a id="statBtn" href="{{ url_for('admin_page.dataproduksikel', id=data_kel.id ) }}" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -71,4 +78,70 @@
     </div>
 </div>
 
-{% endblock %}
+{% block script %}
+<script async>
+    // =====================================
+    // Jumlah Kebutuhan dan Hasil Produksi
+    // =====================================
+    let totalPanenCabai = parseInt('{{totalPanenCabai}}', 10);
+    let totalPanenTomat = parseInt('{{totalPanenTomat}}', 10);
+
+    var breakup = {
+        color: '#adb5bd',
+        series: [totalPanenCabai / 1000, totalPanenTomat / 1000],
+        labels: ['Cabai', 'Tomat'],
+        chart: {
+            width: 300,
+            type: 'donut',
+            fontFamily: "Plus Jakarta Sans', sans-serif",
+            foreColor: '#adb0bb',
+        },
+        plotOptions: {
+            pie: {
+                startAngle: 0,
+                endAngle: 360,
+                donut: {
+                    size: '50%',
+                },
+            },
+        },
+        stroke: {
+            show: false,
+        },
+
+        dataLabels: {
+            enabled: false,
+        },
+
+        legend: {
+            show: true,
+        },
+        colors: ['#ff6b6b', '#fcb45e'],
+
+        responsive: [
+            {
+                breakpoint: 991,
+                options: {
+                    chart: {
+                        width: 150,
+                    },
+                },
+            },
+        ],
+        tooltip: {
+            theme: 'dark',
+            x: {
+                format: 'dd MMM yyyy',
+            },
+            y: {
+                formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                    return `${value} kg`;
+                },
+            },
+        },
+    };
+
+    var chart = new ApexCharts(document.querySelector('#grafik'), breakup);
+    chart.render();
+</script>
+{% endblock %} {% endblock %}

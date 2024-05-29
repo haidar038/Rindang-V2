@@ -1,4 +1,21 @@
-{% extends 'admin-dashboard/layout.html' %} {% block container %}
+{% extends 'admin-dashboard/layout.html' %} {% block title %} Data Produksi RINDANG {% endblock %} {% block head %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"
+    integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"
+    integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+></script>
+{% endblock %} {% block container %}
 <div class="container-fluid">
     <!--  Row 1 -->
     <div class="row">
@@ -12,11 +29,22 @@
                                     <strong>Informasi Statistik Produksi</strong>
                                 </h5>
                             </div>
-                            <div>
-                                <select class="form-select" id="select-pangan">
-                                    <option value="chart">Cabai</option>
-                                    <option value="chart2">Tomat</option>
-                                </select>
+                            <div class="filter-data d-flex gap-2">
+                                <div>
+                                    <select class="form-select" id="select-kelurahan">
+                                        <option value="">Semua Kelurahan</option>
+                                        {% for kelurahan in kel %}
+                                        <option value="{{ kelurahan.nama }}">{{ kelurahan.nama }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div>
+                                    <select class="form-select" id="select-pangan">
+                                        <option value="">Semua Komoditas</option>
+                                        <option value="Cabai">Cabai</option>
+                                        <option value="Tomat">Tomat</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="date-filter mb-3 row-gap-3 row">
@@ -37,123 +65,123 @@
                                 <button class="w-100 btn btn-outline-dark" id="reset-button">Reset</button>
                             </div>
                         </div>
-                        <div id="chart"></div>
+                        <div class="mt-4" id="chart" role="img" aria-label="Production Statistics Chart"></div>
+                        <!-- <canvas id="chart"></canvas> -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% block script %}
+{% endblock %} {% block script %}
 <script>
-    $(function () {
-        const chartData = JSON.parse('{{ chart_data | tojson }}');
+    let chartData = JSON.parse('{{ chart_data | tojson }}');
 
-        const seriesData = [];
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const filterButton = document.getElementById('filter-button');
+    const resetButton = document.getElementById('reset-button');
+    const kelurahanSelect = document.getElementById('select-kelurahan');
+    const komoditasSelect = document.getElementById('select-pangan');
+    const chartElement = document.querySelector('#chart');
+
+    let chart = null;
+
+    function filterData() {
+        const selectedKelurahan = kelurahanSelect.value;
+        const selectedKomoditas = komoditasSelect.value;
+
+        const filteredData = [];
+        for (const [kelurahan, dataKelurahan] of Object.entries(chartData)) {
+            // Jika kelurahan dipilih atau tidak ada filter kelurahan
+            if (selectedKelurahan === '' || kelurahan === selectedKelurahan) {
+                for (const [komoditas, dataKomoditas] of Object.entries(dataKelurahan)) {
+                    // Jika komoditas dipilih atau tidak ada filter komoditas
+                    if (selectedKomoditas === '' || komoditas === selectedKomoditas) {
+                        dataKomoditas.tgl_panen.forEach((tanggal, index) => {
+                            filteredData.push({
+                                kelurahan,
+                                komoditas,
+                                jml_panen: dataKomoditas.jml_panen[index] / 1000,
+                                tanggal_panen: tanggal,
+                            });
+                        });
+                    }
+                }
+            }
+        }
+
+        updateChart(filteredData);
+    }
+
+    function updateChart(data) {
+        if (chart) {
+            chart.destroy();
+        }
+
         const colorMap = {
             Cabai: '#ff6b6b',
             Tomat: '#fcb45e',
         };
 
-        for (const kelurahan in chartData) {
-            for (const komoditas in chartData[kelurahan]) {
-                const panenData = chartData[kelurahan][komoditas];
-                const jmlPanen = panenData.jml_panen.map((value) => value / 1000);
-                const tglPanen = panenData.tgl_panen;
-
-                // Buat series data untuk setiap komoditas di setiap kelurahan
-                seriesData.push({
-                    name: `${kelurahan} - ${komoditas}`,
-                    data: jmlPanen,
-                    color: colorMap[komoditas],
-                });
+        // Mengelompokkan data berdasarkan tanggal panen dan kelurahan-komoditas
+        const dataByTanggalKelurahanKomoditas = data.reduce((acc, item) => {
+            const tanggal = item.tanggal_panen;
+            const key = `${item.kelurahan} - ${item.komoditas}`;
+            if (!acc[tanggal]) {
+                acc[tanggal] = {};
             }
-        }
-
-        // Menggabungkan semua tanggal panen dan menghapus duplikat (tidak berubah)
-        const allDates = [];
-        for (const kelurahan in chartData) {
-            for (const komoditas in chartData[kelurahan]) {
-                allDates.push(...chartData[kelurahan][komoditas].tgl_panen);
+            if (!acc[tanggal][key]) {
+                acc[tanggal][key] = {
+                    name: key,
+                    data: [],
+                    color: colorMap[item.komoditas],
+                };
             }
-        }
-        const labels = [...new Set(allDates)];
+            acc[tanggal][key].data.push({ x: new Date(tanggal).getTime(), y: item.jml_panen });
+            return acc;
+        }, {});
 
-        var chart = {
+        // Mengambil data untuk chart
+        const labels = Object.keys(dataByTanggalKelurahanKomoditas);
+        const seriesData = Object.values(dataByTanggalKelurahanKomoditas)
+            .map((dataPerTanggal) => {
+                return Object.values(dataPerTanggal);
+            })
+            .flat();
+
+        chart = new ApexCharts(chartElement, {
             series: seriesData,
-
             chart: {
-                default_locale: 'en',
-                locales: [
-                    {
-                        name: 'en',
-                        options: {
-                            months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                            shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                            days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-                            shortDays: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                            toolbar: {
-                                download: 'Download SVG',
-                                selection: 'Selection',
-                                selectionZoom: 'Selection Zoom',
-                                zoomIn: 'Zoom In',
-                                zoomOut: 'Zoom Out',
-                                pan: 'Panning',
-                                reset: 'Reset Zoom',
-                            },
-                        },
-                    },
-                ],
                 type: 'bar',
                 height: 345,
-                offsetX: -15,
-                toolbar: { show: true },
-                foreColor: '#adb0bb',
-                fontFamily: 'inherit',
-                sparkline: { enabled: false },
+                toolbar: {
+                    show: true,
+                },
             },
-
-            colors: ['#ff6b6b', '#fcb45e'],
-
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '35%',
-                    borderRadius: [6],
-                    borderRadiusApplication: 'end',
-                    borderRadiusWhenStacked: 'all',
+                    columnWidth: '100%',
+                    borderRadius: 3,
                 },
             },
-            markers: { size: 0 },
-
-            dataLabels: {
-                enabled: false,
-            },
-
             legend: {
                 show: false,
             },
-
-            grid: {
-                borderColor: 'rgba(0,0,0,0.1)',
-                strokeDashArray: 3,
-                xaxis: {
-                    lines: {
-                        show: false,
-                    },
-                },
+            dataLabels: {
+                enabled: false,
             },
-
             xaxis: {
                 type: 'datetime',
                 categories: labels,
                 labels: {
-                    style: { cssClass: 'grey--text lighten-2--text fill-color' },
+                    style: {
+                        cssClass: 'grey--text lighten-2--text fill-color',
+                    },
                 },
             },
-
             yaxis: {
-                show: true,
                 min: 0,
                 max: 25,
                 tickAmount: 5,
@@ -163,25 +191,17 @@
                     },
                 },
             },
-            stroke: {
-                show: true,
-                width: 3,
-                lineCap: 'butt',
-                colors: ['transparent'],
-            },
-
             tooltip: {
                 theme: 'dark',
                 x: {
                     format: 'dd MMM yyyy',
                 },
                 y: {
-                    formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                    formatter: function (value) {
                         return `${value} kg`;
                     },
                 },
             },
-
             responsive: [
                 {
                     breakpoint: 600,
@@ -194,10 +214,56 @@
                     },
                 },
             ],
-        };
+        });
 
-        var chart = new ApexCharts(document.querySelector('#chart'), chart);
         chart.render();
-    });
+    }
+
+    // Data asli untuk reset
+    const originalChartData = JSON.parse(JSON.stringify(chartData));
+
+    function filterDataByDate() {
+        const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
+        const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
+
+        const filteredData = [];
+        for (const [kelurahan, dataKelurahan] of Object.entries(chartData)) {
+            for (const [komoditas, dataKomoditas] of Object.entries(dataKelurahan)) {
+                dataKomoditas.tgl_panen.forEach((tanggal, index) => {
+                    const tanggalPanen = new Date(tanggal);
+                    if ((!startDate || tanggalPanen >= startDate) && (!endDate || tanggalPanen <= endDate)) {
+                        filteredData.push({
+                            kelurahan,
+                            komoditas,
+                            jml_panen: dataKomoditas.jml_panen[index] / 1000,
+                            tanggal_panen: tanggal,
+                        });
+                    }
+                });
+            }
+        }
+
+        updateChart(filteredData);
+    }
+
+    function resetData() {
+        // Kembalikan data ke data asli
+        chartData = JSON.parse(JSON.stringify(originalChartData));
+
+        // Reset input tanggal
+        startDateInput.value = '';
+        endDateInput.value = '';
+
+        // Update chart dengan data asli
+        filterData(); // Panggil filterData() untuk memperbarui chart tanpa filter
+    }
+
+    filterButton.addEventListener('click', filterDataByDate);
+    resetButton.addEventListener('click', resetData);
+
+    kelurahanSelect.addEventListener('change', filterData);
+    komoditasSelect.addEventListener('change', filterData);
+
+    filterData();
 </script>
-{% endblock %} {% endblock %}
+{% endblock %}

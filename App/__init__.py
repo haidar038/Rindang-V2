@@ -6,7 +6,7 @@ from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
-import os, io
+import io, os
 
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
@@ -20,12 +20,8 @@ DB_NAME = 'rindang_digifarm.db'
 
 def create_app():
     app = Flask(__name__)
-    db_path = os.path.join(os.getcwd(), f"{DB_NAME}")
-    db_uri = 'sqlite:///{}'.format(db_path)
-
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SECRET_KEY'] = 'rindang_digifarm'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # app.config['FLASK_ADMIN_SWATCH'] = 'simplex'
@@ -35,6 +31,7 @@ def create_app():
     login_manager.init_app(app)
     toastr.init_app(app)
     jwt.init_app(app)
+    # mongo.init_app(app)
 
     from .auth.routes import auth
     from .views.routes import views

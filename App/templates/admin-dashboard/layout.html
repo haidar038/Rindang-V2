@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>RINDANG - Admin Dashboard</title>
+        <title>{% block title %} {% endblock %}</title>
         <meta name="keywords" content="rindang sistem informasi pangan kota ternate kebutuhan cabai barito rica tanam petani" />
         <meta property="og:title" content="RINDANG - Rica Tanam Dalam Kampung" />
         <meta property="og:description" content="Sistem Informasi kebutuhan pangan dan informasi pangan Kota Ternate" />
@@ -89,7 +89,7 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ url_for('admin_page.dataproduksi' ) }}" target="_blank" aria-expanded="false">
+                                <a class="sidebar-link" href="{{ url_for('admin_page.dataproduksi' ) }}" aria-expanded="false">
                                     <span>
                                         <i class="ti ti-plant"></i>
                                     </span>
@@ -145,10 +145,10 @@
                                     <div class="dropdown">
                                         <a href="javascript:void(0)" class="nav-icon-hover gap-3 d-none d-lg-flex" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <img src="../../static/admin/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle" />
-                                            <!-- <div class="d-flex flex-column justify-content-center">
+                                            <div class="d-flex flex-column justify-content-center">
                                                 <span>Menu</span>
-                                                <small class="text-muted">Personal</small>
-                                            </div> -->
+                                                <small class="text-muted">Admin</small>
+                                            </div>
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                             <div class="message-body">
@@ -174,6 +174,7 @@
 
         <!-- Development -->
         <!-- TIPPY JS -->
+        {% block script %} {% endblock %}
         <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
         <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
 
@@ -181,17 +182,17 @@
         <script src="../../static/admin/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="../../static/admin/js/sidebarmenu.js"></script>
         <script src="../../static/admin/js/app.min.js"></script>
-        <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script>
+        <!-- <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script> -->
         <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
         <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
 
         <!-- TOOLTIPS -->
         <script>
-            tippy("#dwldBtn", {
-                content: "Export Laporan",
+            tippy('#dwldBtn', {
+                content: 'Export Laporan',
             });
-            tippy("#statBtn", {
-                content: "Lihat Statistik",
+            tippy('#statBtn', {
+                content: 'Lihat Statistik',
             });
         </script>
     </body>

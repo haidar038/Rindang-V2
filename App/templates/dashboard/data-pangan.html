@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div id="chart"></div>
-                    <!-- <div id="chart2" style="display: none;"></div> -->
+                    <div id="chart2" style="display: none"></div>
                 </div>
             </div>
             <!-- Chart End -->
@@ -295,23 +295,23 @@
                                                 </th>
                                                 <th class="align-middle text-center">
                                                     <!-- <a href="#" class="fw-semibold mb-0 h6">Kebun <i class="ti ti-arrows-down-up"></i></a> -->
-                                                    <a href="#" class="fw-semibold mb-0 h6" data-sort-by="kebun" data-sort-order="asc">Kebun <i class="ti ti-arrows-down-up"></i></a>
+                                                    <a href="" class="fw-semibold mb-0 h6" data-sort-by="kebun" data-sort-order="asc">Kebun <i class="ti ti-arrows-down-up"></i></a>
                                                 </th>
                                                 <th class="align-middle text-center">
-                                                    <!-- <a href="#" class="fw-semibold mb-0 h6">Jumlah Bibit <i class="ti ti-arrows-down-up"></i></a> -->
-                                                    <a href="#" class="fw-semibold mb-0 h6" data-sort-by="bibit" data-sort-order="asc">Jumlah Bibit <i class="ti ti-arrows-down-up"></i></a>
+                                                    <!-- <a href="" class="fw-semibold mb-0 h6">Jumlah Bibit <i class="ti ti-arrows-down-up"></i></a> -->
+                                                    <a href="" class="fw-semibold mb-0 h6" data-sort-by="bibit" data-sort-order="asc">Jumlah Bibit <i class="ti ti-arrows-down-up"></i></a>
                                                 </th>
                                                 <th class="align-middle text-center">
-                                                    <!-- <a href="#" class="fw-semibold mb-0 h6">Tanggal Penanaman <i class="ti ti-arrows-down-up"></i></a> -->
-                                                    <a href="#" class="fw-semibold mb-0 h6" data-sort-by="tanam" data-sort-order="asc">Tanggal Penanaman <i class="ti ti-arrows-down-up"></i></a>
+                                                    <!-- <a href="" class="fw-semibold mb-0 h6">Tanggal Penanaman <i class="ti ti-arrows-down-up"></i></a> -->
+                                                    <a href="" class="fw-semibold mb-0 h6" data-sort-by="tanam" data-sort-order="asc">Tanggal Penanaman <i class="ti ti-arrows-down-up"></i></a>
                                                 </th>
                                                 <th class="align-middle text-center">
-                                                    <!-- <a href="#" class="fw-semibold mb-0 h6">Status <i class="ti ti-arrows-down-up"></i></a> -->
-                                                    <a href="#" class="fw-semibold mb-0 h6" data-sort-by="status" data-sort-order="asc">Status <i class="ti ti-arrows-down-up"></i></a>
+                                                    <!-- <a href="" class="fw-semibold mb-0 h6">Status <i class="ti ti-arrows-down-up"></i></a> -->
+                                                    <a href="" class="fw-semibold mb-0 h6" data-sort-by="status" data-sort-order="asc">Status <i class="ti ti-arrows-down-up"></i></a>
                                                 </th>
                                                 <th class="align-middle text-center">
-                                                    <!-- <a href="#" class="fw-semibold mb-0 h6">Hasil Panen (kg) <i class="ti ti-arrows-down-up"></i></a> -->
-                                                    <a href="#" class="fw-semibold mb-0 h6" data-sort-by="hasil" data-sort-order="asc">Hasil Panen <i class="ti ti-arrows-down-up"></i></a>
+                                                    <!-- <a href="" class="fw-semibold mb-0 h6">Hasil Panen (kg) <i class="ti ti-arrows-down-up"></i></a> -->
+                                                    <a href="" class="fw-semibold mb-0 h6" data-sort-by="hasil" data-sort-order="asc">Hasil Panen <i class="ti ti-arrows-down-up"></i></a>
                                                 </th>
                                                 <th class="align-middle text-center">
                                                     <h6 class="fw-semibold mb-0">Menu</h6>
@@ -350,7 +350,7 @@
                                                     <div class="fw-bold">
                                                         <strong>{{ data_cabai.jml_panen/1000 }}</strong>
                                                     </div>
-                                                    <div class="small" id="tglPanenCabai">{{ data_cabai.tanggal_panen | default("Belum ada tanggal") }}</div>
+                                                    <div class="small" id="tglPanenCabai">{{ data_cabai.tanggal_panen | default("2022-10-01") }}</div>
                                                 </td>
                                                 <td class="border-bottom-0 align-middle">
                                                     <a class="btn btn-danger fs-6" href="{{ url_for('views.delete_data_pangan', id=data_cabai.id ) }}"><i class="ti ti-trash"></i></a>
@@ -564,8 +564,10 @@
     const tableHeaders = document.querySelectorAll('th a');
     const tableBody = document.querySelector('tbody'); // Get the table body element
 
-    sortOrder = {{ sortOrder }}
-    sortBy = {{ sortBy }}
+    const sortOrder = '{{ sortOrder }}';
+    const sortBy = '{{ sortBy }}';
+
+    console.log(sortBy, sortOrder);
 
     // Function to retrieve table data as an array of objects
     function getTableData() {
@@ -633,31 +635,35 @@
     const endDateInput = document.getElementById('end-date');
     const filterButton = document.getElementById('filter-button');
     const resetButton = document.getElementById('reset-button');
+    const chartContainer = document.getElementById('chart');
+    const chartContainer2 = document.getElementById('chart2');
 
-    let statCabai = {{ stat_cabai | safe }};
-    let statTomat = {{ stat_tomat | safe }};
-    let tanggalCabai = {{ tgl_panen_cabai | safe }};
-    let tanggalTomat = {{ tgl_panen_tomat | safe }};
+    let statCabai = JSON.parse('{{ stat_cabai | safe }}');
+    let statTomat = JSON.parse('{{ stat_tomat | safe }}');
+    let tanggalCabai = JSON.parse('{{ tgl_panen_cabai | safe }}');
+    let tanggalTomat = JSON.parse('{{ tgl_panen_tomat | safe }}');
 
     let statCabaiConv = statCabai.map((value) => value / 1000);
     let statTomatConv = statTomat.map((value) => value / 1000);
 
     let bulanIndonesia = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    // let HariIndonesia = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
     let formattedDates = tanggalCabai.map((tanggal) => {
-        let dateObject = new Date(tanggal); // konversi ke objek Date
-
-        // format tanggal menjadi "Tanggal Bulan Tahun"
-        tanggal = dateObject.getDate();
-        let bulan = bulanIndonesia[dateObject.getMonth()]; // bulan di JavaScript dimulai dari 0
+        let dateObject = new Date(tanggal);
+        let tanggalFormatted = dateObject.getDate();
+        let bulan = bulanIndonesia[dateObject.getMonth()];
         let tahun = dateObject.getFullYear();
-
-        return tanggal + ' ' + bulan + ' ' + tahun;
+        return tanggalFormatted + ' ' + bulan + ' ' + tahun;
     });
 
-    console.log(formattedDates); // output: array tanggal dalam format "Tanggal Bulan Tahun"
-    console.log(tanggalCabai);
+    let totalPanenCabai = parseFloat('{{totalPanenCabai}}', 10);
+    let totalPanenTomat = parseFloat('{{totalPanenTomat}}', 10);
+
+    let breakupChart = null;
+
+    // Inisialisasi chart (lakukan ini hanya sekali saat halaman dimuat)
+    let chartcabai = null;
+    let charttomat = null;
 
     $(function () {
         const baseChartOptions = {
@@ -693,14 +699,63 @@
             },
             // ... other common options
         };
-        // =====================================
-        // Grafik Produksi
-        // =====================================
-        var cabaiBar = {
+
+        // Fungsi untuk memperbarui opsi chart
+        function updateChartOptions(chart, data, categories, color) {
+            chart.updateOptions({
+                series: [{ name: 'Panen ' + (data === statCabaiConv ? 'Cabai' : 'Tomat'), data: data }],
+                colors: color,
+                xaxis: {
+                    categories: categories,
+                    labels: {
+                        style: { cssClass: 'grey--text lighten-2--text fill-color' },
+                    },
+                },
+            });
+        }
+
+        // Fungsi untuk menyaring data dan memperbarui chart
+        function filterData() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            const filteredCabaiData = statCabaiConv.filter((value, index) => {
+                const date = new Date(tanggalCabai[index]);
+                return date >= startDate && date <= endDate;
+            });
+
+            const filteredTomatData = statTomatConv.filter((value, index) => {
+                const date = new Date(tanggalTomat[index]);
+                return date >= startDate && date <= endDate;
+            });
+
+            const filteredTanggalCabai = tanggalCabai.filter((tanggal, index) => {
+                const date = new Date(tanggal);
+                return date >= startDate && date <= endDate;
+            });
+
+            const filteredTanggalTomat = tanggalTomat.filter((tanggal, index) => {
+                const date = new Date(tanggal);
+                return date >= startDate && date <= endDate;
+            });
+
+            updateChartOptions(chartcabai, filteredCabaiData, filteredTanggalCabai, '#ff6b6b');
+            updateChartOptions(charttomat, filteredTomatData, filteredTanggalTomat, '#fcb45e');
+        }
+
+        // Fungsi untuk mereset chart ke data awal
+        function resetChart() {
+            updateChartOptions(chartcabai, statCabaiConv, tanggalCabai, '#ff6b6b');
+            updateChartOptions(charttomat, statTomatConv, tanggalTomat, '#fcb45e');
+            startDateInput.value = '';
+            endDateInput.value = '';
+        }
+
+        // Membuat chart cabai
+        chartcabai = new ApexCharts(chartContainer, {
             ...baseChartOptions,
             series: [{ name: 'Panen Cabai', data: statCabaiConv }],
             colors: '#ff6b6b',
-
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -711,15 +766,12 @@
                 },
             },
             markers: { size: 0 },
-
             dataLabels: {
                 enabled: false,
             },
-
             legend: {
                 show: false,
             },
-
             grid: {
                 borderColor: 'rgba(0,0,0,0.1)',
                 strokeDashArray: 3,
@@ -729,7 +781,6 @@
                     },
                 },
             },
-
             xaxis: {
                 type: 'datetime',
                 categories: tanggalCabai,
@@ -737,7 +788,6 @@
                     style: { cssClass: 'grey--text lighten-2--text fill-color' },
                 },
             },
-
             yaxis: {
                 show: true,
                 min: 0,
@@ -755,9 +805,17 @@
                 lineCap: 'butt',
                 colors: ['transparent'],
             },
-
-            tooltip: { theme: 'light' },
-
+            tooltip: {
+                theme: 'dark',
+                x: {
+                    format: 'dd MMM yyyy',
+                },
+                y: {
+                    formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                        return `${value} kg`;
+                    },
+                },
+            },
             responsive: [
                 {
                     breakpoint: 600,
@@ -770,13 +828,14 @@
                     },
                 },
             ],
-        };
+        });
+        chartcabai.render();
 
-        var tomatBar = {
+        // Membuat chart tomat
+        charttomat = new ApexCharts(chartContainer2, {
             ...baseChartOptions,
             series: [{ name: 'Panen Tomat', data: statTomatConv }],
             colors: '#fcb45e',
-
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -787,15 +846,12 @@
                 },
             },
             markers: { size: 0 },
-
             dataLabels: {
                 enabled: false,
             },
-
             legend: {
                 show: false,
             },
-
             grid: {
                 borderColor: 'rgba(0,0,0,0.1)',
                 strokeDashArray: 3,
@@ -805,15 +861,13 @@
                     },
                 },
             },
-
             xaxis: {
-                type: 'category',
+                type: 'datetime',
                 categories: tanggalTomat,
                 labels: {
                     style: { cssClass: 'grey--text lighten-2--text fill-color' },
                 },
             },
-
             yaxis: {
                 show: true,
                 min: 0,
@@ -831,9 +885,17 @@
                 lineCap: 'butt',
                 colors: ['transparent'],
             },
-
-            tooltip: { theme: 'light' },
-
+            tooltip: {
+                theme: 'dark',
+                x: {
+                    format: 'dd MMM yyyy',
+                },
+                y: {
+                    formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                        return `${value} kg`;
+                    },
+                },
+            },
             responsive: [
                 {
                     breakpoint: 600,
@@ -846,43 +908,13 @@
                     },
                 },
             ],
-        };
+        });
+        charttomat.render();
 
-        var chartcabai = new ApexCharts(document.querySelector('#chart'), cabaiBar);
-        var charttomat = new ApexCharts(document.querySelector('#chart2'), tomatBar);
-        chartcabai.render();
-
-        function updateChartOptions(chart, data, categories, color) {
-            chart.updateOptions({
-                series: [{ name: 'Panen ' + (data === statCabaiConv ? 'Cabai' : 'Tomat'), data: data }],
-                colors: color,
-                xaxis: {
-                    categories: categories,
-                    labels: {
-                        style: { cssClass: 'grey--text lighten-2--text fill-color' },
-                    },
-                },
-            });
-        }
-
-        function filterPangan() {
-            var x = document.getElementById('select-pangan').value;
-            if (x === 'chart') {
-                updateChartOptions(chartcabai, statCabaiConv, tanggalCabai, '#ff6b6b');
-            } else if (x === 'chart2') {
-                updateChartOptions(chartcabai, statTomatConv, tanggalTomat, '#fcb45e');
-            }
-        }
-
-        // =====================================
-        // Jumlah Kebutuhan dan Hasil Produksi
-        // =====================================
-        let totalPanenCabai = parseInt('{{totalPanenCabai}}', 10);
-        let totalPanenTomat = parseInt('{{totalPanenTomat}}', 10);
-
-        var breakup = {
+        // Membuat chart breakup
+        breakupChart = new ApexCharts(document.querySelector('#breakup'), {
             color: '#adb5bd',
-            series: [totalPanenCabai, totalPanenTomat],
+            series: [totalPanenCabai / 1000, totalPanenTomat / 1000],
             labels: ['Cabai', 'Tomat'],
             chart: {
                 width: 260,
@@ -895,23 +927,20 @@
                     startAngle: 0,
                     endAngle: 360,
                     donut: {
-                        size: '75%',
+                        size: '65%',
                     },
                 },
             },
             stroke: {
                 show: false,
             },
-
             dataLabels: {
                 enabled: false,
             },
-
             legend: {
                 show: false,
             },
             colors: ['#ff6b6b', '#fcb45e'],
-
             responsive: [
                 {
                     breakpoint: 991,
@@ -924,86 +953,52 @@
             ],
             tooltip: {
                 theme: 'dark',
-                fillSeriesColor: false,
+                x: {
+                    format: 'dd MMM yyyy',
+                },
+                y: {
+                    formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                        return `${value} kg`;
+                    },
+                },
             },
-        };
-
-        var chart = new ApexCharts(document.querySelector('#breakup'), breakup);
-        chart.render();
-
-        // Add event listener to the filter button
-        filterButton.addEventListener('click', function () {
-            // Get the selected date range
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-
-            // Filter the data based on the selected date range
-            const filteredCabaiData = statCabaiConv.filter((value, index) => {
-                const date = new Date(tanggalCabai[index]);
-                return date >= startDate && date <= endDate;
-            });
-
-            const filteredTomatData = statTomatConv.filter((value, index) => {
-                const date = new Date(tanggalTomat[index]);
-                return date >= startDate && date <= endDate;
-            });
-
-            // Update the chart data with the filtered data
-            // chartcabai.updateSeries([{ name: "Panen Cabai", data: filteredCabaiData }]);
-            // charttomat.updateSeries([{ name: "Panen Tomat", data: filteredTomatData }]);
-
-            const filteredTanggalCabai = tanggalCabai.filter((tanggal, index) => {
-                const date = new Date(tanggal);
-                return date >= startDate && date <= endDate;
-            });
-
-            const filteredTanggalTomat = tanggalTomat.filter((tanggal, index) => {
-                const date = new Date(tanggal);
-                return date >= startDate && date <= endDate;
-            });
-
-            chartcabai.updateOptions({
-                series: [{ name: 'Panen Cabai', data: filteredCabaiData }],
-                xaxis: {
-                    categories: filteredTanggalCabai,
-                    // ...
-                },
-            });
-
-            charttomat.updateOptions({
-                series: [{ name: 'Panen Tomat', data: filteredTomatData }],
-                xaxis: {
-                    categories: filteredTanggalTomat,
-                    // ...
-                },
-            });
         });
+        breakupChart.render();
 
-        // Add event listener to the reset button
-        // ... (rest of the script)
+        // Menampilkan chart sesuai pilihan
+        function filterPangan() {
+            const selectedValue = selectPangan.value;
+            if (selectedValue === 'chart') {
+                // Pastikan chart cabai sudah render
+                if (!chartcabai.rendered) {
+                    chartcabai.render();
+                }
+                chartContainer.style.display = 'block';
+                chartContainer2.style.display = 'none';
+            } else if (selectedValue === 'chart2') {
+                // Pastikan chart tomat sudah render
+                if (!charttomat.rendered) {
+                    charttomat.render();
+                }
+                chartContainer.style.display = 'none';
+                chartContainer2.style.display = 'block';
+            }
+        }
 
-        resetButton.addEventListener('click', function () {
-            // Update the chart data with the original data
-            chartcabai.updateSeries([{ name: 'Panen Cabai', data: statCabaiConv }]);
-            charttomat.updateSeries([{ name: 'Panen Tomat', data: statTomatConv }]);
+        selectPangan.addEventListener('change', filterPangan);
 
-            // Reset the x-axis categories to the original dates
-            chartcabai.updateOptions({
-                xaxis: {
-                    categories: tanggalCabai,
-                },
-            });
+        // Menambahkan event listener untuk filter button
+        filterButton.addEventListener('click', filterData);
 
-            charttomat.updateOptions({
-                xaxis: {
-                    categories: tanggalTomat,
-                },
-            });
+        // Menambahkan event listener untuk reset button
+        resetButton.addEventListener('click', resetChart);
 
-            // Optionally, reset the date range inputs (if you have them)
-            startDateInput.value = '';
-            endDateInput.value = '';
-        });
+        function updateBreakupChart() {
+            breakupChart.updateSeries([totalPanenCabai / 1000, totalPanenTomat / 1000]);
+        }
+
+        // Panggil updateBreakupChart() setelah chart breakup dibuat
+        updateBreakupChart();
     });
 </script>
 {% endblock %}

@@ -13,328 +13,93 @@ from App import db
 
 views = Blueprint('views', __name__)
 
+# Constants for API URL parameters
+KAB_KOTA = 458  # Ternate
+KOMODITAS_ID = 3
+TARGET_KOMODITAS = ["Cabai Merah Keriting", "Cabai Rawit Merah", "Bawang Merah"]
+
+# Helper function to fetch and format price data from API
+def fetch_price_data(start_date, end_date):
+    """Fetches price data from the API and formats it for display.
+
+    Args:
+        start_date (str): The starting date in YYYY-MM-DD format.
+        end_date (str): The ending date in YYYY-MM-DD format.
+
+    Returns:
+        list: A list of dictionaries containing formatted price data.
+    """
+
+    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{KAB_KOTA}/{KOMODITAS_ID}/{start_date}/{end_date}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+
+        data = response.json()
+
+        table_data = []
+        for item in data["data"]:
+            if item["name"] in TARGET_KOMODITAS:
+                for date_data in item["by_date"]:
+                    date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
+                    formatted_date = date_obj.strftime("%d/%m/%Y")
+                    geomean_value = date_data["geomean"]
+
+                    if geomean_value == "-":
+                        formatted_price = "-"
+                    else:
+                        geomean_float = float(geomean_value)
+                        formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
+                        formatted_price = formatted_price[:-3]
+
+                    table_data.append({
+                        "date": formatted_date,
+                        "name": item["name"],
+                        "price": formatted_price
+                    })
+
+        return table_data
+
+    except requests.exceptions.RequestException as e:
+        flash(f"Error fetching data: {e}", category='error')
+        return []  # Return an empty list on error
+
 @views.route('/', methods=['POST', 'GET'])
 def index():
     kelurahan = Kelurahan.query.all()
     produksi = DataPangan.query.all()
 
-    # if current_user.is_authenticated:
-    #     if current_user.account_type == 'admin':
-    #         return redirect(url_for('admin_page.index'))
-    #     elif current_user.account_type == 'user':
-    #         return redirect(url_for('views.dashboard'))
-
     today = datetime.today()
-    kab_kota = 458 #Ternate
-    komoditas_id = 3
     one_week_ago = today - timedelta(days=7)
-
-    # Format dates as YYYY-MM-DD
     start_date = one_week_ago.strftime("%Y-%m-%d")
     end_date = today.strftime("%Y-%m-%d")
 
-    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-
-        data = response.json()
-
-        target = ["Cabai Merah Keriting"]
-
-        data_harga = []
-        nama_komoditas = []
-
-        for item in data["data"]:
-            if item["name"] in target:
-                komoditas = item["by_date"]
-                data_harga.append(komoditas)
-                nama_komoditas.append(item['name'])
-
-        table_data = []
-
-        for item in data["data"]:
-            for date_data in item["by_date"]:
-                date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
-                formatted_date = date_obj.strftime("%d/%m/%Y")
-
-                # Handle cases where geomean is '-'
-                geomean_value = date_data["geomean"]
-                if geomean_value == "-":
-                    formatted_price = "-"
-                else:
-                    geomean_float = float(geomean_value)
-
-                    formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                    formatted_price = formatted_price[:-3]
-
-                table_data.append({
-                    "date": formatted_date,
-                    "name": item["name"],
-                    "price": formatted_price
-                })
-
-        data_tanggal = []
-
-        for date_str in data['meta']['date']:
-            data_tanggal.append(date_str)
-
-    except requests.exceptions.RequestException as e:
-        # Handle request errors gracefully (e.g., network issues, server errors)
-        flash(f"Error fetching data: {e}", category='error')
-        table_data = []  # Set table_data to empty list in case of errors
+    table_data = fetch_price_data(start_date, end_date)
 
     total_kebun = sum(kel.kebun for kel in kelurahan)
     total_panen = sum(prod.jml_panen for prod in produksi)
 
     return render_template('index.html', table_data=table_data, kebun=total_kebun, produksi=total_panen, round=round)
 
-
-# @views.route('/beranda', methods=['GET', 'POST'])
-# @login_required
-# def home():
-#     if current_user.is_authenticated and session['account_type'] == 'user':
-#         postingan = DataPangan.query.all()
-#         user = User.query.all()
-
-#         if request.method == 'POST':
-#             teks = request.form['tulisan']
-#             anonym = True if request.form.get('anonim') == 'on' else False
-
-#             cerita = DataPangan(konten=teks, tanggal=datetime.utcnow(), status=False, anonym=anonym, user_id=current_user.id)
-#             db.session.add(cerita)
-#             db.session.commit()
-#             print('DataPangan berhasil dibuat!')
-#             flash('Berhasil posting cerita!', 'success')
-#             return redirect(request.referrer)
-#         return render_template('beranda.html', postingan=postingan, user=user)
-#     elif current_user.is_authenticated and session['account_type'] == 'admin':
-#         return redirect(url_for('views.dashboard'))
-#     else:
-#         return redirect(url_for('auth.login'))
-    
-# @views.route('/profil/<string:username>', methods=['GET', 'POST'])
-# @login_required
-# def profil(username):
-#     if current_user.is_authenticated and session['account_type'] == 'user':
-#         # user = User.query.filter_by(username=username)
-#         user = User.query.filter_by(username=username).first()
-
-#         if request.method == 'POST':
-#             if user:
-#                 password = request.form['password']
-#                 if check_password_hash(user.password, password):
-#                     user.nama_lengkap = request.form['nama_lengkap']
-#                     user.username = request.form['username']
-#                     user.email = request.form['email']
-#                     user.password = generate_password_hash(request.form['password'], method='pbkdf2')
-#                     db.session.commit()
-#                     flash('Akun berhasil diubah!', category='success')
-#                     print('Akun berhasil diperbarui!')
-#                     return redirect(url_for('views.profil', username=username))
-#                 else:
-#                     flash("Kata sandi salah, silakan coba lagi.", category='danger')
-#                     return redirect(url_for('views.profil', username=user.username))
-
-#         post = DataPangan.query.filter_by(user_id=current_user.id).all()
-#         return render_template("profil.html", user=user, post=post)
-#     elif current_user.is_authenticated and session['account_type'] == 'admin':
-#         return render_template("admin_profile.html")
-#     else:
-#         return redirect(url_for('auth.login'))
-
-# @views.route('/about')
-# def about():
-#     return render_template('about.html')
-
-
-# +++++++++++++++++++++++++++++++++++++ CHAT ROOM SESSION ++++++++++++++++++++++++++++++++++++++++
-
-# page = request.args.get('page', 1, type=int)
-# per_page = 10  # Ubah sesuai kebutuhan
-# messages = Chat.query.filter_by(room_id=room).order_by(Chat.timestamp.desc()).paginate(page, per_page, error_out=False)
-# chatContent = messages.items
-
-# @views.route('/chat/<string:room>/', defaults={'page_num': 1})
-# @views.route('/chat/<string:room>/<int:page_num>')
-# @login_required
-# def chat(room, page_num):
-#     user = User.query.all()
-#     superuser = Admin.query.filter_by(account_type='admin').first()
-#     if user or superuser:
-#         msgs = Chat.query.filter_by(room_id=room).order_by(Chat.tanggal.desc()).paginate(page=page_num, per_page=5)
-#         return render_template('chat_room.html', room=room, user=user, msgs=msgs, error_out=True)
-#     else:
-#         return "User not found", 404
-
-# @views.route('/get_messages', methods=['GET'])
-# def get_messages():
-#     page = request.args.get('page', 1, type=int)
-#     per_page = 10  # Ubah sesuai kebutuhan
-
-#     messages = Chat.query.order_by(Chat.timestamp.desc()).paginate(page, per_page, error_out=False)
-#     messages_data = [{'content': msg.content, 'user_id': msg.user_id} for msg in messages.items]
-
-#     return jsonify({'messages': messages_data, 'has_next': messages.has_next})
-
-# @views.route('/chat/delete_chat/<string:room>', methods=['GET'])
-# def delete_chat(room):
-#     # Use the SQLAlchemy delete() method to delete all rows
-#     chat = Chat.query.filter_by(room_id=room).all()
-#     for chats in chat:
-#         db.session.delete(chats)
-    
-#     # Commit the changes to the database
-#     db.session.commit()
-
-#     return redirect(request.referrer)
-
-# @socketio.on("connect")
-# def connect():
-#     print("Client connected!")
-
-# @socketio.on('online')
-# def online(data):
-#     emit('status_change', {'username': data['username'], 'status': 'online'}, broadcast=True)
-
-# @socketio.on("user_join")
-# def user_join(room):
-#     username = current_user.username
-#     join_room(room)
-#     if session['account_type'] == 'admin':
-#         chats = Chat.query.filter_by(room_id=room).all()
-#         for chat in chats:
-#             chat.read = True
-#         db.session.commit()
-#     emit('join', {'username':username}, to=room)
-#     print(f"Client {username} joined to {room}!")
-
-# @socketio.on("new_message")
-# def handle_message(message, room):
-#     username = current_user.username
-#     if room in rooms():
-#         emit('chat', {'username':username, 'message':message}, broadcast=True, to=room)
-
-#     print(f"New message: {message} from {username}")
-#     msg_content = Chat(pesan=message, tanggal=datetime.utcnow(), sender=current_user.username, room_id=room, user_id=current_user.id)
-#     db.session.add(msg_content)
-#     db.session.commit()
-
-# @socketio.on('leave')
-# def leave(room):
-#     username = current_user.username
-#     room = room
-#     print(f"{username} leave room")
-#     leave_room(room)
-#     emit('leave', {'username': username}, to=room)
-
-# +++++++++++++++++++++++++++++++ CHAT ROOM SESSION ++++++++++++++++++++++++++=
-
-
-# todo =========================== ADMIN SECTION =================================
-# @views.route('/adminProfile/<string:username>', methods=['GET', 'POST'])
-# @login_required
-# def adminProfile(username):
-#     if current_user.is_authenticated and current_user.account_type == 'admin':
-#         user = Admin.query.filter_by(username=username).first()
-
-#         if request.method == 'POST':
-#             if user:
-#                 db.session.delete(user)
-#                 db.session.commit()
-#                 username = request.form['username']
-#                 password = request.form['password']
-
-#                 if check_password_hash(user.password, password):
-#                     update_user = Admin(username=username, password=generate_password_hash(password, method='pbkdf2'))
-#                     db.session.add(update_user)
-#                     db.session.commit()
-#                     flash('Akun berhasil diubah!', category='success')
-#                     print('Akun berhasil diperbarui!')
-#                     return redirect(url_for('views.adminProfile', username=username))
-#         return render_template("admin_profile.html")
-    
-#     elif current_user.is_authenticated and current_user.account_type == 'user':
-#         return render_template("profil.html")
-#     else:
-#         return redirect(url_for('auth.adminlogin'))
-
 @views.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     if current_user.account_type == 'admin':
         return redirect(url_for('admin_page.index'))
-    
+
     data_pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
 
     today = datetime.today()
-    kab_kota = 458 #Ternate
-    komoditas_id = 3
     one_week_ago = today - timedelta(days=7)
-
-    # Format dates as YYYY-MM-DD
     start_date = one_week_ago.strftime("%Y-%m-%d")
     end_date = today.strftime("%Y-%m-%d")
 
-    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-
-        data = response.json()
-
-        target = ["Cabai Merah Keriting"]
-
-        data_harga = []
-        nama_komoditas = []
-
-        for item in data["data"]:
-            if item["name"] in target:
-                komoditas = item["by_date"]
-                data_harga.append(komoditas)
-                nama_komoditas.append(item['name'])
-
-        table_data = []
-
-        for item in data["data"]:
-            for date_data in item["by_date"]:
-                date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
-                formatted_date = date_obj.strftime("%d/%m/%Y")
-
-                # Handle cases where geomean is '-'
-                geomean_value = date_data["geomean"]
-                if geomean_value == "-":
-                    formatted_price = "-"
-                else:
-                    geomean_float = float(geomean_value)
-
-                    # Remove decimal places
-                    # geomean_no_decimals = int(geomean_float)
-
-                    formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                    formatted_price = formatted_price[:-3]
-
-                table_data.append({
-                    "date": formatted_date,
-                    "name": item["name"],
-                    "price": formatted_price
-                })
-
-        data_tanggal = []
-
-        for date_str in data['meta']['date']:
-            data_tanggal.append(date_str)
-
-    except requests.exceptions.RequestException as e:
-        # Handle request errors gracefully (e.g., network issues, server errors)
-        flash(f"Error fetching data: {e}", category='error')
-        table_data = []  # Set table_data to empty list in case of errors
+    table_data = fetch_price_data(start_date, end_date)
 
     total_panen = sum(prod.jml_panen for prod in data_pangan if data_pangan)
-    
-    return render_template('dashboard/index.html', data=data, total_panen=total_panen, harga=table_data, round=round)
+
+    return render_template('dashboard/index.html', total_panen=total_panen, harga=table_data, round=round)
 
 @views.route('/dashboard/penjualan')
 @login_required
@@ -348,60 +113,13 @@ def hargapangan():
         return redirect(url_for('admin_page.index'))
 
     today = datetime.today()
-    kab_kota = 458 #Ternate
-    komoditas_id = 3
     one_week_ago = today - timedelta(days=7)
-
-    # Format dates as YYYY-MM-DD
     start_date = one_week_ago.strftime("%Y-%m-%d")
     end_date = today.strftime("%Y-%m-%d")
 
-    url = f"https://panelharga.badanpangan.go.id/data/kabkota-range-by-levelharga/{kab_kota}/{komoditas_id}/{start_date}/{end_date}"
+    table_data = fetch_price_data(start_date, end_date)
 
-    response = requests.get(url)
-    response.raise_for_status()
-
-    data = response.json()
-
-    target = ["Cabai Merah Keriting", "Cabai Rawit Merah", "Bawang Merah"]
-
-    data_harga = []
-    nama_komoditas = []
-    for item in data["data"]:
-        if item["name"] in target:
-            komoditas = item["by_date"]
-            data_harga.append(komoditas)
-            nama_komoditas.append(item['name'])
-    table_data = []
-    for item in data["data"]:
-        for date_data in item["by_date"]:
-            date_obj = datetime.strptime(date_data["date"], "%Y-%m-%d")
-            formatted_date = date_obj.strftime("%d/%m/%Y")
-
-            # Handle cases where geomean is '-'
-            geomean_value = date_data["geomean"]
-            if geomean_value == "-":
-                formatted_price = "-"
-            else:
-                geomean_float = float(geomean_value)
-
-                # Remove decimal places
-                # geomean_no_decimals = int(geomean_float)
-
-                formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                formatted_price = formatted_price[:-3]
-
-            table_data.append({
-                "date": formatted_date,
-                "name": item["name"],
-                "price": formatted_price
-            })
-    
-    data_tanggal = []
-    for date_str in data['meta']['date']:
-        data_tanggal.append(date_str)
-
-    return render_template('dashboard/harga-pangan.html', data=data, table_data=table_data, dates=data_tanggal)
+    return render_template('dashboard/harga-pangan.html', table_data=table_data)
 
 @views.route('/dashboard/data-pangan', methods=['POST','GET'])
 @login_required
@@ -417,13 +135,9 @@ def dataproduksi():
     per_page = 5 # Number of items per page
 
     total_panen = []
-
     for total in pangan:
         panenTotal = total.jml_panen
         total_panen.append(panenTotal)
-
-    # Persentase Kenaikan Produksi Pangan
-    # kenaikan = round(((total_panen[-2] - total_panen[-1])/total_panen[-1])*100) if not 0 in total_panen else 0
 
     cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
     tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
@@ -447,41 +161,21 @@ def dataproduksi():
         stat_tomat.append(totalTomat)
         tgl_panen_tomat.append(tglPanenTomat)
 
-    def calc_increase_cabai(stat_cabai):
-    # Check if the list is empty or contains only one element
-        if len(stat_cabai) < 2:
+    # Helper function to calculate percentage increase
+    def calc_increase(data):
+        if len(data) < 2 or 0 in data:
             return 0
-        # Check if the list contains zero
-        elif 0 in stat_cabai:
-            return 0
-        else:
-            return round(((stat_cabai[-1] - stat_cabai[-2])/stat_cabai[-2])*100)
-    
-    def calc_increase_tomat(stat_tomat):
-    # Check if the list is empty or contains only one element
-        if len(stat_tomat) < 2:
-            return 0
-        # Check if the list contains zero
-        elif 0 in stat_tomat:
-            return 0
-        else:
-            return round(((stat_tomat[-1] - stat_tomat[-2])/stat_tomat[-2])*100)
+        return round(((data[-1] - data[-2])/data[-2])*100)
 
     total_of_panen = sum(total_panen)
     totalPanenCabai = sum(stat_cabai)
     totalPanenTomat = sum(stat_tomat)
-
-    print(stat_cabai)
-    print(tgl_panen_cabai)
 
     if request.method == 'POST':
         kebun = request.form['kebun']
         komoditas = request.form['komoditas']
         jumlahBibit = request.form['jumlahBibit']
         tglBibit = request.form['tglBibit']
-        # status = request.form['status']
-        # jumlahPanen = request.form['jumlahPanen']
-        # tglPanen = request.form['tglPanen']
 
         add_data = DataPangan(kebun=kebun, komoditas=komoditas,
                               tanggal_bibit=tglBibit, jml_bibit=jumlahBibit,
@@ -492,48 +186,8 @@ def dataproduksi():
         print('DataPangan berhasil dibuat!')
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
-    
-    sortBy = request.args.get('sort_by')
-    sortOrder = request.args.get('sort_order', 'asc')
 
-    if sortBy:
-        if sortBy == 'kebun':
-            if sortOrder == 'asc':
-                cabai = cabai.order_by(DataPangan.kebun.asc())
-                tomat = tomat.order_by(DataPangan.kebun.asc())
-            else:
-                cabai = cabai.order_by(DataPangan.kebun.desc())
-                tomat = tomat.order_by(DataPangan.kebun.desc())
-        elif sortBy == 'bibit':
-            if sortOrder == 'asc':
-                cabai = cabai.order_by(DataPangan.kebun.asc())
-                tomat = tomat.order_by(DataPangan.kebun.asc())
-            else:
-                cabai = cabai.order_by(DataPangan.kebun.desc())
-                tomat = tomat.order_by(DataPangan.kebun.desc())
-        elif sortBy == 'tanam':
-            if sortOrder == 'asc':
-                cabai = cabai.order_by(DataPangan.kebun.asc())
-                tomat = tomat.order_by(DataPangan.kebun.asc())
-            else:
-                cabai = cabai.order_by(DataPangan.kebun.desc())
-                tomat = tomat.order_by(DataPangan.kebun.desc())
-        elif sortBy == 'status':
-            if sortOrder == 'asc':
-                cabai = cabai.order_by(DataPangan.kebun.asc())
-                tomat = tomat.order_by(DataPangan.kebun.asc())
-            else:
-                cabai = cabai.order_by(DataPangan.kebun.desc())
-                tomat = tomat.order_by(DataPangan.kebun.desc())
-        elif sortBy == 'hasil':
-            if sortOrder == 'asc':
-                cabai = cabai.order_by(DataPangan.kebun.asc())
-                tomat = tomat.order_by(DataPangan.kebun.asc())
-            else:
-                cabai = cabai.order_by(DataPangan.kebun.desc())
-                tomat = tomat.order_by(DataPangan.kebun.desc())
-
-    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase_cabai(stat_cabai), kenaikan_tomat=calc_increase_tomat(stat_tomat), stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat), cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat), sortBy=sortBy, sortOrder=sortOrder)
+    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase(stat_cabai), kenaikan_tomat=calc_increase(stat_tomat), stat_cabai=stat_cabai, stat_tomat=stat_tomat, cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
 @login_required
@@ -601,7 +255,7 @@ def updatepangan(id):
     pangan = DataPangan.query.get_or_404(id)
     kel = Kelurahan.query.filter_by(id=current_user.kelurahan_id).first()
 
-    updateProd = request.form['updateProduksi']
+    updateProd = request.form.get('updateProduksi')
 
     if updateProd == 'updateProduksi':
         if request.method == 'POST':
@@ -609,10 +263,6 @@ def updatepangan(id):
             komoditas = request.form['updateKomoditas']
             jumlahBibit = request.form['updateJumlahBibit']
             tglBibit = request.form['updateTglBibit']
-
-            if pangan.status == 'Penanaman':
-                jumlahPanen = DataPangan.query.filter_by(id=id)
-                tglPanen = DataPangan.query.filter_by(id=id)
 
             pangan.kebun = kebun
             pangan.komoditas = komoditas
@@ -626,23 +276,12 @@ def updatepangan(id):
             jumlahPanen = request.form['updateJumlahPanen']
             tglPanen = request.form['updateTglPanen']
 
-            # totalKomod = DataPangan.query.filter_by()
-
-            # total_panen = []
-
-            # for total in pangan:
-            #     panenTotal = total.jml_panen
-            #     total_panen.append(panenTotal)
-
-            # total_of_panen = sum(total_panen)
-
             pangan.status = 'Panen'
             pangan.jml_panen = jumlahPanen
             pangan.tanggal_panen = tglPanen
             pangan.kelurahan_id = kel.id
 
             kel.jml_panen = jumlahPanen
-            # kel.komoditas = total_of_panen
 
             db.session.commit()
             return redirect(request.referrer)
@@ -655,32 +294,15 @@ def delete_data_pangan(id):
     db.session.commit()
     return redirect(url_for('views.dataproduksi'))
 
-# @views.route('/dashboard/approve_post/<int:id>', methods=['GET'])
-# def approve_post(id):
-#     post = DataPangan.query.get_or_404(id)
-#     post.status = True
-#     db.session.commit()
-#     return redirect(url_for('views.dashboard'))
-
-# @views.route('/delete_post/<int:id>', methods=['GET'])
-# def delete_post(id):
-#     post = DataPangan.query.get_or_404(id)
-#     db.session.delete(post)
-#     db.session.commit()
-#     return redirect(url_for('views.dashboard'))
-
 # todo ============== PROFILE PAGE ==============
 @views.route('/dashboard/profil', methods=['GET', 'POST'])
 @login_required
 def profil():
-    print(current_user.account_type)
     if current_user.account_type != 'user':
         return redirect(url_for('admin_page.index'))
 
     user = User.query.filter_by(id=current_user.id).first()
     kelurahan = Kelurahan.query.filter_by(id=user.kelurahan_id).first()
-
-    #list_kelurahan = ['Sasa', 'Kalumpang', 'Kulaba', 'Tubo', '']
 
     return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
@@ -690,7 +312,7 @@ def updateprofil(id):
     user = User.query.get_or_404(id)
     kelurahan = Kelurahan.query.filter_by(user_id=current_user.id).first()
 
-    form_type = request.form['formType']
+    form_type = request.form.get('formType')
 
     if form_type == 'Data User':
         if request.method == 'POST':
@@ -783,50 +405,10 @@ def updatepassword(id):
             flash('Kata sandi salah, silakan coba lagi!', category='error')  # Assuming you have a flash message system
             return redirect(url_for('views.settings'))  # Redirect back to the form
 
-# @views.route('/dashboard/pengaturan/update-password/<int:id>', methods=['GET', 'POST'])
-# def updatepassword(id):
-#     user = User.query.get_or_404(id)
-#     if request.method == 'POST':
-#         user.password = request.form['userPass']
-
 @views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
 @login_required
 def weather():
     return render_template('dashboard/weather.html')
-
-# @views.route('/profil/<string:username>', methods=['GET', 'POST'])
-# @login_required
-# def profil(username):
-#     if current_user.is_authenticated and session['account_type'] == 'user':
-#         # user = User.query.filter_by(username=username)
-#         user = User.query.filter_by(username=username).first()
-
-#         if request.method == 'POST':
-#             if user:
-#                 password = request.form['password']
-#                 if check_password_hash(user.password, password):
-#                     user.nama_lengkap = request.form['nama_lengkap']
-#                     user.username = request.form['username']
-#                     user.email = request.form['email']
-#                     user.password = generate_password_hash(request.form['password'], method='pbkdf2')
-#                     db.session.commit()
-#                     flash('Akun berhasil diubah!', category='success')
-#                     print('Akun berhasil diperbarui!')
-#                     return redirect(url_for('views.profil', username=username))
-#                 else:
-#                     flash("Kata sandi salah, silakan coba lagi.", category='danger')
-#                     return redirect(url_for('views.profil', username=user.username))
-
-#         post = DataPangan.query.filter_by(user_id=current_user.id).all()
-#         return render_template("profil.html", user=user, post=post)
-#     elif current_user.is_authenticated and session['account_type'] == 'admin':
-#         return render_template("admin_profile.html")
-#     else:
-#         return redirect(url_for('auth.login'))
-
-# @views.route('/about')
-# def about():
-#     return render_template('about.html')
 
 # ========================= KELURAHAN SECTION =========================
 @views.route('/peta-sebaran')

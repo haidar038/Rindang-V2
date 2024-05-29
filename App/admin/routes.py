@@ -16,14 +16,14 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-import io, os, base64, locale
+import io, os, base64, locale, json
 
 from App.models import User, AppAdmin, DataPangan, Kelurahan, db
 # from App import admin, login_manager, socketio
 
 admin_page = Blueprint('admin_page', __name__)
 
-# locale.setlocale(locale.LC_ALL, 'id_ID')
+# locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
 
 @admin_page.route("/admin-dashboard", methods=['POST', 'GET'])
 @login_required
@@ -58,9 +58,21 @@ def index():
         print(f"Error saat menghitung total panen: {e}")
         total_panen = 0
 
+    stat_cabai = []
+    stat_tomat = []
+    for panenCabai in DataPangan.query.filter_by(komoditas='Cabai').all():
+        totalCabai = panenCabai.jml_panen
+        stat_cabai.append(totalCabai)
+    for panenTomat in DataPangan.query.filter_by(komoditas='Tomat').all():
+        totalTomat = panenTomat.jml_panen
+        stat_tomat.append(totalTomat)
+
+    totalPanenCabai = sum(stat_cabai)
+    totalPanenTomat = sum(stat_tomat)
+
     if not current_user.is_authenticated:
         redirect(url_for('views.adminLogin'))
-    return render_template('admin-dashboard/index.html', user=user, kelurahan=kelurahan, produksi=produksi, total_panen_per_kelurahan=total_panen_per_kelurahan, total_kebun=total_kebun, total_panen=total_panen, round_num=round, genhash=generate_password_hash, checkhash=check_password_hash)
+    return render_template('admin-dashboard/index.html', user=user, kelurahan=kelurahan, produksi=produksi, total_panen_per_kelurahan=total_panen_per_kelurahan, total_kebun=total_kebun, total_panen=total_panen, round_num=round, genhash=generate_password_hash, checkhash=check_password_hash, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat)
 
 @admin_page.route('/admin-dashboard/<string:username>/profil', methods=['POST', 'GET'])
 @login_required
@@ -143,11 +155,30 @@ def dataproduksi():
     if current_user.account_type == 'user':
         return redirect(url_for('views.dashboard'))
 
+    kelurahan_list = Kelurahan.query.all()
     chart_data = get_chart_data()
 
-    print(chart_data)
+    allDataCabai = DataPangan.query.filter_by(komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
+    allDataTomat = DataPangan.query.filter_by(komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
 
-    return render_template('admin-dashboard/data-produksi.html', chart_data=chart_data)
+    stat_cabai = []
+    stat_tomat = []
+
+    tgl_panen_cabai = []
+    tgl_panen_tomat = []
+
+    for panenCabai in allDataCabai:
+        totalCabai = panenCabai.jml_panen
+        tglPanenCabai = panenCabai.tanggal_panen
+        stat_cabai.append(totalCabai)
+        tgl_panen_cabai.append(tglPanenCabai)
+    for panenTomat in allDataTomat:
+        totalTomat = panenTomat.jml_panen
+        tglPanenTomat = panenTomat.tanggal_panen
+        stat_tomat.append(totalTomat)
+        tgl_panen_tomat.append(tglPanenTomat)
+
+    return render_template('admin-dashboard/data-produksi.html', chart_data=chart_data, kel=kelurahan_list, tgl_panen_cabai=tgl_panen_cabai, tgl_panen_tomat=tgl_panen_tomat, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat))
 
 @admin_page.route('admin-dashboard/data-produksi/<int:id>', methods=['POST', 'GET'])
 @login_required
@@ -158,7 +189,7 @@ def dataproduksikel(id):
     kelurahan = Kelurahan.query.get_or_404(id)
     kelurahan_data = {}
 
-    panen_data = (
+    pangan = (
         db.session.query(DataPangan.jml_panen, DataPangan.tanggal_panen, DataPangan.komoditas)
         .filter_by(kelurahan_id=kelurahan.id)  # Hapus filter user_id
         .order_by(asc(DataPangan.tanggal_panen))
@@ -168,7 +199,7 @@ def dataproduksikel(id):
     if kelurahan.nama not in kelurahan_data:
         kelurahan_data[kelurahan.nama] = {}
 
-    for data in panen_data:
+    for data in pangan:
         jml_panen, tgl_panen, komoditas = data
         if komoditas not in kelurahan_data[kelurahan.nama]:
             kelurahan_data[kelurahan.nama][komoditas] = {
@@ -180,7 +211,27 @@ def dataproduksikel(id):
         kelurahan_data[kelurahan.nama][komoditas]['tgl_panen'].append(tgl_panen)
         kelurahan_data[kelurahan.nama][komoditas]['komoditas'].append(komoditas)
 
-    return render_template('/admin-dashboard/data-kelurahan.html', chart_data=kelurahan_data, kelurahan=kelurahan)
+    allDataCabai = DataPangan.query.filter_by(komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
+    allDataTomat = DataPangan.query.filter_by(komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
+
+    stat_cabai = []
+    stat_tomat = []
+
+    tgl_panen_cabai = []
+    tgl_panen_tomat = []
+
+    for panenCabai in allDataCabai:
+        totalCabai = panenCabai.jml_panen
+        tglPanenCabai = panenCabai.tanggal_panen
+        stat_cabai.append(totalCabai)
+        tgl_panen_cabai.append(tglPanenCabai)
+    for panenTomat in allDataTomat:
+        totalTomat = panenTomat.jml_panen
+        tglPanenTomat = panenTomat.tanggal_panen
+        stat_tomat.append(totalTomat)
+        tgl_panen_tomat.append(tglPanenTomat)
+
+    return render_template('/admin-dashboard/data-kelurahan.html', chart_data=kelurahan_data, kelurahan=kelurahan, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat))
 
 @admin_page.route("/admin-dashboard/laporan/userid?=<int:id>/<string:nama>", methods=['POST', 'GET'])
 # @login_required
@@ -313,12 +364,8 @@ def report(nama, id):
     # Reset posisi buffer ke awal
     buffer.seek(0)
 
-    # Encode data PDF menjadi base64
-    # pdf_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
     response = make_response(buffer.getvalue())
     # response.headers['Content-Disposition'] = f'attachment; filename=Report_of_{kel.nama}.pdf'
-    
     response.headers['Content-Disposition'] = f'inline; filename=Report_of_{kel.nama}.pdf'
     response.mimetype = 'application/pdf'
 
@@ -329,4 +376,4 @@ def report(nama, id):
     buffer.close()
 
     return response
-    return render_template('admin-dashboard/laporan.html', today=today, kel=kel, kmd=kmd, round_numb=round)
+    return render_template('admin-dashboard/laporan.html', today=today, kel=kel, kmd=kmd, round_numb=round, pdf_value=pdf_value)

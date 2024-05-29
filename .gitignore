@@ -4,3 +4,5 @@ App/venv
 __pycache__
 instance
 rindang_digifarm.db
+.vscode
+report_Sasa.pdf
