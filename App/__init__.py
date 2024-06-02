@@ -21,7 +21,7 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'rindang_digifarm') # Gunakan variabel environment atau nilai default
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:********@viaduct.proxy.railway.app:31699/railway'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{os.environ.get("MYSQLUSER")}:{os.environ.get("MYSQLPASSWORD")}@{os.environ.get("MYSQLHOST")}:{os.environ.get("MYSQLPORT")}/{os.environ.get("MYSQL_DATABASE")}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
