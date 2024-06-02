@@ -5,6 +5,4 @@ __pycache__
 instance
 rindang_digifarm.db
 .vscode
-report_Sasa.pdf
-mongo.py
-config.json
+.env

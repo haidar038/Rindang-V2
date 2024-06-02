@@ -7,6 +7,7 @@ from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
+from dotenv import load_dotenv
 
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
@@ -15,6 +16,7 @@ toastr = Toastr()
 jwt = JWTManager()
 admin = Admin(name='admin')
 buffer = io.BytesIO()
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)

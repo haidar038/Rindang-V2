@@ -236,7 +236,7 @@ def dataproduksikel(id):
 @admin_page.route("/admin-dashboard/laporan/userid?=<int:id>/<string:nama>", methods=['POST', 'GET'])
 # @login_required
 def report(nama, id):
-    from App.app import app
+    from App.run import app
     # if current_user.account_type == 'user':
     #     return redirect(url_for('views.dashboard'))
 
