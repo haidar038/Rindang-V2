@@ -6,3 +6,5 @@ instance
 rindang_digifarm.db
 .vscode
 .env
+test.py
+report_Sasa.pdf
