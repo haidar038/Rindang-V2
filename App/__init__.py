@@ -31,6 +31,9 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.environ.get("MYSQLUSER")}:{os.environ.get("MYSQLPASSWORD")}@{os.environ.get("MYSQLHOST")}:{os.environ.get("MYSQLPORT")}/{os.environ.get("MYSQLDATABASE")}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_recycle': 3600  # Recycle koneksi setiap 1 jam
+    }
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Batasi ukuran file (misal: 16MB)
 
     db.init_app(app)
