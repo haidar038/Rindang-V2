@@ -32,10 +32,8 @@
         <link rel="stylesheet" href="../static/video-player.css" />
 
         <!-- ++++++++++++++++++++++++ CDNs ++++++++++++++++++++++++ -->
-        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />
-        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -60,11 +58,16 @@
                                 </div>
                                 <div class="mb-3 text-center">
                                     <label for="emailAddress" class="form-label fw-medium">Email</label>
-                                    <input type="email" class="form-control" id="emailAddress" name="emailAddress" placeholder="contoh: example@gmail.com" value="{{ email }}" required />
+                                    <input type="email" class="form-control" id="emailAddress" name="emailAddress" placeholder="Masukkan Alamat Email" value="{{ email }}" required />
                                 </div>
                                 <div class="mb-4 text-center">
                                     <label for="userPassword" class="form-label fw-medium">Kata Sandi</label>
-                                    <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Minimal 8 karakter" required />
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Masukkan Kata Sandi" required />
+                                        <button type="button" class="btn btn-green text-light" id="togglePassword" onclick="togglePasswordVisibility('userPassword')">
+                                            <i id="passwordIcon" class="bi bi-eye-slash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <!-- <div class="form-check mb-5">
                                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
@@ -105,5 +108,22 @@
         </svg>
 
         {{ toastr.include_toastr_js() }}
+
+        <script>
+            function togglePasswordVisibility(inputId) {
+                const passwordInput = document.getElementById(inputId);
+                const passwordIcon = document.getElementById('passwordIcon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordIcon.classList.remove('bi-eye-slash');
+                    passwordIcon.classList.add('bi-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordIcon.classList.remove('bi-eye');
+                    passwordIcon.classList.add('bi-eye-slash');
+                }
+            }
+        </script>
     </body>
 </html>

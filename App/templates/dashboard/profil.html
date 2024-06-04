@@ -12,10 +12,26 @@
                     <div class="container">
                         <div class="row col text-lg-start text-center row-gap-3">
                             <div class="col-sm-12 col-lg-6">
-                                <h3 class="mb-4"><strong>Profil Pengguna</strong></h3>
+                                <h4 class="mb-4"><strong>Profil Pengguna</strong></h4>
                                 <div class="d-flex gap-4 flex-column flex-lg-row">
                                     <div class="">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg" alt="Profile Picture.svg" style="width: 120px" />
+                                        <form id="profilePicForm" action="{{ url_for('views.update_profile_picture', id=current_user.id) }}" method="post" enctype="multipart/form-data" style="display: inline-block">
+                                            <input type="file" name="profile_pic" id="profilePicInput" style="display: none" />
+                                            <button type="button" class="btn p-0 rounded-circle" onclick="document.getElementById('profilePicInput').click()">
+                                                <div class="ratio-1x1">
+                                                    <img
+                                                        src="{% if user.profile_pic %}
+                {{ url_for('static', filename='uploads/profile_pics/' + user.profile_pic) }}
+              {% else %}
+                https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg
+              {% endif %}"
+                                                        alt="Profile Picture"
+                                                        style="width: 120px"
+                                                        class="rounded-circle"
+                                                    />
+                                                </div>
+                                            </button>
+                                        </form>
                                     </div>
                                     <table class="table text-start">
                                         <tr>
@@ -47,7 +63,9 @@
                                     <p>{{ user.bio }}</p>
                                 </div>
                             </div>
-                            <button id="updateProfileBtn" type="button" class="btn btn-green rounded-4 w-auto" data-bs-toggle="modal" data-bs-target="#updateProfile">Ubah Profil</button>
+                            <div class="text-center text-lg-start">
+                                <button id="updateProfileBtn" type="button" class="btn btn-green rounded-4 w-auto" data-bs-toggle="modal" data-bs-target="#updateProfile">Ubah Profil</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -206,4 +224,12 @@
         </div>
     </div>
 </div>
+<script>
+    const profilePicInput = document.getElementById('profilePicInput');
+    const profilePicForm = document.getElementById('profilePicForm');
+
+    profilePicInput.addEventListener('change', () => {
+        profilePicForm.submit();
+    });
+</script>
 {% endblock %}

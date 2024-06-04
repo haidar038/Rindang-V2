@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.String(255), nullable=True, default='') # Ubah db.String menjadi db.String(255)
     kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
     account_type = db.Column(db.String(20), nullable=False, default='user') # Ubah db.String menjadi db.String(20)
+    profile_pic = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f"User('{self.nama_lengkap}','{self.email}','{self.username}')"

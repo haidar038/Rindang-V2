@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for, jsonify, session
+from flask import Blueprint, current_app, request, render_template, flash, redirect, url_for, jsonify, session
 from flask_login import login_required, current_user
 from flask_sqlalchemy import pagination
 from flask_admin.base import expose, AdminIndexView, Admin
@@ -6,12 +6,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import asc
 from datetime import datetime, timedelta
 from babel.numbers import format_currency
-import json, requests, ast
+from werkzeug.utils import secure_filename
+import json, requests, secrets, os
 
 from App.models import User, DataPangan, Kelurahan
-from App import db
+from App import db, UPLOAD_FOLDER
 
 views = Blueprint('views', __name__)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Constants for API URL parameters
 KAB_KOTA = 458  # Ternate
@@ -64,6 +67,41 @@ def fetch_price_data(start_date, end_date):
     except requests.exceptions.RequestException as e:
         flash(f"Error fetching data: {e}", category='error')
         return []  # Return an empty list on error
+    
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@views.route('/dashboard/profil/<int:id>/update_picture', methods=['POST'])
+@login_required
+def update_profile_picture(id):
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        if 'profile_pic' not in request.files:
+            flash('Tidak ada file yang dipilih!', 'error')
+            return redirect(request.url)
+        file = request.files['profile_pic']
+        if file.filename == '':
+            flash('Tidak ada file yang dipilih!', 'error')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secrets.token_hex(8) + '_' + secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+
+            # Hapus foto profil lama jika ada
+            if user.profile_pic:
+                old_file_path = os.path.join(upload_folder, user.profile_pic)
+                if os.path.exists(old_file_path):
+                    os.remove(old_file_path)
+
+            user.profile_pic = filename
+            db.session.commit()
+            flash('Foto profil berhasil diubah!', 'success')
+        else:
+            flash('File yang diizinkan hanya JPG, JPEG, dan PNG.', 'error')
+    return redirect(url_for('views.profil'))
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
