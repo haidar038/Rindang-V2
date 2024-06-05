@@ -345,7 +345,7 @@ def profil():
     return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
 @views.route('/dashboard/profil/<int:id>/update', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def updateprofil(id):
     user = User.query.get_or_404(id)
     kelurahan = Kelurahan.query.filter_by(user_id=current_user.id).first()
@@ -380,6 +380,8 @@ def updateprofil(id):
 
             flash('Profil Berhasil diubah!', 'success')
             return redirect(url_for('views.profil'))
+    else:
+        return None
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 @login_required
