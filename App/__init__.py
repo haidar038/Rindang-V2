@@ -32,7 +32,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_recycle': 3600  # Recycle koneksi setiap 1 jam
+    'pool_recycle': 300  # Recycle koneksi setiap 5 menit (300 detik)
     }
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Batasi ukuran file (misal: 16MB)
 

@@ -326,6 +326,21 @@ html {
     transform: translate(0, -50%);
 }
 
+.weather-card__left {
+    background: url('img/pexels-wdnet-96622.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.weather-card__left .weather-icon {
+    width: 20%;
+}
+
+.weather-icon {
+    width: 50%;
+}
+
 @-webkit-keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 #fff;
@@ -421,6 +436,9 @@ html {
 /** Mobile Screen */
 
 @media screen and (max-width: 767.9px) {
+    .weather-icon {
+        width: 50%;
+    }
     .navbar .nav-link {
         color: #121212 !important;
     }

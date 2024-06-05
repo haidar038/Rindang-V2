@@ -79,3 +79,8 @@ zopfli==0.2.3
 python-dotenv==1.0.1
 pymysql
 flask-migrate
+openmeteo-requests
+requests-cache
+retry-requests
+numpy
+pandas

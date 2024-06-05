@@ -14,7 +14,6 @@ def unauthorized(error):
 # User Loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    """Loads the appropriate user based on account type."""
     account_type = session.get('account_type')
     if account_type == 'admin':
         return AppAdmin.query.get(int(user_id))

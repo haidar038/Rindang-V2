@@ -443,10 +443,10 @@ def updatepassword(id):
             flash('Kata sandi salah, silakan coba lagi!', category='error')  # Assuming you have a flash message system
             return redirect(url_for('views.settings'))  # Redirect back to the form
 
-@views.route('/dashboard/prakiraan-cuaca', methods=['GET', 'POST'])
-@login_required
+@views.route('/prakiraan-cuaca', methods=['GET', 'POST'])
+# @login_required
 def weather():
-    return render_template('dashboard/weather.html')
+    return render_template('weather.html')
 
 # ========================= KELURAHAN SECTION =========================
 @views.route('/peta-sebaran')

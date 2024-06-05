@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Dashboard - Penjualan</title>
+
+        <meta name="keywords" content="rindang sistem informasi pangan kota ternate kebutuhan cabai barito rica tanam petani" />
+        <meta property="og:title" content="RINDANG - Rica Tanam Dalam Kampung" />
+        <meta property="og:description" content="Sistem Informasi kebutuhan pangan dan informasi pangan Kota Ternate" />
+        <meta property="og:image" content="https://i.ibb.co/grnRZSB/og-thumbnail.webp" />
+        <meta property="og:url" content="https://rindang.vercel.app" />
+        <meta property="og:type" content="website" />
+
+        <!-- FAVICONS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicons/favicon-16x16.png" />
+        <link rel="manifest" href="../../static/favicons/site.webmanifest" />
+        <link rel="mask-icon" href="../../static/favicons/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#ffc40d" />
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css' ) }}" />
+        <link rel="stylesheet" href="../../static/admin/css/styles.min.css" />
+        <link rel="stylesheet" href="../../static/admin/css/base-color.css" />
+        <!-- <link rel="stylesheet" href="../../static/admin/css/font-size.css" /> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <style>
+            #map {
+                display: block;
+                position: relative;
+                height: 286px;
+            }
+        </style>
+
+        <!-- FONTS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/plus-jakarta-display.min.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    </head>
+
+    <body class="bg-green-dark" onload="startTime()">
+        <nav class="navbar navbar-expand-lg bg-light" aria-label="Offcanvas navbar large">
+            <div class="container">
+                <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='img/rindang-logo.svg' ) }}" alt="" /></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2" aria-controls="offcanvasNavbar2" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbar2Label">
+                    <div class="offcanvas-header">
+                        <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='img/rindang-logo.svg' ) }}" alt="" /></a>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        {% if not current_user.is_authenticated %}
+                        <ul class="navbar-nav ms-lg-auto flex-column flex-lg-row mb-lg-0 column-gap-lg-3">
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a id="nav" class="nav-link" aria-current="page" href="{{ url_for('auth.login' ) }}">Masuk</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-warning btn-yellow px-4" href="{{ url_for('auth.register' ) }}">Daftar</a>
+                            </li>
+                        </ul>
+                        {% else %}
+                        <div class="dropdown ms-lg-auto">
+                            <a class="nav-link gap-2" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <small class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold" style="font-size: 11pt">{{ current_user.username }}</small>
+                                <img class="img-profile rounded-circle" src="../../static/admin/images/profile/user-1.jpg" width="35" height="35" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="{{ url_for('views.profil' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-user fs-6"></i>
+                                        <p class="mb-0 fs-3">Edit Profil</p>
+                                    </a>
+                                    <a href="{{ url_for('views.settings' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-settings fs-6"></i>
+                                        <p class="mb-0 fs-3">Pengaturan</p>
+                                    </a>
+                                    <a href="{{ url_for('auth.logout' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block">Keluar</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container py-4">
+            <div class="row mb-4 mb-lg-0">
+                <h1 class="text-light mb-4">Prakiraan Cuaca</h1>
+                <div class="col-12 col-lg-6">
+                    <div class="card card-body weather-card weather-card__left text-light">
+                        <div class="mb-3 d-flex flex-column">
+                            <strong class="fw-bold fs-5">Cuaca Saat Ini</strong>
+                            <span id="time">00:00:00</span>
+                        </div>
+                        <div id="current-weather-data">
+                            <!-- Data cuaca saat ini akan dimuat di sini -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div id="map" class="rounded"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-lg-flex gap-2" id="forecast-cards">
+                    <!-- Kartu prakiraan cuaca akan dimuat di sini -->
+                </div>
+            </div>
+        </div>
+
+        <svg class="position-fixed bottom-0 d-none" style="z-index: -9" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path
+                fill="#fff"
+                fill-opacity="1"
+                d="M0,128L60,112C120,96,240,64,360,53.3C480,43,600,53,720,74.7C840,96,960,128,1080,128C1200,128,1320,96,1380,80L1440,64L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
+            ></path>
+        </svg>
+
+        <script src="../../static/admin/libs/jquery/dist/jquery.min.js"></script>
+        <script src="../../static/admin/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="../../static/admin/js/sidebarmenu.js"></script>
+        <script src="../../static/admin/js/app.min.js"></script>
+        <script src="../../static/admin/libs/apexcharts/dist/apexcharts.min.js"></script>
+        <script src="../../static/admin/libs/simplebar/dist/simplebar.js"></script>
+        <!-- <script src="../../static/admin/js/dashboard.js"></script> -->
+        <script>
+            const url = 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-MalukuUtara.xml';
+            const areaIdToFind = '501394';
+            const daysOfWeek = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const weatherDescriptions = {
+                0: 'Cerah',
+                1: 'Cerah Berawan',
+                2: 'Cerah Berawan',
+                3: 'Berawan',
+                4: 'Berawan Tebal',
+                5: 'Udara Kabur',
+                10: 'Asap',
+                45: 'Kabut',
+                60: 'Hujan Ringan',
+                61: 'Hujan Sedang',
+                63: 'Hujan Lebat',
+                80: 'Hujan Lokal',
+                95: 'Hujan Petir',
+                97: 'Hujan Petir',
+            };
+
+            fetch(url)
+                .then((response) => response.text())
+                .then((xmlString) => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+
+                    function findAreaById(areaId) {
+                        const areas = xmlDoc.querySelectorAll('area');
+                        for (let i = 0; i < areas.length; i++) {
+                            if (areas[i].getAttribute('id') === areaId) {
+                                return areas[i];
+                            }
+                        }
+                        return null;
+                    }
+
+                    function extractParameterData(parameterElement, unit) {
+                        const timeranges = parameterElement.querySelectorAll('timerange');
+                        const values = [];
+                        for (let i = 0; i < timeranges.length; i++) {
+                            const valueElement = timeranges[i].querySelector(`value[unit='${unit}']`);
+                            if (valueElement) {
+                                values.push(valueElement.textContent);
+                            }
+                        }
+                        return values;
+                    }
+
+                    const foundArea = findAreaById(areaIdToFind);
+
+                    if (foundArea) {
+                        const humidityData = extractParameterData(foundArea.querySelector("parameter[id='hu']"), '%');
+                        const temperatureData = extractParameterData(foundArea.querySelector("parameter[id='t']"), 'C');
+                        const weatherData = extractParameterData(foundArea.querySelector("parameter[id='weather']"), 'icon');
+                        const windDirectionData = extractParameterData(foundArea.querySelector("parameter[id='wd']"), 'deg');
+                        const windSpeedData = extractParameterData(foundArea.querySelector("parameter[id='ws']"), 'Kt');
+
+                        // Menampilkan data cuaca saat ini
+                        const currentWeatherDescription = weatherDescriptions[weatherData[0]] || 'Tidak diketahui';
+                        const currentWeatherData = `
+                            <div class="d-flex mb-4 gap-4">
+                                <img src="../static/weather_icons/${weatherData[0]}.png" alt="Weather Icon" class="weather-icon">
+                                <strong class="weather-temp text-light fw-bold text-center h1 display-4">${temperatureData[0]}°C</strong>
+                                <p class="h4 text-light fw-normal">${currentWeatherDescription}</p>
+                            </div>
+                            <p class="mb-0"><span class="bi bi-moisture"></span>&ensp; Kelembapan: ${humidityData[0]}%</p>
+                            <p class="mb-0"><span class="bi bi-compass"></span>&ensp; Arah Angin: ${windDirectionData[0]}°</p>
+                            <p class="mb-0"><span class="bi bi-wind"></span>&ensp; Kecepatan Angin: ${windSpeedData[0]} Kt</p>
+                        `;
+                        document.getElementById('current-weather-data').innerHTML = currentWeatherData;
+
+                        // Menampilkan kartu prakiraan cuaca
+                        const forecastCardsContainer = document.getElementById('forecast-cards');
+                        for (let i = 1; i < 6; i++) {
+                            const date = new Date();
+                            date.setDate(date.getDate() + i);
+                            const dayOfWeek = daysOfWeek[date.getDay()];
+                            const forecastWeatherDescription = weatherDescriptions[weatherData[i]] || 'Tidak diketahui';
+
+                            const forecastCard = `
+                                <div class="card card-body weather-card mb-3">
+                                    <h5 class="card-title mb-3">${dayOfWeek}</h5>
+                                    <div class="d-lg-block d-flex">
+                                        <div class="mb-4">
+                                            <img src="../static/weather_icons/${weatherData[i]}.png" alt="Weather Icon" class="weather-icon">
+                                        </div>
+                                        <div>
+                                            <p class="card-text">${forecastWeatherDescription}</p>
+                                            <p class="card-text mb-0">Suhu Max: ${temperatureData[i]}°C</p>
+                                            <p class="card-text mb-0">Kelembapan: ${humidityData[i]}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            forecastCardsContainer.innerHTML += forecastCard;
+                        }
+                    } else {
+                        console.log('Area dengan ID', areaIdToFind, 'tidak ditemukan.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching or parsing XML data:', error);
+                });
+        </script>
+        <script>
+            var map = L.map('map').setView([0.7906, 127.3842], 10); // Ganti dengan koordinat Ternate
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(map);
+
+            var marker = L.marker([0.7906, 127.3842]).addTo(map); // Ganti dengan koordinat Ternate
+            marker.bindPopup('<b>Ternate</b>').openPopup();
+        </script>
+        <script>
+            function startTime() {
+                const today = new Date();
+                let h = today.getHours();
+                let m = today.getMinutes();
+                let s = today.getSeconds();
+                m = checkTime(m);
+                s = checkTime(s);
+                document.getElementById('time').innerHTML = h + ':' + m + ':' + s;
+                setTimeout(startTime, 1000);
+            }
+
+            function checkTime(i) {
+                if (i < 10) {
+                    i = '0' + i;
+                } // add zero in front of numbers < 10
+                return i;
+            }
+        </script>
+    </body>
+</html>
