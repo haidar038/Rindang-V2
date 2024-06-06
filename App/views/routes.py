@@ -22,8 +22,9 @@ def picture_allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in PICTURE_ALLOWED_EXTENSIONS
 
+# Fungsi yang disederhanakan untuk memeriksa nama file dan tipe impor
 def allowed_report_stat(filename, import_type):
-    file_name_without_extension = os.path.splitext(filename)[0].lower() # Mengambil nama file tanpa ekstensi
+    file_name_without_extension = os.path.splitext(filename)[0].lower()
     return import_type in file_name_without_extension
 
 def report_allowed_file(filename):
@@ -63,12 +64,8 @@ def fetch_price_data(start_date, end_date):
                     formatted_date = date_obj.strftime("%d/%m/%Y")
                     geomean_value = date_data["geomean"]
 
-                    if geomean_value == "-":
-                        formatted_price = "-"
-                    else:
-                        geomean_float = float(geomean_value)
-                        formatted_price = format_currency(geomean_float, "IDR", locale="id_ID", decimal_quantization=False)
-                        formatted_price = formatted_price[:-3]
+                    # Menyederhanakan format harga
+                    formatted_price = "-" if geomean_value == "-" else format_currency(float(geomean_value), "IDR", locale="id_ID", decimal_quantization=False)[:-3]
 
                     table_data.append({
                         "date": formatted_date,
@@ -118,6 +115,7 @@ def index():
     kelurahan = Kelurahan.query.all()
     produksi = DataPangan.query.all()
 
+    # Menggunakan metode today() untuk mendapatkan tanggal hari ini
     today = datetime.today()
     one_week_ago = today - timedelta(days=7)
     start_date = one_week_ago.strftime("%Y-%m-%d")
@@ -138,6 +136,7 @@ def dashboard():
 
     data_pangan = DataPangan.query.filter_by(user_id=current_user.id).all()
 
+    # Menggunakan metode today() untuk mendapatkan tanggal hari ini
     today = datetime.today()
     one_week_ago = today - timedelta(days=7)
     start_date = one_week_ago.strftime("%Y-%m-%d")
@@ -160,6 +159,7 @@ def hargapangan():
     if current_user.account_type == 'admin':
         return redirect(url_for('admin_page.index'))
 
+    # Menggunakan metode today() untuk mendapatkan tanggal hari ini
     today = datetime.today()
     one_week_ago = today - timedelta(days=7)
     start_date = one_week_ago.strftime("%Y-%m-%d")
@@ -182,10 +182,8 @@ def dataproduksi():
     page = request.args.get('page', 1, type=int)  # Get page number from query string
     per_page = 5 # Number of items per page
 
-    total_panen = []
-    for total in pangan:
-        panenTotal = total.jml_panen
-        total_panen.append(panenTotal)
+    # Menggunakan list comprehension untuk menyederhanakan perhitungan total panen
+    total_panen = [total.jml_panen for total in pangan]
 
     cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
     tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
@@ -193,21 +191,11 @@ def dataproduksi():
     allDataCabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
     allDataTomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
 
-    stat_cabai = []
-    stat_tomat = []
-    tgl_panen_cabai = []
-    tgl_panen_tomat = []
-
-    for panenCabai in allDataCabai:
-        totalCabai = panenCabai.jml_panen
-        tglPanenCabai = panenCabai.tanggal_panen
-        stat_cabai.append(totalCabai)
-        tgl_panen_cabai.append(tglPanenCabai)
-    for panenTomat in allDataTomat:
-        totalTomat = panenTomat.jml_panen
-        tglPanenTomat = panenTomat.tanggal_panen
-        stat_tomat.append(totalTomat)
-        tgl_panen_tomat.append(tglPanenTomat)
+    # Menggunakan list comprehension untuk menyederhanakan pembuatan list data statistik
+    stat_cabai = [panenCabai.jml_panen for panenCabai in allDataCabai]
+    tgl_panen_cabai = [panenCabai.tanggal_panen for panenCabai in allDataCabai]
+    stat_tomat = [panenTomat.jml_panen for panenTomat in allDataTomat]
+    tgl_panen_tomat = [panenTomat.tanggal_panen for panenTomat in allDataTomat]
 
     # Helper function to calculate percentage increase
     def calc_increase(data):
@@ -231,7 +219,6 @@ def dataproduksi():
                               user_id=current_user.id)
         db.session.add(add_data)
         db.session.commit()
-        print('DataPangan berhasil dibuat!')
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
 
@@ -275,6 +262,7 @@ def import_data_pangan():
                     jml_bibit = row[2].value
                     tanggal_bibit = row[3].value.strftime('%Y-%m-%d') if isinstance(row[3].value, datetime) else row[3].value 
 
+                    # Menyederhanakan pembuatan objek DataPangan berdasarkan tipe impor
                     if import_type == 'penanaman':
                         data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
                                                 jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
@@ -329,29 +317,23 @@ def updatepangan(id):
 
     if updateProd == 'updateProduksi':
         if request.method == 'POST':
-            kebun = request.form['updateKebun']
-            komoditas = request.form['updateKomoditas']
-            jumlahBibit = request.form['updateJumlahBibit']
-            tglBibit = request.form['updateTglBibit']
-
-            pangan.kebun = kebun
-            pangan.komoditas = komoditas
-            pangan.jml_bibit = jumlahBibit
-            pangan.tanggal_bibit = tglBibit
+            # Memperbarui data pangan dengan data dari form
+            pangan.kebun = request.form['updateKebun']
+            pangan.komoditas = request.form['updateKomoditas']
+            pangan.jml_bibit = request.form['updateJumlahBibit']
+            pangan.tanggal_bibit = request.form['updateTglBibit']
 
             db.session.commit()
             return redirect(url_for('views.dataproduksi'))
     elif updateProd == 'dataPanen':
         if request.method == 'POST':
-            jumlahPanen = request.form['updateJumlahPanen']
-            tglPanen = request.form['updateTglPanen']
-
+            # Memperbarui data pangan dan kelurahan dengan data dari form
             pangan.status = 'Panen'
-            pangan.jml_panen = jumlahPanen
-            pangan.tanggal_panen = tglPanen
+            pangan.jml_panen = request.form['updateJumlahPanen']
+            pangan.tanggal_panen = request.form['updateTglPanen']
             pangan.kelurahan_id = kel.id
 
-            kel.jml_panen = jumlahPanen
+            kel.jml_panen = request.form['updateJumlahPanen']
 
             db.session.commit()
             return redirect(request.referrer)
@@ -384,8 +366,9 @@ def updateprofil(id):
 
     form_type = request.form.get('formType')
 
-    if request.method == 'POST':  # Periksa metode POST di luar
+    if request.method == 'POST':
         if form_type == 'Data User':
+            # Memperbarui data user dengan data dari form
             user.nama_lengkap = request.form['nama']
             user.username = request.form['username']
             user.pekerjaan = request.form['pekerjaan']
@@ -397,25 +380,26 @@ def updateprofil(id):
                 db.session.add(add_kelurahan)
             db.session.commit()
             flash('Profil Berhasil Diubah', 'success')
-            return redirect(url_for('views.profil'))  # Pastikan ada return di sini
+            return redirect(url_for('views.profil')) 
 
         elif form_type == 'Data Kelurahan':
             if kelurahan:  
+                # Memperbarui data kelurahan dengan data dari form
                 kelurahan.nama = request.form['kelurahan']
                 kelurahan.kebun = request.form['kebun']
                 kelurahan.luas_kebun = request.form['luaskebun']
                 user.kelurahan_id = kelurahan.id
                 db.session.commit()
-                flash('Profil Berhasil diubah!', 'success')  # Pindahkan flash message ke dalam blok if
+                flash('Profil Berhasil diubah!', 'success')
             else:
                 flash('Tidak ada data kelurahan untuk diperbaharui!', 'danger')
-            return redirect(url_for('views.profil'))  # Pastikan ada return di sini
+            return redirect(url_for('views.profil')) 
 
         else:
-            flash('Tipe form tidak valid!', 'danger')  # Pesan jika form_type tidak valid
-            return redirect(url_for('views.profil')) # Atau redirect ke halaman error 
+            flash('Tipe form tidak valid!', 'danger')
+            return redirect(url_for('views.profil'))
 
-    return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)  # Mengembalikan template jika metode GET
+    return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 @login_required
@@ -436,13 +420,12 @@ def updateemail(id):
         if check_password_hash(current_user.password, password):
             user.email = request.form['email']
             db.session.commit()
-            flash('Email berhasil diubah!', category='success')  # Assuming you have a flash message system
-            return redirect((request.referrer))  # For successful update
+            flash('Email berhasil diubah!', category='success')
+            return redirect((request.referrer))
         else:
-            # Handle incorrect password scenario (e.g., flash a message or redirect)
-            flash('Kata sandi salah, silakan coba lagi!', category='error')  # Assuming you have a flash message system
-            return redirect(url_for('views.settings'))  # Redirect back to the form
-        
+            flash('Kata sandi salah, silakan coba lagi!', category='error')
+            return redirect(url_for('views.settings')) 
+
 @views.route('/dashboard/pengaturan/<int:id>/reset-profil', methods=['POST', 'GET'])
 def resetprofil(id):
     kelurahan = Kelurahan.query.filter_by(user_id=id).first()
@@ -472,15 +455,13 @@ def updatepassword(id):
             else:
                 user.password = generate_password_hash(newpass, method='pbkdf2')
                 db.session.commit()
-                flash('Kata sandi berhasil diperbarui!', category='success')  # Assuming you have a flash message system
-                return redirect((request.referrer))  # For successful update
+                flash('Kata sandi berhasil diperbarui!', category='success')
+                return redirect((request.referrer)) 
         else:
-            # Handle incorrect password scenario (e.g., flash a message or redirect)
-            flash('Kata sandi salah, silakan coba lagi!', category='error')  # Assuming you have a flash message system
-            return redirect(url_for('views.settings'))  # Redirect back to the form
+            flash('Kata sandi salah, silakan coba lagi!', category='error')
+            return redirect(url_for('views.settings'))
 
 @views.route('/prakiraan-cuaca', methods=['GET', 'POST'])
-# @login_required
 def weather():
     return render_template('weather.html')
 

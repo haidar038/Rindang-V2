@@ -27,12 +27,12 @@
                             <div class="col-12 col-lg-4" id="grafik"></div>
                             <div class="col-12 col-lg-8">
                                 <table class="table">
-                                    <tr>
+                                    <tr class="align-middle">
                                         <td style="width: 20%">Jumlah Kebun</td>
                                         <td style="width: 0">:</td>
                                         <td><strong class="badge bg-red fw-bold">{{ total_kebun }} Kebun</strong></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="align-middle">
                                         <td>Hasil Produksi</td>
                                         <td style="width: 0">:</td>
                                         <td>
@@ -52,7 +52,7 @@
                                     <th>Action</th>
                                 </tr>
                                 {% for data_kel in kelurahan %}
-                                <tr class="text-center align-middle">
+                                <tr class="text-center align-middle bg-light">
                                     <td>{{loop.index}}</td>
                                     <td><strong>{{data_kel.nama}}</strong></td>
                                     <td>
@@ -61,7 +61,7 @@
                                     <td>
                                         <div><strong>{{ round_num(total_panen_per_kelurahan[data_kel.id]/1000, 2) }} kg</strong></div>
                                     </td>
-                                    <td class="border-bottom-0 align-middle gap-2 d-sm-flex d-lg-block">
+                                    <td class="border-bottom-0 gap-2 align-middle d-flex d-lg-block">
                                         <a id="dwldBtn" href="{{ url_for('admin_page.report', nama=genhash(data_kel.nama, method='pbkdf2'), id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"
                                             ><i class="ti ti-download"></i
                                         ></a>
@@ -91,7 +91,7 @@
         series: [totalPanenCabai / 1000, totalPanenTomat / 1000],
         labels: ['Cabai', 'Tomat'],
         chart: {
-            width: 300,
+            width: '100%', // Gunakan lebar 100%
             type: 'donut',
             fontFamily: "Plus Jakarta Sans', sans-serif",
             foreColor: '#adb0bb',
@@ -123,7 +123,23 @@
                 breakpoint: 991,
                 options: {
                     chart: {
-                        width: 150,
+                        width: '100%', // Gunakan lebar 100% pada breakpoint ini
+                    },
+                },
+            },
+            {
+                breakpoint: 768,
+                options: {
+                    chart: {
+                        width: '80%', // Gunakan lebar 80% pada breakpoint ini
+                    },
+                },
+            },
+            {
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: '100%', // Gunakan lebar 100% pada breakpoint ini
                     },
                 },
             },
