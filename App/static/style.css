@@ -408,6 +408,10 @@ html {
     object-fit: cover;
 }
 
+#hero-section {
+    z-index: 1;
+}
+
 #video-player {
     transition: ease-in-out 0.25s;
 }
@@ -467,6 +471,7 @@ html {
 
     .navbar {
         background-color: #fff;
+        z-index: 1000;
     }
 
     .navbar .nav-item a .active {
