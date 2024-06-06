@@ -154,6 +154,7 @@
                                 <a id="nav-contact" class="nav-link" href="#contact">Kontak</a>
                             </li>
                         </ul>
+                        {% if not current_user.is_authenticated %}
                         <ul class="navbar-nav navbar-dark ms-lg-auto flex-column flex-lg-row mb-lg-0 column-gap-lg-3">
                             <li class="nav-item">
                                 <a id="nav" class="nav-link" aria-current="page" href="{{ url_for('auth.login' ) }}">Masuk</a>
@@ -162,6 +163,27 @@
                                 <a class="btn btn-warning btn-yellow px-4" href="{{ url_for('auth.register' ) }}">Daftar</a>
                             </li>
                         </ul>
+                        {% else %}
+                        <div class="dropdown ms-lg-auto">
+                            <a class="nav-link gap-2" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <small class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold" style="font-size: 11pt">{{ current_user.username }}</small>
+                                <img class="img-profile rounded-circle" src="../../static/admin/images/profile/user-1.jpg" width="35" height="35" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="{{ url_for('views.profil' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-user fs-6"></i>
+                                        <p class="mb-0 fs-3">Edit Profil</p>
+                                    </a>
+                                    <a href="{{ url_for('views.settings' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-settings fs-6"></i>
+                                        <p class="mb-0 fs-3">Pengaturan</p>
+                                    </a>
+                                    <a href="{{ url_for('auth.logout' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block">Keluar</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </nav>

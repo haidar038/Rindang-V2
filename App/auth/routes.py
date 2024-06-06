@@ -62,7 +62,7 @@ def login():
         else:
             return redirect(url_for('views.dashboard'))
 
-    email = request.form.get('emailAddress', '')
+    email = request.form.get('emailAddress', '')  # Ambil nilai email dari form jika ada
 
     if request.method == 'POST':
         email = request.form['emailAddress']
@@ -77,12 +77,12 @@ def login():
             return redirect(url_for('views.dashboard'))
         elif user is None:
             flash("Akun anda belum terdaftar, silakan daftar terlebih dahulu", category='warning')
-            return redirect(url_for('auth.login', email=email))
+            return redirect(url_for('auth.login', email=email))  # Teruskan nilai email saat redirect
         else:
             flash("Kata sandi salah, silakan coba lagi.", category='error')
-            return redirect(url_for('auth.login', email=email))
+            return redirect(url_for('auth.login', email=email))  # Teruskan nilai email saat redirect
 
-    return render_template('login.html', page='User', email=email)
+    return render_template('login.html', page='User', email=email)  # Teruskan nilai email ke template
 
 # User Registration Route
 @auth.route('/register', methods=['GET', 'POST'])

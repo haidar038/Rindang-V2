@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="mb-3 text-center">
                                     <label for="emailAddress" class="form-label fw-medium">Email</label>
-                                    <input type="email" class="form-control" id="emailAddress" name="emailAddress" placeholder="Masukkan Alamat Email" value="{{ email }}" required />
+                                    <input type="email" class="form-control" id="emailAddress" name="emailAddress" placeholder="Masukkan Alamat Email" {% if email %} value="{{ email }}" {% endif %} required />
                                 </div>
                                 <div class="mb-4 text-center">
                                     <label for="userPassword" class="form-label fw-medium">Kata Sandi</label>
