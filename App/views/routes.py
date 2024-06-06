@@ -352,8 +352,8 @@ def updateprofil(id):
 
     form_type = request.form.get('formType')
 
-    if form_type == 'Data User':
-        if request.method == 'POST':
+    if request.method == 'POST':  # Periksa metode POST di luar
+        if form_type == 'Data User':
             user.nama_lengkap = request.form['nama']
             user.username = request.form['username']
             user.pekerjaan = request.form['pekerjaan']
@@ -363,25 +363,27 @@ def updateprofil(id):
             if not kelurahan:
                 add_kelurahan = Kelurahan(user_id=id)
                 db.session.add(add_kelurahan)
-                db.session.commit()
-                flash('Profil Berhasil Diubah', 'success')
-                return redirect(url_for('views.profil'))
+            db.session.commit()
+            flash('Profil Berhasil Diubah', 'success')
+            return redirect(url_for('views.profil'))  # Pastikan ada return di sini
 
-    elif form_type == 'Data Kelurahan':
-        if request.method == 'POST':
-            if kelurahan:  # Check if kelurahan exists before updating
+        elif form_type == 'Data Kelurahan':
+            if kelurahan:  
                 kelurahan.nama = request.form['kelurahan']
                 kelurahan.kebun = request.form['kebun']
                 kelurahan.luas_kebun = request.form['luaskebun']
                 user.kelurahan_id = kelurahan.id
                 db.session.commit()
+                flash('Profil Berhasil diubah!', 'success')  # Pindahkan flash message ke dalam blok if
             else:
-                flash('Tidak ada data kelurahan untuk diperbaharui!', 'danger')  # Flash error message
+                flash('Tidak ada data kelurahan untuk diperbaharui!', 'danger')
+            return redirect(url_for('views.profil'))  # Pastikan ada return di sini
 
-            flash('Profil Berhasil diubah!', 'success')
-            return redirect(url_for('views.profil'))
-    else:
-        return None
+        else:
+            flash('Tipe form tidak valid!', 'danger')  # Pesan jika form_type tidak valid
+            return redirect(url_for('views.profil')) # Atau redirect ke halaman error 
+
+    return render_template('dashboard/profil.html', user=user, kelurahan=kelurahan)  # Mengembalikan template jika metode GET
 
 @views.route('/dashboard/pengaturan', methods=['GET', 'POST'])
 @login_required
