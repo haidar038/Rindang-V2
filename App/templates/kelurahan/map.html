@@ -9,8 +9,8 @@
         <meta name="keywords" content="rindang sistem informasi pangan kota ternate kebutuhan cabai barito rica tanam petani" />
         <meta property="og:title" content="RINDANG - Rica Tanam Dalam Kampung" />
         <meta property="og:description" content="Sistem Informasi kebutuhan pangan dan informasi pangan Kota Ternate" />
-        <meta property="og:image" content="https://i.ibb.co/grnRZSB/og-thumbnail.webp" />
-        <meta property="og:url" content="https://rindang.vercel.app" />
+        <meta property="og:image" content="https://i.ibb.co.com/8dynFyq/Rindang-OG-Thumbnail.jpg" />
+        <meta property="og:url" content="https://rindang.net" />
         <meta property="og:type" content="website" />
 
         <!-- FAVICONS -->
@@ -161,37 +161,37 @@
         <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
         <script>
             //var center_spot = L.marker([0.805211567917295, 127.33528798258935])
-            var kebun1sasa = L.marker([0.755278, 127.326389]).bindPopup("Kebun 1 Sasa"),
-                kebun1kulaba = L.marker([0.846389, 127.361944]).bindPopup("Kebun 1 Kulaba"),
-                kebun2kulaba = L.marker([0.841667, 127.358889]).bindPopup("Kebun 2 Kulaba"),
-                kebun1kalumpang = L.marker([0.825278, 127.378056]).bindPopup("Kebun 1 Kalumpang"),
-                kebun1fora = L.marker([0.768611, 127.316944]).bindPopup("Kebun 1 Foramadihi"),
-                kebun2fora = L.marker([0.768611, 127.3175]).bindPopup("Kebun 2 Foramadihi");
+            var kebun1sasa = L.marker([0.755278, 127.326389]).bindPopup('Kebun 1 Sasa'),
+                kebun1kulaba = L.marker([0.846389, 127.361944]).bindPopup('Kebun 1 Kulaba'),
+                kebun2kulaba = L.marker([0.841667, 127.358889]).bindPopup('Kebun 2 Kulaba'),
+                kebun1kalumpang = L.marker([0.825278, 127.378056]).bindPopup('Kebun 1 Kalumpang'),
+                kebun1fora = L.marker([0.768611, 127.316944]).bindPopup('Kebun 1 Foramadihi'),
+                kebun2fora = L.marker([0.768611, 127.3175]).bindPopup('Kebun 2 Foramadihi');
 
             var kebun = L.layerGroup([kebun1sasa, kebun1kalumpang, kebun1kulaba, kebun2kulaba, kebun1fora, kebun2fora]);
 
-            var normal = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            var normal = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 20,
-                attribution: "© OpenStreetMap",
+                attribution: '© OpenStreetMap',
             });
 
-            var ligth_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}", {
+            var ligth_map = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution:
                     '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                ext: "png",
+                ext: 'png',
             });
 
-            var dark_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}", {
+            var dark_map = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution:
                     '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                ext: "png",
+                ext: 'png',
             });
 
-            var map = L.map("map", {
+            var map = L.map('map', {
                 center: [0.8016929, 127.3569173],
                 zoom: 12,
                 layers: [normal, kebun],
@@ -211,8 +211,8 @@
         </script>
         <script>
             $(document).ready(function () {
-                $("#toggle-sidebar-btn").click(function () {
-                    $(".sidebar").toggleClass("active");
+                $('#toggle-sidebar-btn').click(function () {
+                    $('.sidebar').toggleClass('active');
                 });
             });
         </script>

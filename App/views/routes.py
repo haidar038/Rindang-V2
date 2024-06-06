@@ -465,6 +465,10 @@ def updatepassword(id):
 def weather():
     return render_template('weather.html')
 
+@views.route('/terms-and-conditions')
+def terms():
+    return render_template('terms_conditions.html')
+
 # ========================= KELURAHAN SECTION =========================
 @views.route('/peta-sebaran')
 def mapbase():

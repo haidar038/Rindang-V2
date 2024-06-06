@@ -9,8 +9,8 @@
         <meta name="keywords" content="rindang sistem informasi pangan kota ternate kebutuhan cabai barito rica tanam petani" />
         <meta property="og:title" content="RINDANG - Rica Tanam Dalam Kampung" />
         <meta property="og:description" content="Sistem Informasi kebutuhan pangan dan informasi pangan Kota Ternate" />
-        <meta property="og:image" content="https://i.ibb.co/grnRZSB/og-thumbnail.webp" />
-        <meta property="og:url" content="https://rindang.vercel.app" />
+        <meta property="og:image" content="https://i.ibb.co.com/8dynFyq/Rindang-OG-Thumbnail.jpg" />
+        <meta property="og:url" content="https://rindang.net" />
         <meta property="og:type" content="website" />
 
         <!-- FAVICONS -->
@@ -169,23 +169,23 @@
 
         <script>
             const passwordInputs = document.querySelectorAll('input[type="password"]'); // Select all password inputs
-            const toggleButtons = document.querySelectorAll(".pass-toggle"); // Select all toggle buttons
+            const toggleButtons = document.querySelectorAll('.pass-toggle'); // Select all toggle buttons
 
             // Loop through each password input and its corresponding toggle button
             for (let i = 0; i < passwordInputs.length; i++) {
                 const passwordInput = passwordInputs[i];
                 const toggleButton = toggleButtons[i];
 
-                toggleButton.addEventListener("click", function () {
+                toggleButton.addEventListener('click', function () {
                     // Toggle the password type between "password" and "text"
-                    const type = passwordInput.type === "password" ? "text" : "password";
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
                     passwordInput.type = type;
 
                     // Change the icon based on password visibility
-                    if (type === "password") {
-                        toggleButton.querySelector("ion-icon").name = "eye";
+                    if (type === 'password') {
+                        toggleButton.querySelector('ion-icon').name = 'eye';
                     } else {
-                        toggleButton.querySelector("ion-icon").name = "eye-off";
+                        toggleButton.querySelector('ion-icon').name = 'eye-off';
                     }
                 });
             }
