@@ -288,6 +288,27 @@ html {
     background-color: #fff !important;
 }
 
+/* PAGINATION */
+/* ====================================== */
+
+.pagination .page-link {
+    color: var(--green);
+    background-color: transparent;
+    border: 1px solid var(--green);
+}
+
+.pagination .page-link:hover {
+    color: white;
+    background-color: var(--hover-green);
+    border-color: var(--hover-green);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--green);
+    border-color: var(--green);
+    color: white;
+}
+
 .play-button {
     /* -webkit-mask-image: -webkit-radial-gradient(#000, #fff); */
     -webkit-mask-image: radial-gradient(#000, #fff);

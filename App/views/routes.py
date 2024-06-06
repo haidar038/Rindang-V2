@@ -14,7 +14,21 @@ from App import db, UPLOAD_FOLDER
 
 views = Blueprint('views', __name__)
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+PICTURE_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+REPORT_ALLOWED_EXTENSIONS = {'xlsx'}
+REPORT_STAT = {'panen', 'penanaman'}
+
+def picture_allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in PICTURE_ALLOWED_EXTENSIONS
+
+def allowed_report_stat(filename, import_type):
+    file_name_without_extension = os.path.splitext(filename)[0].lower() # Mengambil nama file tanpa ekstensi
+    return import_type in file_name_without_extension
+
+def report_allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in REPORT_ALLOWED_EXTENSIONS
 
 # Constants for API URL parameters
 KAB_KOTA = 458  # Ternate
@@ -67,10 +81,6 @@ def fetch_price_data(start_date, end_date):
     except requests.exceptions.RequestException as e:
         flash(f"Error fetching data: {e}", category='error')
         return []  # Return an empty list on error
-    
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.route('/dashboard/profil/<int:id>/update_picture', methods=['POST'])
 @login_required
@@ -85,7 +95,7 @@ def update_profile_picture(id):
         if file.filename == '':
             flash('Tidak ada file yang dipilih!', 'error')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+        if file and picture_allowed_file(file.filename):
             filename = secrets.token_hex(8) + '_' + secure_filename(file.filename)
             file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
@@ -239,37 +249,59 @@ def import_data_pangan():
         import_type = request.form['import_type']
         excel_file = request.files['excel_file'] 
 
-        if excel_file:
-            wb = load_workbook(excel_file)
-            sheet = wb.active
+        if 'excel_file' not in request.files:
+            flash('Tidak ada file yang dipilih!', 'error')
+            return redirect(request.url)
 
-            for row in sheet.iter_rows(min_row=2):
-                kebun = row[0].value
-                komoditas = row[1].value
-                jml_bibit = row[2].value
-                tanggal_bibit = row[3].value.strftime('%Y-%m-%d') if isinstance(row[3].value, datetime) else row[3].value 
+        if excel_file.filename == '':
+            flash('Tidak ada file yang dipilih!', 'error')
+            return redirect(request.url)
 
-                if import_type == 'penanaman':
-                    data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
-                                            jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
-                                            status='Penanaman', jml_panen=0, tanggal_panen=0, 
-                                            user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
-                elif import_type == 'panen':
-                    jml_panen = row[4].value 
-                    tanggal_panen = row[5].value.strftime('%Y-%m-%d') if isinstance(row[5].value, datetime) else row[5].value
+        # Validasi ekstensi dan nama file
+        if excel_file and report_allowed_file(excel_file.filename):
+            if not allowed_report_stat(excel_file.filename, import_type):
+                flash('Nama file harus sesuai format ("panen" atau "penanaman") dan sesuai dengan pilihan status produksi!', 'warning')
+                return redirect(request.url)
 
-                    data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
-                                            jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
-                                            status='Panen', jml_panen=jml_panen, tanggal_panen=tanggal_panen, 
-                                            user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
-                else:
-                    flash('Tipe impor tidak valid!', 'error')
-                    return redirect(url_for('views.import_data_pangan'))
-                db.session.add(data_pangan)
-    
-            db.session.commit()
-            flash('Data berhasil diimpor!', 'success')
-            return redirect(url_for('views.dataproduksi'))
+            filename = secure_filename(excel_file.filename)
+            
+            try: 
+                wb = load_workbook(excel_file)
+                sheet = wb.active
+
+                for row in sheet.iter_rows(min_row=2):
+                    kebun = row[0].value
+                    komoditas = row[1].value
+                    jml_bibit = row[2].value
+                    tanggal_bibit = row[3].value.strftime('%Y-%m-%d') if isinstance(row[3].value, datetime) else row[3].value 
+
+                    if import_type == 'penanaman':
+                        data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
+                                                jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
+                                                status='Penanaman', jml_panen=0, tanggal_panen=0, 
+                                                user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
+                    elif import_type == 'panen':
+                        jml_panen = row[4].value 
+                        tanggal_panen = row[5].value.strftime('%Y-%m-%d') if isinstance(row[5].value, datetime) else row[5].value
+
+                        data_pangan = DataPangan(kebun=kebun, komoditas=komoditas, 
+                                                jml_bibit=jml_bibit, tanggal_bibit=tanggal_bibit, 
+                                                status='Panen', jml_panen=jml_panen, tanggal_panen=tanggal_panen, 
+                                                user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
+                    else:
+                        flash('Tipe impor tidak valid!', 'error')
+                        return redirect(url_for('views.import_data_pangan'))
+                    db.session.add(data_pangan)
+        
+                db.session.commit()
+                flash('Data berhasil diimpor!', 'success')
+                return redirect(url_for('views.dataproduksi'))
+            except Exception as e:
+                flash(f'Terjadi kesalahan saat memproses file: {e}', 'error')
+                return redirect(request.url)
+        else:
+            flash('Ekstensi file tidak diizinkan. Unggah file Excel (.xlsx)!', 'error')
+            return redirect(request.url) 
 
     return render_template('dashboard/import_data.html')
 
