@@ -1006,8 +1006,14 @@
                                     <div class="col-8">
                                         <div class="h1 fw-medium text-light mb-4">Gabung Bersama Kami Untuk Memulai Pertanian Berkelanjutan</div>
                                         <div class="gap-4 d-flex">
-                                            <button class="btn btn-light btn-lg">Gabung Sekarang</button>
-                                            <button class="btn btn-outline-light btn-lg">Pelajari Lebih Lanjut</button>
+                                            <a href="{{ url_for('auth.register' ) }}" target="_blank" role="button" class="btn btn-light btn-lg">Gabung Sekarang</a>
+                                            <a
+                                                href="{{ url_for('static', filename='BOOKLET RINDANG ESSENTIALS_PRINT.pdf') }}"
+                                                download="{{ url_for('static', filename='BOOKLET RINDANG ESSENTIALS_PRINT.pdf') }}"
+                                                role="button"
+                                                class="btn btn-outline-light btn-lg"
+                                                >Pelajari Lebih Lanjut</a
+                                            >
                                         </div>
                                     </div>
                                     <div class="col-4 ps-5 pt-5">
@@ -1024,8 +1030,14 @@
                                 <div class="card-body">
                                     <h5 class="card-title text-light text-center mb-5">Gabung Bersama Kami Untuk Memulai Pertanian Berkelanjutan</h5>
                                     <div class="d-flex flex-column gap-2">
-                                        <a href="#" class="btn btn-light">Gabung Sekarang</a>
-                                        <a href="#" class="btn btn-outline-light">Pelajari Lebih Lanjut</a>
+                                        <a role="button" target="_blank" href="{{ url_for('auth.register' ) }}" class="btn btn-light">Gabung Sekarang</a>
+                                        <a
+                                            role="button"
+                                            href="{{ url_for('static', filename='BOOKLET RINDANG ESSENTIALS_PRINT.pdf') }}"
+                                            download="{{ url_for('static', filename='BOOKLET RINDANG ESSENTIALS_PRINT.pdf') }}"
+                                            class="btn btn-outline-light"
+                                            >Pelajari Lebih Lanjut</a
+                                        >
                                     </div>
                                 </div>
                             </div>
@@ -1103,121 +1115,121 @@
         <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
         <!-- <script type="text/javascript" src="vanilla-tilt.js"></script> -->
         <script>
-            gsap.from("#hero-person", { y: 100, duration: 1, opacity: 0 });
+            gsap.from('#hero-person', { y: 100, duration: 1, opacity: 0 });
         </script>
         <script>
             function contoh() {
                 Swal.fire({
-                    title: "The Internet?",
-                    text: "That thing is still around?",
-                    icon: "question",
+                    title: 'The Internet?',
+                    text: 'That thing is still around?',
+                    icon: 'question',
                 });
             }
         </script>
         <script>
-            const playBtn = document.getElementById("play-btn");
-            const playBtnIcon = document.getElementById("play-btn-icon");
+            const playBtn = document.getElementById('play-btn');
+            const playBtnIcon = document.getElementById('play-btn-icon');
             //const pauseBtn = document.getElementById('pause-btn');
             //const pauseBtnIcon = document.getElementById('pause-btn-icon');
-            const videoPlayer = document.getElementById("video-player");
-            const vdControls = document.createAttribute("controls");
+            const videoPlayer = document.getElementById('video-player');
+            const vdControls = document.createAttribute('controls');
 
             function playVideo() {
                 videoPlayer.play();
-                playBtn.style.visibility = "hidden";
+                playBtn.style.visibility = 'hidden';
                 videoPlayer.setAttributeNode(vdControls);
             }
 
             function pauseVideo() {
                 videoPlayer.pause();
-                pauseBtn.style.display = "none";
+                pauseBtn.style.display = 'none';
                 videoPlayer.removeAttributeNode(vdControls);
             }
 
             function allTab() {
-                document.getElementById("pills-all").classList.add("active");
-                document.getElementById("all-tab-collapse").classList.add("show");
-                document.getElementById("pills-category").classList.remove("active");
-                document.getElementById("category-tab-collapse").classList.remove("show");
-                document.getElementById("tabs-content-2").style.display = "none";
-                document.getElementById("tabs-content-1").style.display = "block";
+                document.getElementById('pills-all').classList.add('active');
+                document.getElementById('all-tab-collapse').classList.add('show');
+                document.getElementById('pills-category').classList.remove('active');
+                document.getElementById('category-tab-collapse').classList.remove('show');
+                document.getElementById('tabs-content-2').style.display = 'none';
+                document.getElementById('tabs-content-1').style.display = 'block';
             }
 
             function categoryTab() {
-                document.getElementById("pills-category").classList.add("active");
-                document.getElementById("category-tab-collapse").classList.add("show");
-                document.getElementById("pills-all").classList.remove("active");
-                document.getElementById("all-tab-collapse").classList.remove("show");
-                document.getElementById("tabs-content-1").style.display = "none";
-                document.getElementById("tabs-content-2").style.display = "block";
+                document.getElementById('pills-category').classList.add('active');
+                document.getElementById('category-tab-collapse').classList.add('show');
+                document.getElementById('pills-all').classList.remove('active');
+                document.getElementById('all-tab-collapse').classList.remove('show');
+                document.getElementById('tabs-content-1').style.display = 'none';
+                document.getElementById('tabs-content-2').style.display = 'block';
             }
         </script>
         <script>
-            const home = document.getElementById("hero-section");
-            const about = document.getElementById("about");
-            const galery = document.getElementById("galery");
-            const contact = document.getElementById("contact");
-            var mediaQuery = window.matchMedia("(max-width: 767.9px)");
+            const home = document.getElementById('hero-section');
+            const about = document.getElementById('about');
+            const galery = document.getElementById('galery');
+            const contact = document.getElementById('contact');
+            var mediaQuery = window.matchMedia('(max-width: 767.9px)');
 
             function mdQuery(x) {
                 if (mediaQuery.matches) {
-                    home.addEventListener("click", function () {
-                        document.getElementById("navbarSupportedContent").classList.remove("show");
+                    home.addEventListener('click', function () {
+                        document.getElementById('navbarSupportedContent').classList.remove('show');
                     });
 
-                    about.addEventListener("click", function () {
-                        document.getElementById("navbarSupportedContent").classList.remove("show");
+                    about.addEventListener('click', function () {
+                        document.getElementById('navbarSupportedContent').classList.remove('show');
                     });
 
-                    galery.addEventListener("click", function () {
-                        document.getElementById("navbarSupportedContent").classList.remove("show");
+                    galery.addEventListener('click', function () {
+                        document.getElementById('navbarSupportedContent').classList.remove('show');
                     });
 
-                    contact.addEventListener("click", function () {
-                        document.getElementById("navbarSupportedContent").classList.remove("show");
+                    contact.addEventListener('click', function () {
+                        document.getElementById('navbarSupportedContent').classList.remove('show');
                     });
                 }
             }
 
             mdQuery(mediaQuery);
 
-            mediaQuery.addEventListener("change", function () {
+            mediaQuery.addEventListener('change', function () {
                 mdQuery(mediaQuery);
             });
         </script>
         <script>
             //var center_spot = L.marker([0.805211567917295, 127.33528798258935])
-            var kebun1sasa = L.marker([0.755278, 127.326389]).bindPopup("Kebun 1 Sasa"),
-                kebun1kulaba = L.marker([0.846389, 127.361944]).bindPopup("Kebun 1 Kulaba"),
-                kebun2kulaba = L.marker([0.841667, 127.358889]).bindPopup("Kebun 2 Kulaba"),
-                kebun1kalumpang = L.marker([0.825278, 127.378056]).bindPopup("Kebun 1 Kalumpang"),
-                kebun1fora = L.marker([0.768611, 127.316944]).bindPopup("Kebun 1 Foramadihi"),
-                kebun2fora = L.marker([0.768611, 127.3175]).bindPopup("Kebun 2 Foramadihi");
+            var kebun1sasa = L.marker([0.755278, 127.326389]).bindPopup('Kebun 1 Sasa'),
+                kebun1kulaba = L.marker([0.846389, 127.361944]).bindPopup('Kebun 1 Kulaba'),
+                kebun2kulaba = L.marker([0.841667, 127.358889]).bindPopup('Kebun 2 Kulaba'),
+                kebun1kalumpang = L.marker([0.825278, 127.378056]).bindPopup('Kebun 1 Kalumpang'),
+                kebun1fora = L.marker([0.768611, 127.316944]).bindPopup('Kebun 1 Foramadihi'),
+                kebun2fora = L.marker([0.768611, 127.3175]).bindPopup('Kebun 2 Foramadihi');
 
             var kebun = L.layerGroup([kebun1sasa, kebun1kalumpang, kebun1kulaba, kebun2kulaba, kebun1fora, kebun2fora]);
 
-            var normal = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            var normal = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 20,
-                attribution: "© OpenStreetMap",
+                attribution: '© OpenStreetMap',
             });
 
-            var ligth_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}", {
+            var ligth_map = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution:
                     '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                ext: "png",
+                ext: 'png',
             });
 
-            var dark_map = L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}", {
+            var dark_map = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution:
                     '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                ext: "png",
+                ext: 'png',
             });
 
-            var map = L.map("map", {
+            var map = L.map('map', {
                 center: [0.8016929, 127.3569173],
                 zoom: 12,
                 layers: [normal, kebun],

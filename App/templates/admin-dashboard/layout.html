@@ -100,22 +100,19 @@
                             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                                 <li class="nav-item">
                                     <div class="dropdown">
-                                        <a href="javascript:void(0)" class="nav-icon-hover gap-3 d-none d-lg-flex" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="{{ url_for('static', filename='admin/images/profile/user-1.jpg') }}" alt="Profile Picture" width="35" height="35" class="rounded-circle" />
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <span>Menu</span>
-                                                <small class="text-muted">Admin</small>
-                                            </div>
+                                        <a class="nav-link gap-2" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <img class="img-profile rounded-circle" src="{{ url_for('static', filename='admin/images/profile/user-1.jpg') }}" width="35" height="35" />
+                                            <small class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold" style="font-size: 11pt">{{ current_user.username }}</small>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
+                                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                             <div class="message-body">
                                                 <a href="{{ url_for('admin_page.profile', username=current_user.username) }}" class="d-flex align-items-center gap-2 dropdown-item">
                                                     <i class="ti ti-user fs-6"></i>
                                                     <p class="mb-0 fs-3">Profil</p>
                                                 </a>
-                                                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-green mx-3 mt-2 d-block"><i class="ti ti-power"></i> Keluar</a>
+                                                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-green mx-3 mt-2 d-block">Keluar</a>
                                             </div>
-                                        </ul>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
