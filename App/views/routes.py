@@ -116,6 +116,10 @@ def site_map():
     articles = sorted(flatpages, key=lambda item:item.meta['published'], reverse=False)
     return render_template('sitemap.xml', articles=articles, base_url="https://rindang.net")
 
+@views.route('/robots.txt')
+def robots_txt():
+    return send_from_directory(current_app.static_folder, 'robots.txt')
+
 @views.route('/', methods=['POST', 'GET'])
 def index():
     kelurahan = Kelurahan.query.all()
