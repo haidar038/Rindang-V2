@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
 from mailersend import emails
 from dotenv import load_dotenv
+from flask_sitemap import Sitemap
 
 app = Flask(__name__)
 
@@ -22,6 +23,7 @@ jwt = JWTManager()
 admin = Admin(name='admin')
 buffer = io.BytesIO()
 migrate = Migrate(app, db)
+ext = Sitemap(app=app)
 mailer = emails.NewEmail(os.getenv('MAILERSEND_API_KEY'))
 
 UPLOAD_FOLDER = 'App/static/uploads/profile_pics'  # Sesuaikan path folder upload

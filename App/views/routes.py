@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request, render_template, flash, redirect, url_for, jsonify, session
+from flask import Blueprint, current_app, request, render_template, flash, redirect, url_for, send_from_directory
 from flask_login import login_required, current_user
 from flask_sqlalchemy import pagination
 from flask_admin.base import expose, AdminIndexView, Admin
@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 import json, requests, secrets, os
 
 from App.models import User, DataPangan, Kelurahan
-from App import db, UPLOAD_FOLDER, mailer
+from App import db, UPLOAD_FOLDER, mailer, ext
 
 views = Blueprint('views', __name__)
 
@@ -110,6 +110,14 @@ def update_profile_picture(id):
         else:
             flash('File yang diizinkan hanya JPG, JPEG, dan PNG.', 'error')
     return redirect(url_for('views.profil'))
+
+@views.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(current_app.static_folder, request.path[1:])
+
+@ext.register_generator
+def index():
+    yield 'index', {}
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
