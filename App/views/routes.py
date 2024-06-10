@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 import json, requests, secrets, os
 
 from App.models import User, DataPangan, Kelurahan
-from App import db, UPLOAD_FOLDER, mailer, ext, flatpages
+from App import db, UPLOAD_FOLDER, mailer, flatpages
 
 views = Blueprint('views', __name__)
 
@@ -112,17 +112,9 @@ def update_profile_picture(id):
     return redirect(url_for('views.profil'))
 
 @views.route('/sitemap.xml')
-def static_from_root():
-    return send_from_directory(current_app.static_folder, request.path[1:])
-
-@views.route('/sitemap.xml')
 def site_map():
     articles = sorted(flatpages, key=lambda item:item.meta['published'], reverse=False)
-    return render_template('sitemap_template.xml', articles=articles, base_url="https://buildstaticwebsites.com")
-
-@ext.register_generator
-def index():
-    yield 'index', {}
+    return render_template('sitemap.xml', articles=articles, base_url="https://rindang.net")
 
 @views.route('/', methods=['POST', 'GET'])
 def index():
