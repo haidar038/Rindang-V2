@@ -8,10 +8,12 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
+from mailersend import emails
 from dotenv import load_dotenv
 
 app = Flask(__name__)
 
+load_dotenv()
 socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -20,11 +22,60 @@ jwt = JWTManager()
 admin = Admin(name='admin')
 buffer = io.BytesIO()
 migrate = Migrate(app, db)
-load_dotenv()
+mailer = emails.NewEmail(os.getenv('MAILERSEND_API_KEY'))
 
 UPLOAD_FOLDER = 'App/static/uploads/profile_pics'  # Sesuaikan path folder upload
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+def send_email(to_email, subject, html_content):
+    """Mengirim email menggunakan MailerSend.
+
+    Args:
+        to_email (str): Alamat email penerima.
+        subject (str): Subjek email.
+        html_content (str): Konten HTML email.
+    """
+
+    try:
+        # Menggunakan API key dari environment variable
+        mailer = emails.NewEmail(os.getenv('MAILERSEND_API_KEY'))
+
+        mail_body = {}
+
+        mail_from = {
+            "name": "M. Khaidar", # Ganti dengan nama pengirim Anda
+            "email": "haidar038@gmail.com"  # Ganti dengan email pengirim TERVERIFIKASI
+        }
+
+        recipients = [
+            {
+                "name": "Recipient Name", # Anda bisa mengambil nama pengguna jika ada
+                "email": to_email,
+            }
+        ]
+
+        # (Opsional) Tambahkan reply_to jika diperlukan
+        # reply_to = {
+        #     "name": "Nama Pengirim",
+        #     "email": "reply@rindangdigifarm.com",  # Ganti dengan email yang ingin Anda gunakan untuk balasan
+        # }
+
+        mailer.set_mail_from(mail_from, mail_body)
+        mailer.set_mail_to(recipients, mail_body)
+        mailer.set_subject(subject, mail_body)
+        mailer.set_html_content(html_content, mail_body)
+        #mailer.set_plaintext_content("Ini adalah konten teks", mail_body) # Opsional: Tambahkan teks biasa jika diperlukan 
+        #mailer.set_reply_to(reply_to, mail_body) # Opsional
+
+        response = mailer.send(mail_body)
+        print(response)
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 def create_app():
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'rindang_digifarm') # Gunakan variabel environment atau nilai default

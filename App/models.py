@@ -1,8 +1,9 @@
-from App import db, admin
+from App import db, admin, app
 from flask_login import UserMixin
 from datetime import datetime
 from flask_admin.contrib.sqla.view import ModelView
 from flask_admin.base import BaseView, expose
+from itsdangerous import URLSafeTimedSerializer
 
 now = datetime.now()
 
@@ -18,9 +19,25 @@ class User(db.Model, UserMixin):
     kelurahan_id = db.Column(db.Integer, db.ForeignKey('kelurahan.id'), nullable=True)
     account_type = db.Column(db.String(20), nullable=False, default='user') # Ubah db.String menjadi db.String(20)
     profile_pic = db.Column(db.String(255), nullable=True)
+    verification_token = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f"User('{self.nama_lengkap}','{self.email}','{self.username}')"
+    
+    def get_reset_token(self, expires_sec=1800):
+        """Membuat token untuk reset password atau verifikasi email."""
+        s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        return s.dumps({'user_id': self.id}, salt='confirm-email')
+
+    @staticmethod
+    def verify_reset_token(token):
+        """Verifikasi token dan kembalikan user yang sesuai."""
+        s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, salt='confirm-email', max_age=1800)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
     
 class Kelurahan(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,8 +1,9 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session, Response
 from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from itsdangerous import URLSafeTimedSerializer
 from App.models import User, AppAdmin
-from App import db, login_manager
+from App import app, db, login_manager, send_email
 
 auth = Blueprint('auth', __name__)
 
@@ -10,6 +11,24 @@ auth = Blueprint('auth', __name__)
 @auth.errorhandler(401)
 def unauthorized(error):
     return Response(response="Unauthorized", status=401)
+
+@auth.route('/verify_email/<token>')
+def verify_email(token):
+    """Verifikasi alamat email pengguna berdasarkan token."""
+
+    # 1. Cari pengguna berdasarkan token
+    user = User.query.filter_by(verification_token=token).first()
+
+    if user:
+        # 2. Verifikasi token dan tandai pengguna sebagai terverifikasi
+        user.verified = True
+        user.verification_token = None  # Hapus token setelah verifikasi
+        db.session.commit()
+        flash('Email Anda berhasil diverifikasi!', 'success')
+    else:
+        flash('Token verifikasi tidak valid atau kedaluwarsa.', 'error')
+
+    return redirect(url_for('auth.login'))
 
 # User Loader for Flask-Login
 @login_manager.user_loader
@@ -21,6 +40,10 @@ def load_user(user_id):
         return User.query.get(int(user_id))
     else:
         return None
+
+@auth.route('/waiting-for-verification')
+def waiting_verification():
+    return render_template('dashboard/waiting_verified.html')
 
 # Admin Login Route
 @auth.route('/adminLogin', methods=['GET', 'POST'])
@@ -106,15 +129,34 @@ def register():
         elif User.query.filter_by(email=email).first():
             flash('Email sudah digunakan, silakan buat yang lain.', category='error')
         else:
-            add_user = User(email=email, password=generate_password_hash(password, method='pbkdf2'))
-            db.session.add(add_user)
-            db.session.commit()
-            flash('Akun berhasil dibuat!', category='success')
-            
-            # Log the user out explicitly after registration
-            logout_user()
+            try:
+                add_user = User(email=email, password=generate_password_hash(password, method='pbkdf2'))
+                
+                # Generate token verifikasi
+                s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+                token = s.dumps({'user_id': add_user.id}, salt='email-confirm') 
+                add_user.verification_token = token 
 
-            return redirect(url_for('auth.login'))
+                db.session.add(add_user)
+                db.session.commit()
+
+                # Kirim email verifikasi setelah pengguna berhasil dibuat 
+                subject = "Selamat Datang di Rindang Digifarm!"
+                html_content = f"""
+                    <h1>Halo {email}!</h1>
+                    <p>Selamat datang di Rindang Digifarm! Akun Anda telah berhasil dibuat.</p>
+                    <p>Silakan klik tautan berikut untuk verifikasi akun Anda:</p> 
+                    <a href="{url_for('auth.verify_email', token='YOUR_VERIFICATION_TOKEN', _external=True)}">Verifikasi Akun</a>
+                """
+                send_email(email, subject, html_content)
+
+                flash('Akun berhasil dibuat! Silahkan cek email Anda untuk verifikasi.', category='success')
+                return redirect(url_for('auth.login'))
+
+            except Exception as e:
+                db.session.rollback()
+                flash('Terjadi kesalahan saat membuat akun. Silahkan coba lagi.', category='error')
+                print(f"Error during registration: {e}")
 
     return render_template('register.html', page='User')
 

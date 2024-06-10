@@ -7,10 +7,11 @@ from sqlalchemy import asc
 from datetime import datetime, timedelta
 from babel.numbers import format_currency
 from werkzeug.utils import secure_filename
+
 import json, requests, secrets, os
 
 from App.models import User, DataPangan, Kelurahan
-from App import db, UPLOAD_FOLDER
+from App import db, UPLOAD_FOLDER, mailer
 
 views = Blueprint('views', __name__)
 
