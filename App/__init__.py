@@ -11,6 +11,7 @@ from flask_toastr import Toastr
 from mailersend import emails
 from dotenv import load_dotenv
 from flask_sitemap import Sitemap
+from flask_flatpages import FlatPages
 
 app = Flask(__name__)
 
@@ -24,6 +25,7 @@ admin = Admin(name='admin')
 buffer = io.BytesIO()
 migrate = Migrate(app, db)
 ext = Sitemap(app=app)
+flatpages = FlatPages()
 mailer = emails.NewEmail(os.getenv('MAILERSEND_API_KEY'))
 
 UPLOAD_FOLDER = 'App/static/uploads/profile_pics'  # Sesuaikan path folder upload
@@ -95,6 +97,7 @@ def create_app():
     login_manager.init_app(app)
     toastr.init_app(app)
     jwt.init_app(app)
+    flatpages.init_app(app)
 
     from .auth.routes import auth
     from .views.routes import views
