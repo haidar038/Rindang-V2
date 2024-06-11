@@ -77,9 +77,6 @@ def send_email(to_email, subject, html_content):
 
     except Exception as e:
         print(f"Error sending email: {e}")
-        
-    except Exception as e:
-        print(f"Error sending email: {e}")
 
 def create_app():
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'rindang_digifarm') # Gunakan variabel environment atau nilai default

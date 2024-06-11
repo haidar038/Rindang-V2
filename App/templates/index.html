@@ -156,27 +156,46 @@
                                 <a class="btn btn-warning btn-yellow px-4" href="{{ url_for('auth.register' ) }}">Daftar</a>
                             </li>
                         </ul>
+                        {% else %} {% if current_user.account_type == 'admin' %}
+                        <div class="dropdown">
+                            <a class="nav-link gap-2" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="me-2 d-none d-lg-inline text-light">{{ current_user.username }}</span>
+                                <img class="img-profile rounded-circle" src="{{ url_for('static', filename='admin/images/profile/user-1.jpg') }}" width="35" height="35" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="{{ url_for('admin_page.profile', username=current_user.username) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <ion-icon name="person"></ion-icon>
+                                        <p class="mb-0">Profil</p>
+                                    </a>
+                                    <a href="{{ url_for('auth.logout') }}" class="d-flex align-items-center gap-2 dropdown-item"><ion-icon name="power"></ion-icon> Keluar</a>
+                                </div>
+                            </div>
+                        </div>
                         {% else %}
                         <div class="dropdown ms-lg-auto">
-                            <a class="nav-link gap-2" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <small class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold" style="font-size: 11pt">{{ current_user.username }}</small>
-                                <img class="img-profile rounded-circle" src="../../static/admin/images/profile/user-1.jpg" width="35" height="35" />
+                            <a class="nav-link" href="javascript:void(0)" id="drop2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="me-2 d-none d-lg-inline text-light">{{ current_user.username }}</span>
+                                <img class="img-profile rounded-circle" src="   ../../static/admin/images/profile/user-1.jpg" width="35" height="35" />
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div class="message-body">
                                     <a href="{{ url_for('views.profil' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
-                                        <i class="ti ti-user fs-6"></i>
-                                        <p class="mb-0 fs-3">Edit Profil</p>
+                                        <ion-icon name="person"></ion-icon>
+                                        <p class="mb-0">Edit Profil</p>
                                     </a>
                                     <a href="{{ url_for('views.settings' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
-                                        <i class="ti ti-settings fs-6"></i>
-                                        <p class="mb-0 fs-3">Pengaturan</p>
+                                        <ion-icon name="settings"></ion-icon>
+                                        <p class="mb-0">Pengaturan</p>
                                     </a>
-                                    <a href="{{ url_for('auth.logout' ) }}" class="btn btn-outline-green mx-3 mt-2 d-block">Keluar</a>
+                                    <a href="{{ url_for('auth.logout' ) }}" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <ion-icon name="power"></ion-icon>
+                                        <p class="mb-0">Keluar</p></a
+                                    >
                                 </div>
                             </div>
                         </div>
-                        {% endif %}
+                        {% endif %} {% endif %}
                     </div>
                 </div>
             </nav>
