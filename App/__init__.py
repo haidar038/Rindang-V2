@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+# from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash
 from flask_toastr import Toastr
 from mailersend import emails
