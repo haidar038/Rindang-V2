@@ -20,7 +20,6 @@ socketio = SocketIO(cors_allowed_origins="*")
 db = SQLAlchemy()
 login_manager = LoginManager()
 toastr = Toastr()
-jwt = JWTManager()
 admin = Admin(name='admin')
 buffer = io.BytesIO()
 migrate = Migrate(app, db)
@@ -93,7 +92,6 @@ def create_app():
     socketio.init_app(app)
     login_manager.init_app(app)
     toastr.init_app(app)
-    jwt.init_app(app)
     flatpages.init_app(app)
 
     from .auth.routes import auth
