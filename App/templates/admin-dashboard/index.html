@@ -62,9 +62,9 @@
                                         <div><strong>{{ round_num(total_panen_per_kelurahan[data_kel.id]/1000, 2) }} kg</strong></div>
                                     </td>
                                     <td class="border-bottom-0 gap-2 align-middle d-flex d-lg-block">
-                                        <a id="dwldBtn" href="{{ url_for('admin_page.report', nama=genhash(data_kel.nama, method='pbkdf2'), id=data_kel.id ) }}" role="button" target="_blank" class="btn btn-green fs-5"
-                                            ><i class="ti ti-download"></i
-                                        ></a>
+                                        <a href="{{ url_for('admin_page.report', id=data_kel.id) }}" role="button" target="_blank" class="btn btn-green fs-5">
+                                            <i class="ti ti-download"></i>
+                                        </a>
                                         <a id="statBtn" href="{{ url_for('admin_page.dataproduksikel', id=data_kel.id ) }}" role="button" class="btn btn-yellow fs-5 text-light"><i class="ti ti-chart-line"></i></a>
                                     </td>
                                 </tr>

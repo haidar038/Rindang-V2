@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for, make_response
+from flask import Blueprint, request, render_template, flash, redirect, url_for, make_response, send_file
 from flask_login import login_required, current_user
 from sqlalchemy import asc
 # from flask_jwt_extended.tokens import _encode_jwt, _decode_jwt
@@ -16,7 +16,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-import io, os, base64, locale, json
+import io, os, locale, json
 
 from App.models import User, AppAdmin, DataPangan, Kelurahan, db
 # from App import admin, login_manager, socketio
@@ -233,14 +233,19 @@ def dataproduksikel(id):
 
     return render_template('/admin-dashboard/data-kelurahan.html', chart_data=kelurahan_data, kelurahan=kelurahan, stat_cabai=json.dumps(stat_cabai), stat_tomat=json.dumps(stat_tomat))
 
-@admin_page.route("/admin-dashboard/laporan/userid?=<int:id>/<string:nama>", methods=['POST', 'GET'])
-# @login_required
-def report(nama, id):
-    from App.run import app
-    # if current_user.account_type == 'user':
-    #     return redirect(url_for('views.dashboard'))
+@admin_page.route("/admin-dashboard/laporan/userid=<int:id>", methods=['GET'])
+@login_required
+def report(id):
+    locale.setlocale(locale.LC_ALL, 'id_ID')
+    if current_user.account_type == 'user':
+        return redirect(url_for('views.dashboard'))
+
+    kel = Kelurahan.query.get_or_404(id)
+    today = datetime.today()
+    kmd = DataPangan.query.filter_by(kelurahan_id=kel.id).all()
 
     # Register Font    
+    from App.run import app
     font_dir = os.path.join(app.root_path, 'static', 'fonts', 'plusjakarta')
     for font_file in os.listdir(font_dir):
         if font_file.endswith('.ttf'):
@@ -248,12 +253,6 @@ def report(nama, id):
             with open(font_path, 'rb') as f:  # Buka file font dalam mode biner
                 font_name = font_file[:-4]
                 pdfmetrics.registerFont(TTFont(font_name, f))
-    kel = Kelurahan.query.get_or_404(id)
-
-    nama = check_password_hash(nama, kel.nama)
-
-    today = datetime.utcnow()
-    kmd = DataPangan.query.filter_by(kelurahan_id=kel.id).all()
 
     # Render template HTML dengan data
     html = render_template('admin-dashboard/laporan.html', today=today, kel=kel, kmd=kmd, round_numb=round)
@@ -373,7 +372,13 @@ def report(nama, id):
     response.direct_passthrough = True  # Prevent automatic download
 
     pdf_value = buffer.getvalue()
-    buffer.close()
+    # buffer.close()
 
-    return response
+    # Kirimkan file PDF sebagai respons
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f'Report_of_{kel.nama}.pdf',
+        mimetype='application/pdf'
+    )
     return render_template('admin-dashboard/laporan.html', today=today, kel=kel, kmd=kmd, round_numb=round, pdf_value=pdf_value)
