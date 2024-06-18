@@ -16,7 +16,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-import io, os, locale, json
+import io, os, locale, json, tempfile
 
 from App.models import User, AppAdmin, DataPangan, Kelurahan, db
 # from App import admin, login_manager, socketio
@@ -374,9 +374,13 @@ def report(id):
     pdf_value = buffer.getvalue()
     # buffer.close()
 
-    # Kirimkan file PDF sebagai respons
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+        temp_pdf.write(buffer.getvalue())
+        temp_pdf_path = temp_pdf.name
+
+    # Kirimkan file sementara menggunakan send_file
     return send_file(
-        buffer,
+        temp_pdf_path,
         as_attachment=True,
         download_name=f'Report_of_{kel.nama}.pdf',
         mimetype='application/pdf'
