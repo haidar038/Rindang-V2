@@ -38,13 +38,6 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div>
-                                    <select class="form-select" id="select-pangan">
-                                        <option value="">Semua Komoditas</option>
-                                        <option value="Cabai">Cabai</option>
-                                        <option value="Tomat">Tomat</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
                         <div class="date-filter mb-3 row-gap-3 row">
@@ -65,8 +58,14 @@
                                 <button class="w-100 btn btn-outline-dark" id="reset-button">Reset</button>
                             </div>
                         </div>
-                        <div class="mt-4" id="chart" role="img" aria-label="Production Statistics Chart"></div>
-                        <!-- <canvas id="chart"></canvas> -->
+                        <div class="row">
+                            <div class="col">
+                                <div class="mt-4" id="chart-cabai" role="img" aria-label="Production Statistics Chart Cabai"></div>
+                            </div>
+                            <div class="col">
+                                <div class="mt-4" id="chart-tomat" role="img" aria-label="Production Statistics Chart Tomat"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,75 +81,81 @@
     const filterButton = document.getElementById('filter-button');
     const resetButton = document.getElementById('reset-button');
     const kelurahanSelect = document.getElementById('select-kelurahan');
-    const komoditasSelect = document.getElementById('select-pangan');
-    const chartElement = document.querySelector('#chart');
+    const chartCabaiElement = document.querySelector('#chart-cabai');
+    const chartTomatElement = document.querySelector('#chart-tomat');
 
-    let chart = null;
+    let chartCabai = null;
+    let chartTomat = null;
+
+    const colorMap = {
+        Foramadiahi: '#4CACBC',
+        Sasa: '#6CC4A1',
+        Tubo: '#A0D995',
+        Kulaba: '#F6E3C5',
+        Kalumpang: '#FFFFFF',
+    };
 
     function filterData() {
         const selectedKelurahan = kelurahanSelect.value;
-        const selectedKomoditas = komoditasSelect.value;
 
-        const filteredData = [];
+        const filteredCabaiData = [];
+        const filteredTomatData = [];
+
         for (const [kelurahan, dataKelurahan] of Object.entries(chartData)) {
-            // Jika kelurahan dipilih atau tidak ada filter kelurahan
             if (selectedKelurahan === '' || kelurahan === selectedKelurahan) {
                 for (const [komoditas, dataKomoditas] of Object.entries(dataKelurahan)) {
-                    // Jika komoditas dipilih atau tidak ada filter komoditas
-                    if (selectedKomoditas === '' || komoditas === selectedKomoditas) {
-                        dataKomoditas.tgl_panen.forEach((tanggal, index) => {
-                            filteredData.push({
-                                kelurahan,
-                                komoditas,
-                                jml_panen: dataKomoditas.jml_panen[index] / 1000,
-                                tanggal_panen: tanggal,
-                            });
-                        });
-                    }
+                    dataKomoditas.tgl_panen.forEach((tanggal, index) => {
+                        const dataPoint = {
+                            kelurahan,
+                            komoditas,
+                            jml_panen: dataKomoditas.jml_panen[index] / 1000,
+                            tanggal_panen: tanggal,
+                            color: colorMap[kelurahan],
+                        };
+                        if (komoditas === 'Cabai') {
+                            filteredCabaiData.push(dataPoint);
+                        } else if (komoditas === 'Tomat') {
+                            filteredTomatData.push(dataPoint);
+                        }
+                    });
                 }
             }
         }
 
-        updateChart(filteredData);
+        updateChart(filteredCabaiData, chartCabaiElement, 'Cabai');
+        updateChart(filteredTomatData, chartTomatElement, 'Tomat');
     }
 
-    function updateChart(data) {
-        if (chart) {
-            chart.destroy();
+    function updateChart(data, chartElement, komoditas) {
+        if (komoditas === 'Cabai' && chartCabai) {
+            chartCabai.destroy();
+        } else if (komoditas === 'Tomat' && chartTomat) {
+            chartTomat.destroy();
         }
 
-        const colorMap = {
-            Cabai: '#ff6b6b',
-            Tomat: '#fcb45e',
-        };
-
-        // Mengelompokkan data berdasarkan tanggal panen dan kelurahan-komoditas
-        const dataByTanggalKelurahanKomoditas = data.reduce((acc, item) => {
+        const dataByTanggal = data.reduce((acc, item) => {
             const tanggal = item.tanggal_panen;
-            const key = `${item.kelurahan} - ${item.komoditas}`;
             if (!acc[tanggal]) {
                 acc[tanggal] = {};
             }
+            const key = `${item.kelurahan}`;
             if (!acc[tanggal][key]) {
                 acc[tanggal][key] = {
                     name: key,
                     data: [],
-                    color: colorMap[item.komoditas],
+                    color: item.color,
                 };
             }
             acc[tanggal][key].data.push({ x: new Date(tanggal).getTime(), y: item.jml_panen });
             return acc;
         }, {});
 
-        // Mengambil data untuk chart
-        const labels = Object.keys(dataByTanggalKelurahanKomoditas);
-        const seriesData = Object.values(dataByTanggalKelurahanKomoditas)
-            .map((dataPerTanggal) => {
-                return Object.values(dataPerTanggal);
-            })
+        const labels = Object.keys(dataByTanggal);
+        const seriesData = Object.values(dataByTanggal)
+            .map((dataPerTanggal) => Object.values(dataPerTanggal))
             .flat();
 
-        chart = new ApexCharts(chartElement, {
+        const chartOptions = {
             series: seriesData,
             chart: {
                 type: 'bar',
@@ -214,9 +219,15 @@
                     },
                 },
             ],
-        });
+        };
 
-        chart.render();
+        if (komoditas === 'Cabai') {
+            chartCabai = new ApexCharts(chartElement, chartOptions);
+            chartCabai.render();
+        } else if (komoditas === 'Tomat') {
+            chartTomat = new ApexCharts(chartElement, chartOptions);
+            chartTomat.render();
+        }
     }
 
     // Data asli untuk reset
@@ -226,24 +237,33 @@
         const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
         const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
 
-        const filteredData = [];
+        const filteredCabaiData = [];
+        const filteredTomatData = [];
+
         for (const [kelurahan, dataKelurahan] of Object.entries(chartData)) {
             for (const [komoditas, dataKomoditas] of Object.entries(dataKelurahan)) {
                 dataKomoditas.tgl_panen.forEach((tanggal, index) => {
                     const tanggalPanen = new Date(tanggal);
+                    const dataPoint = {
+                        kelurahan,
+                        komoditas,
+                        jml_panen: dataKomoditas.jml_panen[index] / 1000,
+                        tanggal_panen: tanggal,
+                        color: colorMap[kelurahan],
+                    };
                     if ((!startDate || tanggalPanen >= startDate) && (!endDate || tanggalPanen <= endDate)) {
-                        filteredData.push({
-                            kelurahan,
-                            komoditas,
-                            jml_panen: dataKomoditas.jml_panen[index] / 1000,
-                            tanggal_panen: tanggal,
-                        });
+                        if (komoditas === 'Cabai') {
+                            filteredCabaiData.push(dataPoint);
+                        } else if (komoditas === 'Tomat') {
+                            filteredTomatData.push(dataPoint);
+                        }
                     }
                 });
             }
         }
 
-        updateChart(filteredData);
+        updateChart(filteredCabaiData, chartCabaiElement, 'Cabai');
+        updateChart(filteredTomatData, chartTomatElement, 'Tomat');
     }
 
     function resetData() {
@@ -262,7 +282,6 @@
     resetButton.addEventListener('click', resetData);
 
     kelurahanSelect.addEventListener('change', filterData);
-    komoditasSelect.addEventListener('change', filterData);
 
     filterData();
 </script>
