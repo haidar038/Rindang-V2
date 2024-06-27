@@ -58,12 +58,40 @@
                                 <button class="w-100 btn btn-outline-dark" id="reset-button">Reset</button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
+                        <div class="row pt-4">
+                            <div class="col-12 col-lg-6">
+                                <div class="mb-3">
+                                    <p class="h3 fw-bold">Cabai</p>
+                                </div>
                                 <div class="mt-4" id="chart-cabai" role="img" aria-label="Production Statistics Chart Cabai"></div>
                             </div>
-                            <div class="col">
+                            <div class="col-12 col-lg-6 mb-3">
+                                <div class="mb-3">
+                                    <p class="h3 fw-bold">Tomat</p>
+                                </div>
                                 <div class="mt-4" id="chart-tomat" role="img" aria-label="Production Statistics Chart Tomat"></div>
+                            </div>
+                            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                <div class="sasa d-flex justify-content-center align-items-center gap-2">
+                                    <span class="color-sasa p-2"></span>
+                                    <span>Sasa</span>
+                                </div>
+                                <div class="tubo d-flex justify-content-center align-items-center gap-2">
+                                    <span class="color-tubo p-2"></span>
+                                    <span>Tubo</span>
+                                </div>
+                                <div class="fora d-flex justify-content-center align-items-center gap-2">
+                                    <span class="color-fora p-2"></span>
+                                    <span>Foramadiahi</span>
+                                </div>
+                                <div class="kalumpang d-flex justify-content-center align-items-center gap-2">
+                                    <span class="color-kalumpang p-2"></span>
+                                    <span>Kalumpang</span>
+                                </div>
+                                <div class="kulaba d-flex justify-content-center align-items-center gap-2">
+                                    <span class="color-kulaba p-2"></span>
+                                    <span>Kulaba</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -92,7 +120,7 @@
         Sasa: '#ffd166',
         Tubo: '#06d6a0',
         Kulaba: '#118ab2',
-        Kalumpang: '#073b4c',
+        Kalumpang: '#540b0e',
     };
 
     function filterData() {
@@ -188,8 +216,8 @@
             },
             yaxis: {
                 min: 0,
-                max: 40,
-                tickAmount: 8,
+                max: 50,
+                tickAmount: 5,
                 labels: {
                     style: {
                         cssClass: 'grey--text lighten-2--text fill-color',

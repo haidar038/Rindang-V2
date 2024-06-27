@@ -8,6 +8,11 @@
     --dark-green: #2e711f;
     --light-green: #d9ffd0;
     --light-yellow: #ffdfb9;
+    --palette-fora: #ef476f;
+    --palette-sasa: #ffd166;
+    --palette-tubo: #06d6a0;
+    --palette-kulaba: #118ab2;
+    --palette-kalumpang: #540b0e;
 }
 
 /** SCROLLBAR */
@@ -52,8 +57,28 @@ html {
     font-family: 'Plus Jakarta Sans';
 }
 
+.color-sasa {
+    background-color: var(--palette-sasa);
+}
+
+.color-tubo {
+    background-color: var(--palette-tubo);
+}
+
+.color-kulaba {
+    background-color: var(--palette-kulaba);
+}
+
+.color-kalumpang {
+    background-color: var(--palette-kalumpang);
+}
+
+.color-fora {
+    background-color: var(--palette-fora);
+}
+
 .text-red {
-    color: var(--red) !important;
+    background-color: var(--red) !important;
 }
 
 .text-yellow {
