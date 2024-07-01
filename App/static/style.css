@@ -78,7 +78,7 @@ html {
 }
 
 .text-red {
-    background-color: var(--red) !important;
+    color: var(--red) !important;
 }
 
 .text-yellow {
