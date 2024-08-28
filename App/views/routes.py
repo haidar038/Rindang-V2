@@ -198,8 +198,8 @@ def dataproduksi():
     cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(desc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
     tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(desc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
 
-    allDataCabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
-    allDataTomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
+    allDataCabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(desc(DataPangan.tanggal_bibit)).all()
+    allDataTomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(desc(DataPangan.tanggal_bibit)).all()
 
     # Menggunakan list comprehension untuk menyederhanakan pembuatan list data statistik
     stat_cabai = [panenCabai.jml_panen for panenCabai in allDataCabai]
