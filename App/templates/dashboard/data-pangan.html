@@ -367,81 +367,25 @@
                                     </table>
                                     <nav aria-label="Page navigation for table" class="mt-4">
                                         <ul class="pagination justify-content-center">
-                                            {% if tomat.has_prev %}
+                                            {% if cabai.has_prev %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.prev_num) }}" aria-label="Previous">
-                                                    <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
-                                                </a>
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.prev_num) }}"><i class="bi bi-chevron-left"></i></a>
                                             </li>
                                             {% else %}
                                             <li class="page-item disabled">
-                                                <a class="page-link" href="#" aria-label="Previous">
-                                                    <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
-                                                </a>
+                                                <span class="page-link"><i class="bi bi-chevron-left"></i></span>
                                             </li>
-                                            {% endif %} {% if tomat.page <= 3 %} {% for page_num in range(1, min(tomat.pages, 4) + 1) %} {% if page_num == tomat.page %}
-                                            <li class="page-item active" aria-current="page">
-                                                <span class="page-link">{{ page_num }}</span>
-                                            </li>
+                                            {% endif %} {% for page_num in cabai.iter_pages() %} {% if page_num %} {% if page_num != cabai.page %}
+                                            <li class="page-item"><a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a></li>
                                             {% else %}
+                                            <li class="page-item active px-2"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                            {% endif %} {% else %} ... {% endif %} {% endfor %} {% if cabai.has_next %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a>
-                                            </li>
-                                            {% endif %} {% endfor %} {% if tomat.pages > 3 %}
-                                            <li class="page-item disabled">
-                                                <a class="page-link px-2" href="#">…</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.pages) }}">{{ tomat.pages }}</a>
-                                            </li>
-                                            {% endif %} {% elif tomat.page >= tomat.pages - 2 %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=1) }}">1</a>
-                                            </li>
-                                            <li class="page-item disabled">
-                                                <a class="page-link px-2" href="#">…</a>
-                                            </li>
-                                            {% for page_num in range(max(1, tomat.pages - 3), tomat.pages + 1) %} {% if page_num == tomat.page %}
-                                            <li class="page-item active" aria-current="page">
-                                                <span class="page-link">{{ page_num }}</span>
-                                            </li>
-                                            {% else %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a>
-                                            </li>
-                                            {% endif %} {% endfor %} {% else %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=1) }}">1</a>
-                                            </li>
-                                            <li class="page-item disabled">
-                                                <a class="page-link px-2" href="#">…</a>
-                                            </li>
-                                            {% for page_num in range(tomat.page - 1, tomat.page + 2) %} {% if page_num == tomat.page %}
-                                            <li class="page-item active" aria-current="page">
-                                                <span class="page-link">{{ page_num }}</span>
-                                            </li>
-                                            {% else %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=page_num) }}">{{ page_num }}</a>
-                                            </li>
-                                            {% endif %} {% endfor %}
-                                            <li class="page-item disabled">
-                                                <a class="page-link px-2" href="#">…</a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.pages) }}">{{ tomat.pages }}</a>
-                                            </li>
-                                            {% endif %} {% if tomat.has_next %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=tomat.next_num) }}" aria-label="Next">
-                                                    <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
-                                                </a>
+                                                <a class="page-link" href="{{ url_for('views.dataproduksi', page=cabai.next_num) }}"><i class="bi bi-chevron-right"></i></a>
                                             </li>
                                             {% else %}
                                             <li class="page-item disabled">
-                                                <a class="page-link" href="#" aria-label="Next">
-                                                    <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
-                                                </a>
+                                                <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
                                             </li>
                                             {% endif %}
                                         </ul>
