@@ -139,7 +139,7 @@
                                 <label for="kebun" class="form-label fw-bold fs-4">Kebun</label>
                                 <select class="form-select" aria-label="kebun" id="kebun" name="kebun" {% if not kelurahan %} disabled {% endif %}>
                                     {% if kelurahan %} {% for data_kel in range(kelurahan.kebun) %}
-                                    <option value="Kebun {{loop.index}}">Kebun {{loop.index}}</option>
+                                    <option value="{{loop.index}}">Kebun {{loop.index}}</option>
                                     {% endfor %} {% endif %} {% if not kelurahan %}
                                     <option value="">Belum ada kebun</option>
                                     {% endif %}

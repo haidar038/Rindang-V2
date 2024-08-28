@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from flask_sqlalchemy import pagination
 from flask_admin.base import expose, AdminIndexView, Admin
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 from datetime import datetime, timedelta
 from babel.numbers import format_currency
 from werkzeug.utils import secure_filename
@@ -195,8 +195,8 @@ def dataproduksi():
     # Menggunakan list comprehension untuk menyederhanakan perhitungan total panen
     total_panen = [total.jml_panen for total in pangan]
 
-    cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
-    tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
+    cabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(desc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
+    tomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(desc(DataPangan.tanggal_panen)).paginate(page=page, per_page=per_page, error_out=False)
 
     allDataCabai = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Cabai').order_by(asc(DataPangan.tanggal_panen)).all()
     allDataTomat = DataPangan.query.filter_by(user_id=current_user.id, komoditas='Tomat').order_by(asc(DataPangan.tanggal_panen)).all()
@@ -222,11 +222,13 @@ def dataproduksi():
         komoditas = request.form['komoditas']
         jumlahBibit = request.form['jumlahBibit']
         tglBibit = request.form['tglBibit']
+        tanggal_panen = datetime.today()
+        formatted_date = tanggal_panen.strftime('%Y-%m-%d')
 
         add_data = DataPangan(kebun=kebun, komoditas=komoditas,
-                              tanggal_bibit=tglBibit, jml_bibit=jumlahBibit,
-                              status='Penanaman', jml_panen=0, tanggal_panen=0,
-                              user_id=current_user.id)
+                                tanggal_bibit=tglBibit, jml_bibit=jumlahBibit,
+                                status='Penanaman', jml_panen=0, tanggal_panen=formatted_date,
+                                user_id=current_user.id, kelurahan_id=current_user.kelurahan_id)
         db.session.add(add_data)
         db.session.commit()
         flash('Berhasil menginput data!', 'success')
