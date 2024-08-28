@@ -232,7 +232,7 @@ def dataproduksi():
         flash('Berhasil menginput data!', 'success')
         return redirect(request.referrer)
 
-    return render_template('dashboard/data-pangan.html', allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase(stat_cabai), kenaikan_tomat=calc_increase(stat_tomat), stat_cabai=stat_cabai, stat_tomat=stat_tomat, cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
+    return render_template('dashboard/data-pangan.html', max=max, min=min, allDataCabai=allDataCabai, allDataTomat=allDataTomat, kelurahan=kel, user_data=user_data, kenaikan_cabai=calc_increase(stat_cabai), kenaikan_tomat=calc_increase(stat_tomat), stat_cabai=stat_cabai, stat_tomat=stat_tomat, cabai=cabai, tomat=tomat, pangan=pangan, total_panen=total_of_panen, totalPanenCabai=totalPanenCabai, totalPanenTomat=totalPanenTomat, tgl_panen_cabai=json.dumps(tgl_panen_cabai), tgl_panen_tomat=json.dumps(tgl_panen_tomat))
 
 @views.route('/dashboard/data-pangan/import', methods=['GET', 'POST'])
 @login_required
